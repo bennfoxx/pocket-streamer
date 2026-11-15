@@ -2391,7 +2391,7 @@
         var dtSec = dtMs / 1000;
         lastTs = ts;
 
-        state.phase += dtSec * 3.0;
+        state.phase += dtSec * 1.15;
 
         if (state.playing && !state.locked && state.pttPhase !== 'LISTENING') {
           var spd = HomePlayer.SPEEDS[state.speedIdx] || 1.0;

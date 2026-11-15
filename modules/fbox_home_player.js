@@ -242,6 +242,7 @@
   var _lavaTargetIdx = null;
   var _lavaAnim = 1;
   var _lavaArrivedBounced = true;
+  var _launcherRadii = null;
 
   var _npLavaFrom = null;
   var _npLavaColor = COLORS.gold;
@@ -514,10 +515,18 @@
     stepSpring(_lockWobbleSpring, dtSec);
 
     if (_lavaAnim < 1) {
-      _lavaAnim = Math.min(1, _lavaAnim + dtSec / 0.58);
+      _lavaAnim = Math.min(1, _lavaAnim + dtSec / 0.85);
       if (_lavaAnim >= 0.88 && !_lavaArrivedBounced && _lavaTargetIdx != null) {
         _lavaArrivedBounced = true;
-        triggerBounce('launcher_' + _lavaTargetIdx, 2.4);
+        triggerBounce('launcher_' + _lavaTargetIdx, 1.6);
+      }
+    }
+
+    if (_launcherRadii && _lavaTargetIdx != null) {
+      var radLerp = clamp(dtSec * 5.2, 0.01, 0.35);
+      for (var ri = 0; ri < 4; ri++) {
+        var targetR = ri === _lavaTargetIdx ? 45 : 31;
+        _launcherRadii[ri] = lerp(_launcherRadii[ri], targetR, radLerp);
       }
     }
 
@@ -642,10 +651,10 @@
 
     // Smooth 2-lobe breathing perimeter using midpoint quadratic Bezier smoothing
     var steps = 32;
-    var a1 = ph * 0.72;
-    var a2 = ph * 0.72 + 2.65;
-    var amp1 = r * (0.062 + 0.032 * Math.sin(ph * 1.45));
-    var amp2 = r * (0.048 + 0.026 * Math.cos(ph * 1.15));
+    var a1 = ph * 0.52;
+    var a2 = ph * 0.52 + 2.65;
+    var amp1 = r * (0.048 + 0.022 * Math.sin(ph * 0.9));
+    var amp2 = r * (0.036 + 0.018 * Math.cos(ph * 0.72));
     var inv2Sig2 = 1 / (2 * 0.44 * 0.44);
 
     var pts = [];
@@ -1275,12 +1284,14 @@
       _lavaTargetIdx = activeIdx;
       _lavaAnim = 1;
       _lavaArrivedBounced = true;
+      _launcherRadii = [31, 31, 31, 31];
+      _launcherRadii[activeIdx] = 45;
     } else if (activeIdx !== _lavaTargetIdx) {
       _prevLauncherIdx = _lavaTargetIdx;
       _lavaTargetIdx = activeIdx;
       _lavaAnim = 0;
       _lavaArrivedBounced = false;
-      triggerBounce('launcher_' + _prevLauncherIdx, -1.2);
+      triggerBounce('launcher_' + _prevLauncherIdx, -0.8);
     }
 
     tickInternalAnimations(s);
@@ -1302,10 +1313,10 @@
         ctx,
         LAUNCHER_CX[_prevLauncherIdx],
         LAUNCHER_CY,
-        34,
+        _launcherRadii ? _launcherRadii[_prevLauncherIdx] : 38,
         LAUNCHER_CX[_lavaTargetIdx],
         LAUNCHER_CY,
-        45,
+        _launcherRadii ? _launcherRadii[_lavaTargetIdx] : 38,
         _lavaAnim,
         LAUNCHER_ITEMS[_prevLauncherIdx].color,
         LAUNCHER_ITEMS[_lavaTargetIdx].color
@@ -1317,15 +1328,16 @@
       var item = LAUNCHER_ITEMS[i];
       var selected = i === activeIdx;
       var cx = LAUNCHER_CX[i];
-      var floatY = selected ? 0 : Math.sin(phase * 1.15 + i * 1.45) * 2.2;
+      var floatY = selected ? 0 : Math.sin(phase * 0.9 + i * 1.45) * 1.8;
       var cy = LAUNCHER_CY + floatY;
       var bounceVal = getBounceVal('launcher_' + i);
+      var drawR = _launcherRadii ? _launcherRadii[i] : (selected ? 45 : 31);
 
       if (selected) {
-        drawLivingCircle(ctx, cx, cy, 45, item.color, phase * 0.9 + i * 0.8, bounceVal);
+        drawLivingCircle(ctx, cx, cy, drawR, item.color, phase * 0.8 + i * 0.8, bounceVal);
         ctx.save();
         applySquashStretch(ctx, cx, cy, bounceVal);
-        drawLauncherGlyph(ctx, i, cx, cy, 1.18, phase, true);
+        drawLauncherGlyph(ctx, i, cx, cy, 0.88 + (drawR - 31) / 14 * 0.30, phase, true);
         ctx.restore();
       } else {
         ctx.save();
@@ -1333,10 +1345,10 @@
         ctx.globalAlpha = 0.88;
         ctx.fillStyle = item.color;
         ctx.beginPath();
-        ctx.arc(cx, cy, 31, 0, Math.PI * 2);
+        ctx.arc(cx, cy, drawR, 0, Math.PI * 2);
         ctx.fill();
         ctx.globalAlpha = 1;
-        drawLauncherGlyph(ctx, i, cx, cy, 0.88, phase, item.source === activeSrc && !!s.playing);
+        drawLauncherGlyph(ctx, i, cx, cy, 0.88 + (drawR - 31) / 14 * 0.30, phase, item.source === activeSrc && !!s.playing);
         ctx.restore();
       }
 
