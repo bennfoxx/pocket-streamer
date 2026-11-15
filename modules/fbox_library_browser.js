@@ -789,6 +789,18 @@
     return 5;
   }
 
+  function cycleTopBarFocus(state, dir, allowHome) {
+    var order = allowHome ? ['HOME', 'OUTPUT', 'SYSTEM'] : ['OUTPUT', 'SYSTEM'];
+    var idx = order.indexOf(state.topBarFocus);
+    if (idx < 0) idx = 0;
+    var next = order[clamp(idx + dir, 0, order.length - 1)];
+    if (next !== state.topBarFocus) {
+      state.topBarFocus = next;
+      return true;
+    }
+    return false;
+  }
+
   function updateStickPhysics(state, dtSec, helpers) {
     if (!state || typeof state !== 'object') return;
     ensureState(state);
@@ -807,98 +819,174 @@
       state._scrollAccum = 0;
       state._libScrollActive = false;
       state._libTabStickLatched = false;
+      state._libLayerLatched = false;
     }
     if (screen !== 'SYSTEM_OUTPUT' && screen !== 'SYSTEM' && screen !== 'OUTPUT' && screen !== 'STATUS') {
       state._sysStickLatched = false;
     }
+    if (screen !== 'NOW_PLAYING') {
+      state._npStickXLatched = false;
+      state._npStickYLatched = false;
+    }
+    if (screen !== 'HOME_LAUNCHER' && screen !== 'HOME') {
+      state._homeLayerLatched = false;
+    }
+    if (screen !== 'VOICE_AI' && screen !== 'AI_VOICE' && screen !== 'VOICE') {
+      state._voiceLayerLatched = false;
+      state._voiceModeLatched = false;
+    }
 
-    // ---- NOW_PLAYING: X scrubs (±1x..±16x) + live preview + release commit; Y controls volume ----
+    // ---- NOW_PLAYING: Y switches layers (TOP <-> CONTROLS <-> SCRUB); X moves within layer ----
     if (screen === 'NOW_PLAYING') {
-      var dur = Math.max(0, Number(state.durationSec) || 0);
-      var basePos = Math.max(0, Number(state.positionSec) || 0);
+      if (state.npFocusRow !== 'TOP' && state.npFocusRow !== 'CONTROLS' && state.npFocusRow !== 'SCRUB') {
+        state.npFocusRow = 'CONTROLS';
+      }
+      if (!Number.isFinite(state.npFocusIdx)) state.npFocusIdx = 1;
 
-      if (absX >= dz) {
-        var normX = (absX - dz) / (1 - dz);
-        var speedMul = 1 + Math.pow(normX, 1.35) * 15; // 1x .. 16x
-        var scrubRate = (rawX > 0 ? 1 : -1) * speedMul;
-        var nextDelta = (Number(state.stick.scrubDeltaSec) || 0) + scrubRate * dt;
-
-        if (dur > 0) {
-          nextDelta = clamp(nextDelta, -basePos, Math.max(0, dur - basePos));
-        } else {
-          nextDelta = Math.max(-basePos, nextDelta);
+      if (absY >= 0.28 && absY >= absX) {
+        if (!state._npStickYLatched) {
+          var npOrder = ['TOP', 'CONTROLS', 'SCRUB'];
+          var curRowIdx = npOrder.indexOf(state.npFocusRow);
+          var nextRowIdx = clamp(curRowIdx + (rawY > 0 ? 1 : -1), 0, npOrder.length - 1);
+          if (nextRowIdx !== curRowIdx) {
+            state.npFocusRow = npOrder[nextRowIdx];
+            state.topBarFocus = state.npFocusRow === 'TOP' ? (state.topBarFocus || 'HOME') : null;
+            triggerEarcon(helpers, 'tick');
+          }
+          state._npStickYLatched = true;
         }
-
-        state.stick.scrubDeltaSec = nextDelta;
-        state.stick.scrubSpeed = scrubRate;
-        var previewPos = basePos + nextDelta;
-        state.stick.previewPositionSec = dur > 0 ? clamp(previewPos, 0, dur) : Math.max(0, previewPos);
-        if (helpers && typeof helpers.onScrubPreview === 'function') {
-          helpers.onScrubPreview(state.stick.previewPositionSec, nextDelta, scrubRate);
-        }
-      } else if ((Number(state.stick.scrubDeltaSec) || 0) !== 0) {
-        var deltaToCommit = Number(state.stick.scrubDeltaSec) || 0;
-        var committed = basePos + deltaToCommit;
-        state.positionSec = dur > 0 ? clamp(committed, 0, dur) : Math.max(0, committed);
-        state.stick.scrubDeltaSec = 0;
-        state.stick.scrubSpeed = 0;
-        state.stick.previewPositionSec = state.positionSec;
-
-        var signLabel = deltaToCommit >= 0 ? '+' : '−';
-        triggerToast(
-          helpers,
-          state,
-          'Seek ' + formatTime(state.positionSec) + ' (' + signLabel + Math.abs(Math.round(deltaToCommit)) + 's)',
-          PALETTE.sdCyan
-        );
-        triggerEarcon(helpers, 'tick');
+      } else if (absY < dz) {
+        state._npStickYLatched = false;
       }
 
-      if (absY >= dz) {
-        var normY = (absY - dz) / (1 - dz);
-        // Up (y < 0) raises volume, Down (y > 0) lowers volume
-        var volDir = rawY < 0 ? 1 : -1;
-        var volRate = 18 + normY * 52; // 18..70 %/sec
-        var currentVol = Number(state.volume);
-        if (!Number.isFinite(currentVol)) currentVol = 68;
-        var exactVol = (typeof state._volExact === 'number' && Math.round(state._volExact) === Math.round(currentVol))
-          ? state._volExact
-          : currentVol;
-        exactVol = clamp(exactVol + volDir * volRate * dt, 0, 100);
-        state._volExact = exactVol;
-        var roundedVol = Math.round(exactVol);
-        if (roundedVol !== state.volume) {
-          state.volume = roundedVol;
-          state.volHudUntil = Date.now() + 1400;
+      if (state.npFocusRow === 'SCRUB') {
+        var dur = Math.max(0, Number(state.durationSec) || 0);
+        var basePos = Math.max(0, Number(state.positionSec) || 0);
+
+        if (absX >= dz && absX > absY) {
+          var normX = (absX - dz) / (1 - dz);
+          var speedMul = 1 + Math.pow(normX, 1.35) * 15; // 1x .. 16x
+          var scrubRate = (rawX > 0 ? 1 : -1) * speedMul;
+          var nextDelta = (Number(state.stick.scrubDeltaSec) || 0) + scrubRate * dt;
+
+          if (dur > 0) {
+            nextDelta = clamp(nextDelta, -basePos, Math.max(0, dur - basePos));
+          } else {
+            nextDelta = Math.max(-basePos, nextDelta);
+          }
+
+          state.stick.scrubDeltaSec = nextDelta;
+          state.stick.scrubSpeed = scrubRate;
+          var previewPos = basePos + nextDelta;
+          state.stick.previewPositionSec = dur > 0 ? clamp(previewPos, 0, dur) : Math.max(0, previewPos);
+          if (helpers && typeof helpers.onScrubPreview === 'function') {
+            helpers.onScrubPreview(state.stick.previewPositionSec, nextDelta, scrubRate);
+          }
+        } else if ((Number(state.stick.scrubDeltaSec) || 0) !== 0) {
+          var deltaToCommit = Number(state.stick.scrubDeltaSec) || 0;
+          var committed = basePos + deltaToCommit;
+          state.positionSec = dur > 0 ? clamp(committed, 0, dur) : Math.max(0, committed);
+          state.stick.scrubDeltaSec = 0;
+          state.stick.scrubSpeed = 0;
+          state.stick.previewPositionSec = state.positionSec;
+
+          var signLabel = deltaToCommit >= 0 ? '+' : '−';
+          triggerToast(
+            helpers,
+            state,
+            'Seek ' + formatTime(state.positionSec) + ' (' + signLabel + Math.abs(Math.round(deltaToCommit)) + 's)',
+            PALETTE.sdCyan
+          );
+          triggerEarcon(helpers, 'tick');
+        }
+      } else {
+        if ((Number(state.stick.scrubDeltaSec) || 0) !== 0) {
+          state.stick.scrubDeltaSec = 0;
+          state.stick.scrubSpeed = 0;
+        }
+        if (absX >= 0.25 && absX > absY) {
+          if (!state._npStickXLatched) {
+            var xDir = rawX > 0 ? 1 : -1;
+            if (state.npFocusRow === 'TOP') {
+              if (cycleTopBarFocus(state, xDir, true)) triggerEarcon(helpers, 'tick');
+            } else {
+              var nextIdx = clamp(Math.round(state.npFocusIdx) + xDir, 0, 5);
+              if (nextIdx !== state.npFocusIdx) {
+                state.npFocusIdx = nextIdx;
+                triggerEarcon(helpers, 'tick');
+              }
+            }
+            state._npStickXLatched = true;
+          }
+        } else if (absX < dz) {
+          state._npStickXLatched = false;
         }
       }
       return;
     }
 
-    // ---- LIBRARY_BROWSER: Y drives variable 1x..6x row velocity; X tap switches tabs ----
+    // ---- LIBRARY_BROWSER: Y moves between TOP <-> TABS <-> LIST; X switches category tabs (or TOP pills) ----
     if (screen === 'LIBRARY_BROWSER' || screen === 'LIBRARY_BROWSE') {
-      if (absY >= dz) {
-        var normScrollY = clamp((absY - dz) / (1 - dz), 0, 1);
-        var vel = 1 + normScrollY * 5; // 1x .. 6x rows/sec
-        var dir = rawY > 0 ? 1 : -1;
-        state.stick.scrollVel = vel;
+      if (state.libFocusLayer !== 'TOP' && state.libFocusLayer !== 'TABS' && state.libFocusLayer !== 'LIST') {
+        state.libFocusLayer = 'LIST';
+      }
 
-        var prevDir = state._libScrollDir || 0;
-        if (!state._libScrollActive || (prevDir !== 0 && prevDir !== dir)) {
-          var prevCursor = state.libCursor;
-          moveCursor(state, dir);
-          if (state.libCursor !== prevCursor) triggerEarcon(helpers, 'tick');
-          state._libScrollActive = true;
-          state._libScrollDir = dir;
-          state._scrollAccum = 0;
+      if (absY >= dz && absY >= absX) {
+        var dirY = rawY > 0 ? 1 : -1;
+        if (state.libFocusLayer === 'TOP') {
+          state.stick.scrollVel = 0;
+          if (!state._libLayerLatched && dirY > 0) {
+            state.libFocusLayer = 'TABS';
+            state.topBarFocus = null;
+            state._libLayerLatched = true;
+            triggerEarcon(helpers, 'tick');
+          }
+        } else if (state.libFocusLayer === 'TABS') {
+          state.stick.scrollVel = 0;
+          if (!state._libLayerLatched) {
+            if (dirY < 0) {
+              state.libFocusLayer = 'TOP';
+              state.topBarFocus = state.topBarFocus || 'HOME';
+            } else {
+              state.libFocusLayer = 'LIST';
+              state.topBarFocus = null;
+            }
+            state._libLayerLatched = true;
+            triggerEarcon(helpers, 'tick');
+          }
         } else {
-          state._scrollAccum = (Number(state._scrollAccum) || 0) + dir * vel * dt;
-          var steps = Math.trunc(state._scrollAccum);
-          if (steps !== 0) {
-            state._scrollAccum -= steps;
-            var before = state.libCursor;
-            moveCursor(state, steps);
-            if (state.libCursor !== before) triggerEarcon(helpers, 'tick');
+          // LIST layer
+          if (dirY < 0 && state.libCursor <= 0) {
+            state.stick.scrollVel = 0;
+            if (!state._libLayerLatched && !state._libScrollActive) {
+              state.libFocusLayer = 'TABS';
+              state._libLayerLatched = true;
+              triggerEarcon(helpers, 'tick');
+            }
+          } else {
+            var normScrollY = clamp((absY - dz) / (1 - dz), 0, 1);
+            var vel = 1 + normScrollY * 5; // 1x .. 6x rows/sec
+            state.stick.scrollVel = vel;
+
+            var prevDir = state._libScrollDir || 0;
+            if (!state._libScrollActive || (prevDir !== 0 && prevDir !== dirY)) {
+              var prevCursor = state.libCursor;
+              moveCursor(state, dirY);
+              if (state.libCursor !== prevCursor) triggerEarcon(helpers, 'tick');
+              state._libScrollActive = true;
+              state._libScrollDir = dirY;
+              state._scrollAccum = 0;
+              state._libLayerLatched = true;
+            } else {
+              state._scrollAccum = (Number(state._scrollAccum) || 0) + dirY * vel * dt;
+              var steps = Math.trunc(state._scrollAccum);
+              if (steps !== 0) {
+                state._scrollAccum -= steps;
+                var before = state.libCursor;
+                moveCursor(state, steps);
+                if (state.libCursor !== before) triggerEarcon(helpers, 'tick');
+              }
+            }
           }
         }
       } else {
@@ -906,13 +994,18 @@
         state._scrollAccum = 0;
         state._libScrollActive = false;
         state._libScrollDir = 0;
+        if (absY < dz) state._libLayerLatched = false;
       }
 
       if (absX >= 0.25 && absX >= absY) {
         if (!state._libTabStickLatched) {
-          switchTab(state, rawX > 0 ? 1 : -1, false);
+          if (state.libFocusLayer === 'TOP') {
+            if (cycleTopBarFocus(state, rawX > 0 ? 1 : -1, true)) triggerEarcon(helpers, 'tick');
+          } else {
+            switchTab(state, rawX > 0 ? 1 : -1, false);
+            triggerEarcon(helpers, 'tick');
+          }
           state._libTabStickLatched = true;
-          triggerEarcon(helpers, 'tick');
         }
       } else if (absX < dz) {
         state._libTabStickLatched = false;
@@ -923,56 +1016,137 @@
       return;
     }
 
-    // ---- HOME_LAUNCHER / HOME: X or Y steps launcherIdx (0..3) ----
+    // ---- HOME_LAUNCHER / HOME: Y moves TOP <-> WIDGETS <-> NOW_PILL; X moves across widgets/pills ----
     if (screen === 'HOME_LAUNCHER' || screen === 'HOME') {
-      state._launcherStickCooldown = Math.max(0, (Number(state._launcherStickCooldown) || 0) - dt);
-      var maxHome = Math.max(absX, absY);
-      if (maxHome >= dz) {
-        if (state._launcherStickCooldown <= 0) {
-          var homeDir = absX >= absY ? (rawX > 0 ? 1 : -1) : (rawY > 0 ? 1 : -1);
-          var curLauncher = Number.isFinite(state.launcherIdx) ? Math.round(state.launcherIdx) : 0;
-          var nextLauncher = clamp(curLauncher + homeDir, 0, 3);
-          if (nextLauncher !== curLauncher) {
-            state.launcherIdx = nextLauncher;
+      if (state.homeFocusLayer !== 'TOP' && state.homeFocusLayer !== 'WIDGETS' && state.homeFocusLayer !== 'NOW_PILL') {
+        state.homeFocusLayer = 'WIDGETS';
+      }
+
+      if (absY >= 0.28 && absY >= absX) {
+        if (!state._homeLayerLatched) {
+          var homeOrder = ['TOP', 'WIDGETS', 'NOW_PILL'];
+          var curHomeIdx = homeOrder.indexOf(state.homeFocusLayer);
+          var nextHomeIdx = clamp(curHomeIdx + (rawY > 0 ? 1 : -1), 0, homeOrder.length - 1);
+          if (nextHomeIdx !== curHomeIdx) {
+            state.homeFocusLayer = homeOrder[nextHomeIdx];
+            state.topBarFocus = state.homeFocusLayer === 'TOP' ? (state.topBarFocus || 'OUTPUT') : null;
             triggerEarcon(helpers, 'tick');
           }
-          state._launcherStickCooldown = 0.24;
+          state._homeLayerLatched = true;
         }
-      } else {
+      } else if (absY < dz) {
+        state._homeLayerLatched = false;
+      }
+
+      state._launcherStickCooldown = Math.max(0, (Number(state._launcherStickCooldown) || 0) - dt);
+      if (absX >= dz && absX >= absY) {
+        if (state._launcherStickCooldown <= 0) {
+          var homeDir = rawX > 0 ? 1 : -1;
+          if (state.homeFocusLayer === 'TOP') {
+            if (cycleTopBarFocus(state, homeDir, false)) triggerEarcon(helpers, 'tick');
+          } else if (state.homeFocusLayer === 'WIDGETS') {
+            var curLauncher = Number.isFinite(state.launcherIdx) ? Math.round(state.launcherIdx) : 0;
+            var nextLauncher = clamp(curLauncher + homeDir, 0, 3);
+            if (nextLauncher !== curLauncher) {
+              state.launcherIdx = nextLauncher;
+              triggerEarcon(helpers, 'tick');
+            }
+          }
+          state._launcherStickCooldown = 0.34;
+        }
+      } else if (absX < dz) {
         state._launcherStickCooldown = 0;
       }
       return;
     }
 
-    // ---- VOICE_AI / AI_VOICE: X or Y steps activePromptIdx or selectedNoteIdx ----
+    // ---- VOICE_AI / AI_VOICE: Y moves TOP <-> MODE (Gemini|Memo) <-> CONTENT; X flips Gemini/Memo or steps prompts ----
     if (screen === 'VOICE_AI' || screen === 'AI_VOICE' || screen === 'VOICE') {
-      state._voiceStickCooldown = Math.max(0, (Number(state._voiceStickCooldown) || 0) - dt);
-      var maxVoice = Math.max(absX, absY);
-      if (maxVoice >= dz) {
-        if (state._voiceStickCooldown <= 0) {
-          var vDir = absY >= absX ? (rawY > 0 ? 1 : -1) : (rawX > 0 ? 1 : -1);
-          var notes = Array.isArray(state.voiceNotes) ? state.voiceNotes : [];
-          var inNotesView = (state.voiceSubMode === 'VOICE_NOTE' || state.voiceTab === 'NOTES') && notes.length > 0;
-          if (inNotesView) {
-            var curSel = typeof state.selectedNoteIdx === 'number' && Number.isFinite(state.selectedNoteIdx)
-              ? Math.round(state.selectedNoteIdx)
-              : 0;
-            var nextSelNote = clamp(curSel + vDir, 0, notes.length - 1);
-            if (nextSelNote !== state.selectedNoteIdx) {
-              state.selectedNoteIdx = nextSelNote;
+      if (state.voiceFocusLayer !== 'TOP' && state.voiceFocusLayer !== 'MODE' && state.voiceFocusLayer !== 'CONTENT') {
+        state.voiceFocusLayer = 'CONTENT';
+      }
+      var notes = Array.isArray(state.voiceNotes) ? state.voiceNotes : [];
+      var inNotesView = (state.voiceSubMode === 'VOICE_NOTE' || state.voiceTab === 'NOTES') && notes.length > 0;
+
+      if (absY >= 0.28 && absY >= absX) {
+        if (!state._voiceLayerLatched) {
+          var yDir = rawY > 0 ? 1 : -1;
+          if (state.voiceFocusLayer === 'TOP') {
+            if (yDir > 0) {
+              state.voiceFocusLayer = 'MODE';
+              state.topBarFocus = null;
               triggerEarcon(helpers, 'tick');
             }
-            if (typeof state.voiceNoteCursor === 'number') {
-              var nextNote = clamp(Math.round(state.voiceNoteCursor) + vDir, 0, notes.length - 1);
-              if (nextNote !== state.voiceNoteCursor) {
-                state.voiceNoteCursor = nextNote;
+          } else if (state.voiceFocusLayer === 'MODE') {
+            if (yDir < 0) {
+              state.voiceFocusLayer = 'TOP';
+              state.topBarFocus = state.topBarFocus || 'HOME';
+            } else {
+              state.voiceFocusLayer = 'CONTENT';
+              state.topBarFocus = null;
+            }
+            triggerEarcon(helpers, 'tick');
+          } else {
+            // CONTENT layer
+            if (inNotesView) {
+              var curSel = typeof state.selectedNoteIdx === 'number' && Number.isFinite(state.selectedNoteIdx)
+                ? Math.round(state.selectedNoteIdx) : 0;
+              if (yDir < 0 && curSel <= 0) {
+                state.voiceFocusLayer = 'MODE';
+                triggerEarcon(helpers, 'tick');
+              } else {
+                var nextSelNote = clamp(curSel + yDir, 0, notes.length - 1);
+                if (nextSelNote !== state.selectedNoteIdx) {
+                  state.selectedNoteIdx = nextSelNote;
+                  triggerEarcon(helpers, 'tick');
+                }
+              }
+            } else if (yDir < 0) {
+              state.voiceFocusLayer = 'MODE';
+              triggerEarcon(helpers, 'tick');
+            }
+          }
+          state._voiceLayerLatched = true;
+        }
+      } else if (absY < dz) {
+        state._voiceLayerLatched = false;
+      }
+
+      state._voiceStickCooldown = Math.max(0, (Number(state._voiceStickCooldown) || 0) - dt);
+      if (absX >= dz && absX > absY) {
+        var xVoiceDir = rawX > 0 ? 1 : -1;
+        if (state.voiceFocusLayer === 'TOP') {
+          if (!state._voiceModeLatched) {
+            if (cycleTopBarFocus(state, xVoiceDir, true)) triggerEarcon(helpers, 'tick');
+            state._voiceModeLatched = true;
+          }
+        } else if (state.voiceFocusLayer === 'MODE') {
+          if (!state._voiceModeLatched) {
+            var wantMode = xVoiceDir > 0 ? 'VOICE_NOTE' : 'GEMINI';
+            if (state.voiceSubMode !== wantMode) {
+              var vMod = typeof window !== 'undefined' && window.FBoxVoiceAI ? window.FBoxVoiceAI : null;
+              if (vMod && typeof vMod.toggleSubMode === 'function') {
+                vMod.toggleSubMode(state, helpers);
+              } else {
+                state.voiceSubMode = wantMode;
                 triggerEarcon(helpers, 'tick');
               }
+            }
+            state._voiceModeLatched = true;
+          }
+        } else if (state._voiceStickCooldown <= 0) {
+          if (inNotesView) {
+            var curNoteIdx = typeof state.selectedNoteIdx === 'number' && Number.isFinite(state.selectedNoteIdx)
+              ? Math.round(state.selectedNoteIdx) : 0;
+            var nextNoteIdx = clamp(curNoteIdx + xVoiceDir, 0, notes.length - 1);
+            if (nextNoteIdx !== state.selectedNoteIdx) {
+              state.selectedNoteIdx = nextNoteIdx;
+              triggerEarcon(helpers, 'tick');
             }
           } else {
             var promptCount = getVoicePromptCount(state);
             var curPrompt = Number.isFinite(state.activePromptIdx) ? Math.round(state.activePromptIdx) : 0;
-            var nextPrompt = clamp(curPrompt + vDir, 0, Math.max(0, promptCount - 1));
+            var nextPrompt = clamp(curPrompt + xVoiceDir, 0, Math.max(0, promptCount - 1));
             if (nextPrompt !== curPrompt) {
               state.activePromptIdx = nextPrompt;
               triggerEarcon(helpers, 'tick');
@@ -980,25 +1154,33 @@
           }
           state._voiceStickCooldown = 0.22;
         }
-      } else {
+      } else if (absX < dz) {
         state._voiceStickCooldown = 0;
+        state._voiceModeLatched = false;
       }
       return;
     }
 
-    // ---- SYSTEM_OUTPUT: X horizontal tap toggles btTxOn (3.5mm <-> BT TX) ----
+    // ---- SYSTEM_OUTPUT: X horizontal tap toggles btTxOn (3.5mm <-> BT TX); Y up moves to TOP ----
     if (screen === 'SYSTEM_OUTPUT' || screen === 'SYSTEM' || screen === 'OUTPUT' || screen === 'STATUS') {
+      if (absY >= 0.28 && absY >= absX) {
+        state.topBarFocus = rawY < 0 ? 'HOME' : null;
+      }
       if (absX >= 0.25 && absX >= absY) {
         if (!state._sysStickLatched) {
-          state.btTxOn = !state.btTxOn;
+          if (state.topBarFocus) {
+            if (cycleTopBarFocus(state, rawX > 0 ? 1 : -1, true)) triggerEarcon(helpers, 'tick');
+          } else {
+            state.btTxOn = !state.btTxOn;
+            triggerToast(
+              helpers,
+              state,
+              state.btTxOn ? 'BT TX Active · KCX_BT_EMITTER' : 'Wired Audio · 3.5mm PCM5102',
+              state.btTxOn ? PALETTE.sdCyan : PALETTE.spotifyTeal
+            );
+            triggerEarcon(helpers, 'confirm');
+          }
           state._sysStickLatched = true;
-          triggerToast(
-            helpers,
-            state,
-            state.btTxOn ? 'BT TX Active · KCX_BT_EMITTER' : 'Wired Audio · 3.5mm PCM5102',
-            state.btTxOn ? PALETTE.sdCyan : PALETTE.spotifyTeal
-          );
-          triggerEarcon(helpers, 'confirm');
         }
       } else if (absX < dz) {
         state._sysStickLatched = false;
@@ -1516,6 +1698,14 @@
       ctx.beginPath();
       ctx.arc(cx, cy, rad, 0, Math.PI * 2);
       ctx.fill();
+      if (isActive && state.libFocusLayer === 'TABS') {
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = PALETTE.white;
+        ctx.lineWidth = 2.0;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rad + 3, 0, Math.PI * 2);
+        ctx.stroke();
+      }
       ctx.restore();
 
       // Draw crisp #000000 icon + caption on expanded circle, or centered icon on compact circle

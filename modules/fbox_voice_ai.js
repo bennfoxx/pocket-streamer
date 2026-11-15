@@ -1223,6 +1223,9 @@
     if (state.pttPhase === 'LISTENING') {
       return finishPttRelease(state, helpers);
     }
+    if (state.voiceFocusLayer === 'MODE') {
+      return toggleSubMode(state, helpers);
+    }
     if (state.voiceSubMode === 'VOICE_NOTE') {
       return toggleNotePreview(state, state.selectedNoteIdx, helpers);
     }
@@ -1540,6 +1543,12 @@
       gH * 0.5,
       isGemini ? COLORS.CORAL : hexToRgba(COLORS.CORAL, 0.18)
     );
+    if (state.voiceFocusLayer === 'MODE' && isGemini) {
+      ctx.strokeStyle = COLORS.WHITE;
+      ctx.lineWidth = 2;
+      roundRectPath(ctx, GEMINI_CX - gW * 0.5 - 2.5, MODE_Y - gH * 0.5 - 2.5, gW + 5, gH + 5, (gH + 5) * 0.5);
+      ctx.stroke();
+    }
     ctx.font = 'bold 11px ' + FONT_SANS;
     ctx.fillStyle = isGemini ? COLORS.VOID : COLORS.CORAL;
     ctx.fillText('Gemini', GEMINI_CX, MODE_Y + 0.5);
@@ -1557,6 +1566,12 @@
       mH * 0.5,
       !isGemini ? COLORS.AMBER : hexToRgba(COLORS.AMBER, 0.18)
     );
+    if (state.voiceFocusLayer === 'MODE' && !isGemini) {
+      ctx.strokeStyle = COLORS.WHITE;
+      ctx.lineWidth = 2;
+      roundRectPath(ctx, MEMO_CX - mW * 0.5 - 2.5, MODE_Y - mH * 0.5 - 2.5, mW + 5, mH + 5, (mH + 5) * 0.5);
+      ctx.stroke();
+    }
     ctx.font = 'bold 11px ' + FONT_SANS;
     ctx.fillStyle = !isGemini ? COLORS.VOID : COLORS.AMBER;
     ctx.fillText('Memo', MEMO_CX, MODE_Y + 0.5);

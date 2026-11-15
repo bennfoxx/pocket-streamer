@@ -434,9 +434,9 @@
     if (!isFinite(target)) target = 0;
 
     var stiffness = (springObj.stiffness != null && isFinite(Number(springObj.stiffness)))
-      ? Number(springObj.stiffness) : 300;
+      ? Number(springObj.stiffness) : 220;
     var damping = (springObj.damping != null && isFinite(Number(springObj.damping)))
-      ? Number(springObj.damping) : 17;
+      ? Number(springObj.damping) : 16;
 
     var subSteps = dt > 0.02 ? 2 : 1;
     var h = dt / subSteps;
@@ -459,11 +459,19 @@
 
   function triggerBounce(name, impulseVel) {
     var key = String(name || 'global');
+    var isLauncher = key.indexOf('launcher_') === 0;
     if (!_bounceSprings[key]) {
-      _bounceSprings[key] = { val: 0, vel: 0, target: 0, stiffness: 300, damping: 17 };
+      _bounceSprings[key] = {
+        val: 0,
+        vel: 0,
+        target: 0,
+        stiffness: isLauncher ? 170 : 220,
+        damping: isLauncher ? 14 : 16,
+      };
     }
-    var vel = (impulseVel != null && isFinite(Number(impulseVel))) ? Number(impulseVel) : 5.5;
-    _bounceSprings[key].vel = clamp(_bounceSprings[key].vel + vel, -12, 12);
+    var vel = (impulseVel != null && isFinite(Number(impulseVel))) ? Number(impulseVel) : 4.2;
+    var maxVel = isLauncher ? 4.8 : 9.0;
+    _bounceSprings[key].vel = clamp(_bounceSprings[key].vel + vel, -maxVel, maxVel);
     return _bounceSprings[key];
   }
 
@@ -473,7 +481,7 @@
   }
 
   function applySquashStretch(ctx, cx, cy, bounceVal) {
-    var b = clamp(Number(bounceVal) || 0, -0.45, 0.75);
+    var b = clamp(Number(bounceVal) || 0, -0.26, 0.34);
     if (Math.abs(b) < 0.001) return;
     var scaleX = 1 + b;
     var scaleY = 1 / (1 + b * 0.65);
@@ -506,10 +514,10 @@
     stepSpring(_lockWobbleSpring, dtSec);
 
     if (_lavaAnim < 1) {
-      _lavaAnim = Math.min(1, _lavaAnim + dtSec / 0.32);
-      if (_lavaAnim >= 0.85 && !_lavaArrivedBounced && _lavaTargetIdx != null) {
+      _lavaAnim = Math.min(1, _lavaAnim + dtSec / 0.58);
+      if (_lavaAnim >= 0.88 && !_lavaArrivedBounced && _lavaTargetIdx != null) {
         _lavaArrivedBounced = true;
-        triggerBounce('launcher_' + _lavaTargetIdx, 6.2);
+        triggerBounce('launcher_' + _lavaTargetIdx, 2.4);
       }
     }
 
@@ -690,70 +698,57 @@
     var nx = -dy / totalDist;
     var ny = dx / totalDist;
 
-    var tMove = easeInOutCubic(p);
-    var arcSway = Math.sin(p * Math.PI) * Math.min(8, totalDist * 0.04);
+    var tMove = smoothstep(0, 1, easeInOutCubic(p));
+    var arcSway = Math.sin(p * Math.PI) * Math.min(5, totalDist * 0.025);
     var bx = lerp(x1, x2, tMove) + nx * arcSway;
     var by = lerp(y1, y2, tMove) + ny * arcSway;
 
     var baseR = lerp(r1, r2, tMove);
-    // Bolus pinches sleekly mid-flight, then swells as it reaches destination
-    var br = baseR * (0.64 - 0.14 * Math.sin(p * Math.PI) + 0.34 * smoothstep(0.65, 1.0, p));
+    // Plump viscous wax glob: swells softly instead of pinching thin
+    var br = baseR * (0.80 - 0.05 * Math.sin(p * Math.PI) + 0.20 * smoothstep(0.55, 1.0, p));
 
     ctx.save();
     var fillGrad = makeLavaFill(ctx, x1, y1, x2, y2, c1, c2);
     ctx.fillStyle = fillGrad;
-    ctx.shadowBlur = 14;
-    ctx.shadowColor = hexToRgba(blendHex(c1, c2, tMove), 0.45);
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = hexToRgba(blendHex(c1, c2, tMove), 0.35);
 
-    // 1. Source hourglass bridge: stretches from (x1, y1, r1) to traveling blob and pinches off
-    if (p < 0.72) {
-      var srcPinch = clamp(p / 0.72, 0, 1);
-      var r1Eff = Math.max(4, r1 * lerp(0.92, 0.56, srcPinch));
-      var spreadSrc = lerp(0.48, 0.96, srcPinch);
-      if (traceMetaballConnector(ctx, x1, y1, r1Eff, bx, by, br, spreadSrc, 2.35)) {
+    // 1. Source syrupy neck: stretches smoothly from (x1, y1, r1) into the traveling glob
+    if (p < 0.78) {
+      var srcPinch = clamp(p / 0.78, 0, 1);
+      var r1Eff = Math.max(6, r1 * lerp(0.96, 0.68, srcPinch));
+      var spreadSrc = lerp(0.38, 0.72, srcPinch);
+      if (traceMetaballConnector(ctx, x1, y1, r1Eff, bx, by, br, spreadSrc, 2.6)) {
         ctx.fill();
       }
     }
 
-    // 2. Traveling liquid bolus
+    // 2. Traveling fluid lava glob
     ctx.beginPath();
     ctx.arc(bx, by, br, 0, Math.PI * 2);
     ctx.fill();
 
-    // 3. Destination capture bridge: reaches out and swallows bolus on arrival
-    if (p > 0.34) {
-      var dstBlend = smoothstep(0.34, 0.96, p);
-      var r2Eff = Math.max(5, r2 * lerp(0.55, 1.0, dstBlend));
-      var spreadDst = lerp(0.94, 0.46, dstBlend);
-      if (traceMetaballConnector(ctx, bx, by, br, x2, y2, r2Eff, spreadDst, 2.35)) {
+    // 3. Destination capture neck: gently pulls & absorbs the arriving glob
+    if (p > 0.22) {
+      var dstBlend = smoothstep(0.22, 0.96, p);
+      var r2Eff = Math.max(6, r2 * lerp(0.68, 1.0, dstBlend));
+      var spreadDst = lerp(0.72, 0.38, dstBlend);
+      if (traceMetaballConnector(ctx, bx, by, br, x2, y2, r2Eff, spreadDst, 2.6)) {
         ctx.fill();
       }
     }
 
-    // 4. Satellite lava droplets pinching off mid-flight and splashing into destination
-    if (p > 0.14 && p < 0.94) {
-      var d1t = clamp((p - 0.14) / 0.74, 0, 1);
+    // 4. Soft satellite wax droplet drifting smoothly in the wake
+    if (p > 0.18 && p < 0.92) {
+      var d1t = clamp((p - 0.18) / 0.74, 0, 1);
       var d1Eased = easeInOutCubic(d1t);
-      var d1Off = -Math.sin(d1t * Math.PI) * Math.min(18, Math.max(10, totalDist * 0.08));
-      var d1x = lerp(x1, x2, d1Eased * 0.92 + 0.08) + nx * d1Off;
-      var d1y = lerp(y1, y2, d1Eased * 0.92 + 0.08) + ny * d1Off;
-      var d1r = Math.max(1.5, Math.min(r1, r2) * 0.2 * Math.sin(d1t * Math.PI));
+      var d1Off = -Math.sin(d1t * Math.PI) * Math.min(10, Math.max(5, totalDist * 0.045));
+      var d1x = lerp(x1, x2, d1Eased * 0.88 + 0.08) + nx * d1Off;
+      var d1y = lerp(y1, y2, d1Eased * 0.88 + 0.08) + ny * d1Off;
+      var d1r = Math.max(2.0, Math.min(r1, r2) * 0.22 * Math.sin(d1t * Math.PI));
       ctx.fillStyle = blendHex(c1, c2, d1Eased);
       ctx.beginPath();
       ctx.arc(d1x, d1y, d1r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    if (p > 0.26 && p < 0.98) {
-      var d2t = clamp((p - 0.26) / 0.72, 0, 1);
-      var d2Eased = easeInOutCubic(d2t);
-      var d2Off = Math.sin(d2t * Math.PI) * Math.min(14, Math.max(7, totalDist * 0.055));
-      var d2x = lerp(x1, x2, d2Eased * 0.86 + 0.14) + nx * d2Off;
-      var d2y = lerp(y1, y2, d2Eased * 0.86 + 0.14) + ny * d2Off;
-      var d2r = Math.max(1.2, Math.min(r1, r2) * 0.14 * Math.sin(d2t * Math.PI));
-      ctx.fillStyle = blendHex(c1, c2, clamp(d2Eased + 0.15, 0, 1));
-      ctx.beginPath();
-      ctx.arc(d2x, d2y, d2r, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -942,6 +937,12 @@
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillText(isHome ? 'fbox' : '‹ fbox', 26, 14.5);
+    if (!isHome && s.topBarFocus === 'HOME') {
+      ctx.strokeStyle = COLORS.textPrimary;
+      ctx.lineWidth = 1.8;
+      roundRectPath(ctx, 5, 4, 72, 20, 10);
+      ctx.stroke();
+    }
     ctx.restore();
 
     recordHitbox(helpers, { id: 'top_home', x: 6, y: 4, w: 96, h: 22, action: 'goHome' });
@@ -961,6 +962,12 @@
     ctx.fillStyle = batColor;
     roundRectPath(ctx, batX, batY, batW, batH, 9);
     ctx.fill();
+    if (s.topBarFocus === 'SYSTEM') {
+      ctx.strokeStyle = COLORS.textPrimary;
+      ctx.lineWidth = 1.8;
+      roundRectPath(ctx, batX - 2, batY - 2, batW + 4, batH + 4, 11);
+      ctx.stroke();
+    }
 
     ctx.fillStyle = COLORS.textDark;
     ctx.textAlign = 'center';
@@ -993,6 +1000,12 @@
     ctx.fillStyle = outColor;
     roundRectPath(ctx, outX, outY, outW, outH, 9);
     ctx.fill();
+    if (s.topBarFocus === 'OUTPUT') {
+      ctx.strokeStyle = COLORS.textPrimary;
+      ctx.lineWidth = 1.8;
+      roundRectPath(ctx, outX - 2, outY - 2, outW + 4, outH + 4, 11);
+      ctx.stroke();
+    }
 
     ctx.fillStyle = COLORS.textDark;
     ctx.textAlign = 'center';
@@ -1267,7 +1280,7 @@
       _lavaTargetIdx = activeIdx;
       _lavaAnim = 0;
       _lavaArrivedBounced = false;
-      triggerBounce('launcher_' + _prevLauncherIdx, -3.4);
+      triggerBounce('launcher_' + _prevLauncherIdx, -1.2);
     }
 
     tickInternalAnimations(s);
@@ -1382,6 +1395,13 @@
     roundRectPath(ctx, npX, npY, npW, npH, 13);
     ctx.fill();
     ctx.shadowBlur = 0;
+
+    if (s.homeFocusLayer === 'NOW_PILL') {
+      ctx.strokeStyle = COLORS.textPrimary;
+      ctx.lineWidth = 2.2;
+      roundRectPath(ctx, npX - 3, npY - 3, npW + 6, npH + 6, 16);
+      ctx.stroke();
+    }
 
     ctx.fillStyle = COLORS.textDark;
     ctx.textAlign = 'center';
@@ -1591,6 +1611,30 @@
     ctx.restore();
     recordHitbox(helpers, { id: 'np_speed', x: 467, y: 115, w: 49, h: 30, action: 'cycleSpeed' });
 
+    if (s.npFocusRow === 'CONTROLS') {
+      var npFocusIdx = clamp(Math.round(Number(s.npFocusIdx != null ? s.npFocusIdx : 1)), 0, 5);
+      var npRingCoords = [
+        { cx: 204, r: 22 },
+        { cx: 260, r: 27 },
+        { cx: 322, r: 22 },
+        { cx: 384, r: 22 },
+        { cx: 440, r: 22 },
+        { cx: 491, pill: true },
+      ];
+      var ringSpec = npRingCoords[npFocusIdx];
+      ctx.save();
+      ctx.strokeStyle = COLORS.textPrimary;
+      ctx.lineWidth = 2.2;
+      if (ringSpec.pill) {
+        roundRectPath(ctx, 464, 115, 54, 30, 15);
+      } else {
+        ctx.beginPath();
+        ctx.arc(ringSpec.cx, 130, ringSpec.r, 0, Math.PI * 2);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
     // Bottom-right progress track (x=180..514, y=184, height=7)
     var trackX = 180;
     var trackW = 334;
@@ -1652,6 +1696,13 @@
     ctx.beginPath();
     ctx.arc(knobX, knobY, isScrubbing ? 4 : 2.5, 0, Math.PI * 2);
     ctx.fill();
+    if (s.npFocusRow === 'SCRUB') {
+      ctx.strokeStyle = COLORS.textPrimary;
+      ctx.lineWidth = 2.0;
+      ctx.beginPath();
+      ctx.arc(knobX, knobY, baseKnobR + 3, 0, Math.PI * 2);
+      ctx.stroke();
+    }
     ctx.restore();
 
     // Floating solid time pill when scrubbing
