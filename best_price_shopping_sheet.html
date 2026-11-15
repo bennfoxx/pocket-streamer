@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Pocket Streamer — Locked-In 1.9&quot; Color IPS Amazon Zero-Solder Sheet</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    html {
+      color-scheme: light dark;
+      accent-color: var(--primary);
+    }
+
+    :where(button, input, a, summary, [tabindex]):focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .table-wrapper {
+      overflow: auto;
+      max-inline-size: 100%;
+      container-type: inline-size;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    @supports not (scrollbar-color: auto) {
+      .table-wrapper::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      .table-wrapper::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 5px;
+      }
+
+      .table-wrapper::-webkit-scrollbar-track {
+        background: transparent;
+      }
+    }
+
+    .haul-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+    }
+
+    .haul-table thead th {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 2;
+      background: var(--card);
+    }
+
+    .haul-table tbody th {
+      position: sticky;
+      inset-inline-start: 0;
+      z-index: 1;
+      background: var(--card);
+      text-align: left;
+    }
+
+    .haul-table {
+      --label-2: "Cart";
+      --label-3: "Tier";
+      --label-4: "Unit";
+      --label-5: "Qty";
+      --label-6: "Subtotal";
+      --label-7: "Amazon Link & SKU Check";
+    }
+
+    @container (width < 680px) {
+      .haul-table,
+      .haul-table tbody,
+      .haul-table tr,
+      .haul-table th,
+      .haul-table td {
+        display: block;
+      }
+
+      .haul-table thead {
+        display: none;
+      }
+
+      .haul-table tr {
+        margin-block-end: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        background: var(--background);
+      }
+
+      .haul-table tbody th {
+        position: sticky;
+        inset-block-start: 0;
+        inset-inline-start: auto;
+        z-index: 2;
+        background: var(--background);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.35rem;
+      }
+
+      .haul-table td {
+        padding: 0.35rem 0;
+        border: 0 !important;
+      }
+
+      .haul-table td:nth-child(2)::before { content: var(--label-2) ": "; font-weight: 600; color: var(--muted-foreground); margin-right: 0.4rem; }
+      .haul-table td:nth-child(3)::before { content: var(--label-3) ": "; font-weight: 600; color: var(--muted-foreground); margin-right: 0.4rem; }
+      .haul-table td:nth-child(4)::before { content: var(--label-4) ": "; font-weight: 600; color: var(--muted-foreground); margin-right: 0.4rem; }
+      .haul-table td:nth-child(5)::before { content: var(--label-5) ": "; font-weight: 600; color: var(--muted-foreground); margin-right: 0.4rem; }
+      .haul-table td:nth-child(6)::before { content: var(--label-6) ": "; font-weight: 600; color: var(--muted-foreground); margin-right: 0.4rem; }
+      .haul-table td:nth-child(7)::before { content: var(--label-7) ": "; display: block; font-weight: 600; color: var(--muted-foreground); margin-bottom: 0.25rem; }
+    }
+
+    .cart-check-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      cursor: pointer;
+    }
+
+    .cart-check-input {
+      width: 1rem;
+      height: 1rem;
+      cursor: pointer;
+    }
+
+    @supports not (accent-color: var(--primary)) {
+      .cart-check-input {
+        position: absolute !important;
+        clip-path: inset(50%) !important;
+        overflow: hidden !important;
+        width: 1px !important;
+        height: 1px !important;
+        margin: -1px !important;
+        padding: 0 !important;
+        border: 0 !important;
+        white-space: nowrap !important;
+      }
+
+      .cart-check-label {
+        position: relative;
+        padding-left: 1.5rem;
+      }
+
+      .cart-check-input + span::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1.05rem;
+        height: 1.05rem;
+        border: 2px solid var(--border);
+        border-radius: 0.25rem;
+        background: var(--background);
+        box-sizing: border-box;
+      }
+
+      .cart-check-input:focus-visible + span::before {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+
+      .cart-check-input:checked + span::before {
+        background: var(--primary);
+        border-color: var(--primary);
+      }
+
+      .cart-check-input:checked + span::after {
+        content: "✓";
+        position: absolute;
+        left: 0.2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased m-0 p-4 md:p-6">
+  <div class="max-w-7xl mx-auto space-y-5">
+    <!-- Top Header -->
+    <header class="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-[var(--border)]">
+      <div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <h1 class="text-lg md:text-xl font-semibold tracking-tight">
+            Pocket Streamer — 1.9&quot; IPS + 18650 Battery Build ($70.23 Ordered + $25.98 Battery = $96.21)
+          </h1>
+          <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[var(--card)] border border-[var(--border)] text-[var(--success)]">
+            Batch 1 Arriving Mon (6/6) · Batch 2 18650 Bay ($25.98) · Zero-Solder
+          </span>
+        </div>
+        <p class="text-xs text-[var(--muted-foreground)] mt-1">
+          Core 6 parts ordered &amp; arriving Monday ($70.23 list / $69.73 w/ coupon). Add the <strong>Batch 2 Split-Deck 18650 Battery Bay (+$25.98)</strong> below for untethered ~10–14h Audiobookshelf &amp; Gemini playback.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <button type="button" id="btn-reset-defaults" class="min-h-[32px] px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--card)] text-xs font-medium hover:opacity-90">
+          Reset Quantities &amp; Checks
+        </button>
+      </div>
+    </header>
+
+    <!-- Summary KPIs -->
+    <section aria-label="Amazon Checkout Totals" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3.5 space-y-1">
+        <div class="text-xs text-[var(--muted-foreground)]">1. Brain 1.9&quot; IPS + Stick</div>
+        <div id="kpi-brain" class="text-lg font-bold font-mono tabular-nums">$25.98</div>
+        <div class="text-xs text-[var(--muted-foreground)]">ESP32 1.9&quot; ($15.99) + KY-023 ($9.99)</div>
+      </div>
+
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3.5 space-y-1">
+        <div class="text-xs text-[var(--muted-foreground)]">2. Audio + Mics + Hub</div>
+        <div id="kpi-dac" class="text-lg font-bold font-mono tabular-nums">$24.29</div>
+        <div class="text-xs text-[var(--muted-foreground)]">WM8960 HAT w/ Dual Mics &amp; Speakers</div>
+      </div>
+
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3.5 space-y-1">
+        <div class="text-xs text-[var(--muted-foreground)]">3. Controls + SD + Wires</div>
+        <div id="kpi-wiring" class="text-lg font-bold font-mono tabular-nums">$19.96</div>
+        <div class="text-xs text-[var(--muted-foreground)]">1×4 Keypad + MicroSD + DuPont</div>
+      </div>
+
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3.5 space-y-1">
+        <div class="text-xs text-[var(--muted-foreground)]">4. 18650 Battery Bay</div>
+        <div id="kpi-optional" class="text-lg font-bold font-mono tabular-nums">$25.98</div>
+        <div class="text-xs text-[var(--muted-foreground)]">Shield V3 ($9.99) + 2× Flat-Top Cells ($15.99)</div>
+      </div>
+
+      <div class="bg-[var(--card)] border border-[var(--primary)] rounded-xl p-3.5 space-y-1">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-[var(--muted-foreground)] font-medium">Full Wireless Build</span>
+          <span id="kpi-progress" class="font-mono text-[var(--success)] font-semibold">6/8 core (6/9)</span>
+        </div>
+        <div id="kpi-total" class="text-xl font-bold font-mono tabular-nums text-[var(--primary)]">$96.21</div>
+        <div class="text-xs text-[var(--muted-foreground)]">$95.71 w/ coupon ($25.98 left to order)</div>
+      </div>
+    </section>
+
+    <!-- Tier Filters -->
+    <section aria-label="Filter Part Tiers" class="flex flex-wrap items-center justify-between gap-3">
+      <div role="group" aria-label="Part Tier Filter" class="inline-flex flex-wrap rounded-lg border border-[var(--border)] bg-[var(--card)] p-0.5 text-xs gap-1">
+        <button type="button" data-filter="all" class="filter-btn min-h-[28px] px-3 py-1 rounded-md font-medium">All Items (9)</button>
+        <button type="button" data-filter="Core" class="filter-btn min-h-[28px] px-3 py-1 rounded-md font-medium">Core + Battery (8)</button>
+        <button type="button" data-filter="Optional" class="filter-btn min-h-[28px] px-3 py-1 rounded-md font-medium">Optional Lead (1)</button>
+      </div>
+      <div class="text-xs text-[var(--muted-foreground)]">
+        Cart checkmarks &amp; quantities save automatically in this browser.
+      </div>
+    </section>
+
+    <!-- Responsive Itemized Parts Table -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 sm:p-4">
+      <div tabindex="0" role="region" aria-labelledby="haul-table-caption" class="table-wrapper">
+        <table class="haul-table text-xs">
+          <caption id="haul-table-caption" class="sr-only">
+            Itemized 100% Amazon zero-solder 1.9 inch full-color IPS hardware shopping list with checkout prices, quantities, and wiring notes
+          </caption>
+          <thead>
+            <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
+              <th scope="col" class="py-2.5 pr-3 font-semibold text-left">Component</th>
+              <th scope="col" class="py-2.5 px-3 font-semibold text-left whitespace-nowrap">Cart</th>
+              <th scope="col" class="py-2.5 px-3 font-semibold text-left whitespace-nowrap">Tier</th>
+              <th scope="col" class="py-2.5 px-3 font-semibold text-right whitespace-nowrap">Unit</th>
+              <th scope="col" class="py-2.5 px-3 font-semibold text-center whitespace-nowrap">Qty</th>
+              <th scope="col" class="py-2.5 px-3 font-semibold text-right whitespace-nowrap">Subtotal</th>
+              <th scope="col" class="py-2.5 pl-3 font-semibold text-left">Amazon Link &amp; SKU Check</th>
+            </tr>
+          </thead>
+          <tbody id="haul-tbody" class="divide-y divide-[var(--border)]"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Visual Assembly & Checkout Verification Diagrams -->
+    <section aria-label="Critical Checkout and Zero-Solder Wiring Checks" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Check 1: KY-023 + Keypad Pin Shifts (GPIO 17 / GPIO 16) -->
+      <article class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-2.5">
+        <h2 class="text-xs font-semibold uppercase tracking-wide text-[var(--primary)]">
+          Check 1 · Updated SW -&gt; IO17 &amp; K4 -&gt; IO16
+        </h2>
+        <svg viewBox="0 0 280 96" class="w-full h-auto rounded-lg border border-[var(--border)] bg-[var(--background)]" role="img" aria-label="Because the 1.9 inch ST7789 IPS reserves GPIO 32 for backlight and GPIO 4 for reset, move KY-023 SW to GPIO 17 and Keypad K4 to GPIO 16 while keeping VRx and VRy on ADC1 GPIO 34 and 35">
+          <rect x="8" y="10" width="112" height="76" rx="6" fill="none" stroke="#38bdf8" stroke-width="1.5" />
+          <text x="64" y="26" text-anchor="middle" font-size="8.5" font-weight="700" fill="currentColor" font-family="system-ui, sans-serif">KY-023 + Keypad</text>
+          <text x="64" y="42" text-anchor="middle" font-size="8" fill="currentColor" font-family="ui-monospace, monospace">+5V -&gt; 3.3V Hub</text>
+          <text x="64" y="54" text-anchor="middle" font-size="8" fill="currentColor" font-family="ui-monospace, monospace">VRx/y -&gt; IO34/35</text>
+          <text x="64" y="67" text-anchor="middle" font-size="8" font-weight="700" fill="#10b981" font-family="ui-monospace, monospace">SW  -&gt; IO17 (Not 32!)</text>
+          <text x="64" y="79" text-anchor="middle" font-size="8" font-weight="700" fill="#10b981" font-family="ui-monospace, monospace">K4  -&gt; IO16 (Not 4!)</text>
+
+          <line x1="120" y1="48" x2="136" y2="48" stroke="#10b981" stroke-width="2" />
+
+          <rect x="136" y="10" width="136" height="76" rx="6" fill="none" stroke="#10b981" stroke-width="1.5" />
+          <text x="204" y="28" text-anchor="middle" font-size="8.5" font-weight="700" fill="#10b981" font-family="system-ui, sans-serif">Zero LCD Conflicts</text>
+          <text x="204" y="44" text-anchor="middle" font-size="8" fill="currentColor" opacity="0.88" font-family="system-ui, sans-serif">Avoids IPS BL (IO32)</text>
+          <text x="204" y="58" text-anchor="middle" font-size="8" fill="currentColor" opacity="0.88" font-family="system-ui, sans-serif">Avoids IPS RST (IO4)</text>
+          <text x="204" y="75" text-anchor="middle" font-size="8" font-weight="700" fill="#38bdf8" font-family="system-ui, sans-serif">ADC1 Active w/ Wi-Fi</text>
+        </svg>
+        <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+          Because the <strong class="text-[var(--foreground)]">1.9&quot; IPS</strong> uses <strong class="text-[var(--foreground)]">GPIO 32</strong> (Backlight) and <strong class="text-[var(--foreground)]">GPIO 4</strong> (Reset), wire <strong class="text-[var(--foreground)]">SW -&gt; GPIO 17</strong> and <strong class="text-[var(--foreground)]">K4 -&gt; GPIO 16</strong> so buttons never blink or reset your screen.
+        </p>
+      </article>
+
+      <!-- Check 2: WM8960 Audio + Dual Mic + 40-Pin Power Hub -->
+      <article class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-2.5">
+        <h2 class="text-xs font-semibold uppercase tracking-wide text-[var(--primary)]">
+          Check 2 · WM8960 Power + Dual-Mic Hub
+        </h2>
+        <svg viewBox="0 0 280 96" class="w-full h-auto rounded-lg border border-[var(--border)] bg-[var(--background)]" role="img" aria-label="WM8960 40-pin header passes 5V, 3.3V, and multiple GND pins while streaming full-duplex I2S audio output and dual MEMS mic input">
+          <rect x="8" y="10" width="84" height="76" rx="6" fill="none" stroke="#10b981" stroke-width="1.5" />
+          <text x="50" y="29" text-anchor="middle" font-size="8.5" font-weight="700" fill="currentColor" font-family="system-ui, sans-serif">ESP32 1.9&quot;</text>
+          <text x="50" y="45" text-anchor="middle" font-size="8" fill="currentColor" font-family="ui-monospace, monospace">VIN/3V3/GND</text>
+          <text x="50" y="59" text-anchor="middle" font-size="8" fill="currentColor" font-family="ui-monospace, monospace">I2S: 25/26/27</text>
+          <text x="50" y="75" text-anchor="middle" font-size="7.5" fill="#10b981" font-family="system-ui, sans-serif">MIC IN: IO36</text>
+
+          <line x1="92" y1="48" x2="112" y2="48" stroke="#38bdf8" stroke-width="2" />
+
+          <rect x="112" y="10" width="160" height="76" rx="6" fill="none" stroke="#38bdf8" stroke-width="1.5" />
+          <text x="192" y="26" text-anchor="middle" font-size="8.5" font-weight="700" fill="#38bdf8" font-family="system-ui, sans-serif">WM8960 HAT ($24.29)</text>
+          <text x="192" y="42" text-anchor="middle" font-size="8" fill="currentColor" font-family="system-ui, sans-serif">40-Pin Socket = No Breadboard</text>
+          <text x="192" y="57" text-anchor="middle" font-size="8" fill="currentColor" font-family="ui-monospace, monospace">Pin 4 (5V)   -&gt; MicroSD VCC</text>
+          <text x="192" y="71" text-anchor="middle" font-size="8" fill="currentColor" font-family="ui-monospace, monospace">Pin 17 (3V3) -&gt; KY-023 +5V</text>
+          <text x="192" y="81" text-anchor="middle" font-size="7.5" fill="#10b981" font-family="system-ui, sans-serif">L/R Mics + 3.5mm + Speakers</text>
+        </svg>
+        <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+          Your <strong class="text-[var(--foreground)]">WM8960 HAT ($24.29)</strong> supplies dual 94 dB MEMS voice mics, 3.5mm Hi-Fi headphone jack, stereo desk speakers, and spare 5V/3.3V/GND pins in one solderless socket.
+        </p>
+      </article>
+
+      <!-- Check 3: 1.9" IPS Internal Pins & Shared VSPI -->
+      <article class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-2.5">
+        <h2 class="text-xs font-semibold uppercase tracking-wide text-[var(--primary)]">
+          Check 3 · B0D6QXC813 Shared VSPI Rule
+        </h2>
+        <svg viewBox="0 0 280 96" class="w-full h-auto rounded-lg border border-[var(--border)] bg-[var(--background)]" role="img" aria-label="ideaspark 1.9 inch 170x320 ST7789 IPS shares VSPI clock GPIO 18 and MOSI GPIO 23 cleanly with MicroSD reader using separate CS pins 15 and 5">
+          <rect x="8" y="10" width="126" height="76" rx="6" fill="none" stroke="#10b981" stroke-width="1.5" />
+          <text x="71" y="28" text-anchor="middle" font-size="8.5" font-weight="700" fill="#10b981" font-family="system-ui, sans-serif">B0D6QXC813 Internal</text>
+          <text x="71" y="45" text-anchor="middle" font-size="8" font-weight="700" fill="currentColor" font-family="system-ui, sans-serif">170×320 ST7789 (16MB)</text>
+          <text x="71" y="61" text-anchor="middle" font-size="7.8" fill="currentColor" opacity="0.85" font-family="ui-monospace, monospace">MOSI 23 · SCK 18 · CS 15</text>
+          <text x="71" y="75" text-anchor="middle" font-size="7.8" fill="currentColor" opacity="0.85" font-family="ui-monospace, monospace">DC 2 · RST 4 · BL 32</text>
+
+          <rect x="144" y="10" width="128" height="76" rx="6" fill="none" stroke="#f59e0b" stroke-width="1.5" />
+          <text x="208" y="28" text-anchor="middle" font-size="8.5" font-weight="700" fill="#f59e0b" font-family="system-ui, sans-serif">MicroSD Shares VSPI</text>
+          <text x="208" y="44" text-anchor="middle" font-size="8" fill="currentColor" font-family="ui-monospace, monospace">SCK  -&gt; IO18 (Shared)</text>
+          <text x="208" y="58" text-anchor="middle" font-size="8" fill="currentColor" font-family="ui-monospace, monospace">MOSI -&gt; IO23 (Shared)</text>
+          <text x="208" y="74" text-anchor="middle" font-size="8" fill="currentColor" font-family="ui-monospace, monospace">MISO IO19 · SD_CS IO5</text>
+        </svg>
+        <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+          Since the <strong class="text-[var(--foreground)]">1.9&quot; IPS</strong> connects internally to <strong class="text-[var(--foreground)]">IO18/IO23</strong>, your MicroSD reader plugs straight onto those external pins using <strong class="text-[var(--foreground)]">CS = GPIO 5</strong> (LCD = <strong class="text-[var(--foreground)]">15</strong>).
+        </p>
+      </article>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      let standaloneApplied = false;
+      function applyThemeVariables(isDark) {
+        const s = document.documentElement.style;
+        s.colorScheme = isDark ? 'dark' : 'light';
+        if (isDark) {
+          s.setProperty('--background', '#0b0f17');
+          s.setProperty('--card', '#131924');
+          s.setProperty('--border', '#253042');
+          s.setProperty('--card-border', '#253042');
+          s.setProperty('--foreground', '#e6edf6');
+          s.setProperty('--muted-foreground', '#94a3b8');
+          s.setProperty('--primary', '#38bdf8');
+          s.setProperty('--success', '#34d399');
+        } else {
+          s.setProperty('--background', '#f6f8fb');
+          s.setProperty('--card', '#ffffff');
+          s.setProperty('--border', '#dbe2ec');
+          s.setProperty('--card-border', '#dbe2ec');
+          s.setProperty('--foreground', '#0f172a');
+          s.setProperty('--muted-foreground', '#64748b');
+          s.setProperty('--primary', '#0284c7');
+          s.setProperty('--success', '#059669');
+        }
+      }
+
+      function ensureStandaloneTokens() {
+        const bg = getComputedStyle(document.documentElement).getPropertyValue('--background').trim();
+        if (!bg || standaloneApplied) {
+          standaloneApplied = true;
+          const dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          applyThemeVariables(dark);
+        }
+      }
+      ensureStandaloneTokens();
+
+      window.addEventListener('themechange', ensureStandaloneTokens);
+      if (window.matchMedia) {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        if (mq && mq.addEventListener) {
+          mq.addEventListener('change', () => {
+            if (standaloneApplied) applyThemeVariables(mq.matches);
+          });
+        }
+      }
+
+      const DEFAULT_ITEMS = [
+        {
+          id: 'esp32_ips19',
+          name: 'ideaspark ESP32 16MB + Integrated 1.9" Full-Color IPS (Solder PIN)',
+          spec: 'Arriving Mon · 63.7×31.5 mm PCB · 170×320 ST7789 65K · Wi-Fi/BT A2DP · USB-C',
+          tier: 'Core',
+          kpiGroup: 'brain',
+          unit: 15.99,
+          defaultQty: 1,
+          defaultChecked: true,
+          url: 'https://www.amazon.com/dp/B0D6QXC813',
+          linkLabel: 'Amazon B0D6QXC813 ($15.99 · Ordered)',
+          backups: [],
+          note: 'Ordered! Internal LCD uses GPIO 23/18/15/2/4/32. Supports Audiobookshelf API streaming + cover art rendering (transcode books to 64kbps MP3 for zero PSRAM OOM).'
+        },
+        {
+          id: 'wm8960_hat',
+          name: 'WM8960 Hi-Fi Sound Card HAT with Stereo Speakers + Dual MEMS Mics',
+          spec: 'Arriving Mon · Factory 40-Pin Hub · 94dB Dual Mics · 3.5mm Out · Speaker Driver',
+          tier: 'Core',
+          kpiGroup: 'dac',
+          unit: 24.29,
+          defaultQty: 1,
+          defaultChecked: true,
+          url: 'https://www.amazon.com/dp/B0GH6JCGNV',
+          linkLabel: 'Amazon B0GH6JCGNV ($24.29 · Ordered)',
+          backups: [],
+          note: 'Ordered! Upper-rear bay (y=-15mm) so L/R mics + 3.5mm jack align on top bevel while leaving the bottom half clear for the 18650 Shield V3.'
+        },
+        {
+          id: 'ps2_joystick',
+          name: 'KY-023 Dual-Axis XY PS2 Thumbstick Joystick (6-Pack)',
+          spec: 'Arriving Mon · Factory 5-Pin Header · Book/Track Skip & Volume',
+          tier: 'Core',
+          kpiGroup: 'brain',
+          unit: 9.99,
+          defaultQty: 1,
+          defaultChecked: true,
+          url: 'https://www.amazon.com/dp/B0D83FD3M8',
+          linkLabel: 'Amazon B0D83FD3M8 ($9.99 · Ordered)',
+          backups: [
+            { url: 'https://www.amazon.com/dp/B0HD9F22NT', label: 'Single Stick ($3.91)' }
+          ],
+          note: 'Ordered! Wire +5V -> 3.3V Hub, VRx -> GPIO34, VRy -> GPIO35 (ADC1), and SW -> GPIO17 (avoids GPIO32 LCD backlight).'
+        },
+        {
+          id: 'keypad_4btn',
+          name: 'GODIYMODULES 5-Pack 1×4 Tactile Button Keypad',
+          spec: 'Arriving Mon · Factory 5-Pin Header (GND, K1–K4) · Play, Mode, Fav & Mic',
+          tier: 'Core',
+          kpiGroup: 'wiring',
+          unit: 6.99,
+          defaultQty: 1,
+          defaultChecked: true,
+          url: 'https://www.amazon.com/dp/B0GW8BP2KR',
+          linkLabel: 'Amazon B0GW8BP2KR ($6.99 · Ordered)',
+          backups: [],
+          note: 'Ordered! K1->33, K2->14 (cycles Audiobookshelf/Spotify/SD), K3->13, and K4->GPIO16 (avoids GPIO4 LCD reset).'
+        },
+        {
+          id: 'microsd_spi',
+          name: 'WWZMDiB 3-Pack MicroSD TF Card SPI Reader Module',
+          spec: 'Arriving Mon · Factory 6-Pin Header · Offline Audiobook MP3 Storage',
+          tier: 'Core',
+          kpiGroup: 'wiring',
+          unit: 5.99,
+          defaultQty: 1,
+          defaultChecked: true,
+          url: 'https://www.amazon.com/dp/B0B779R5TZ',
+          linkLabel: 'Amazon B0B779R5TZ ($5.99 · Ordered)',
+          backups: [],
+          note: 'Ordered! Shares VSPI cleanly with the 1.9" IPS (SCK->18, MOSI->23, MISO->19, SD_CS->5) to cache Audiobookshelf MP3s & queue /api/me/sync-local-progress.'
+        },
+        {
+          id: 'dupont_wires',
+          name: 'ELEGOO 120pcs Multicolored DuPont Jumper Wires',
+          spec: 'Arriving Mon · 40× F-F + 40× M-F + 40× M-M (20cm)',
+          tier: 'Core',
+          kpiGroup: 'wiring',
+          unit: 6.98,
+          defaultQty: 1,
+          defaultChecked: true,
+          url: 'https://www.amazon.com/dp/B01EV70C78',
+          linkLabel: 'Amazon B01EV70C78 ($6.98 · Ordered)',
+          backups: [
+            { url: 'https://www.amazon.com/dp/B07GD2BWPY', label: '120pcs Jumper Alt ($6.98)' }
+          ],
+          note: 'Ordered! Plug-and-play ribbons across ESP32, WM8960, KY-023, Keypad, MicroSD, and 18650 V3 5V bus.'
+        },
+        {
+          id: 'shield_18650',
+          name: 'ACEIRMC 2-Pack 18650 Single Battery Shield V3',
+          spec: 'Batch 2 Add-On · 99×29.2×21 mm · Regulated 5V/2.2A & 3V/1A · Hold Switch',
+          tier: 'Core',
+          kpiGroup: 'optional',
+          unit: 9.99,
+          defaultQty: 1,
+          defaultChecked: false,
+          url: 'https://www.amazon.com/dp/B0DFYDCGHP',
+          linkLabel: 'Amazon B0DFYDCGHP ($9.99 · Add to Cart)',
+          backups: [],
+          note: 'Lower-rear split-deck bay! Set slide switch to HOLD during cordless use so idle currents do not trigger auto-shutoff — and slide OFF before flashing ESP32 via USB-C.'
+        },
+        {
+          id: 'cells_18650',
+          name: '2-PCS 18650 Flat-Top 3.7V Replacement Lithium Cells',
+          spec: 'Batch 2 Add-On · 65×18 mm Flat-Top · ~2500–3000mAh Real (~10–14h/cell)',
+          tier: 'Core',
+          kpiGroup: 'optional',
+          unit: 15.99,
+          defaultQty: 1,
+          defaultChecked: false,
+          url: 'https://www.amazon.com/dp/B0HQPL867D',
+          linkLabel: 'Amazon B0HQPL867D ($15.99 · Add to Cart)',
+          backups: [
+            { url: 'https://www.amazon.com/dp/B0BSLT62K6', label: 'Samsung 25R 4-Pack ($28.89)' }
+          ],
+          note: 'Flat-top 18650 fits the V3 spring sled cleanly (~10–14h real runtime; ignore inflated mAh text in third-party titles, or grab the Samsung 25R backup link).'
+        },
+        {
+          id: 'usb_dupont_lead',
+          name: 'MEIRIYFA USB 2.0 A Male to 4-Pin DuPont Female Cable',
+          spec: 'Optional Clean Internal Bridge · Bridges Shield V3 USB-A Out -> WM8960 5V/GND',
+          tier: 'Optional',
+          kpiGroup: 'optional',
+          unit: 9.90,
+          defaultQty: 0,
+          defaultChecked: false,
+          url: 'https://www.amazon.com/dp/B0BV9K69M9',
+          linkLabel: 'Amazon B0BV9K69M9 ($9.90 Optional)',
+          backups: [],
+          note: 'Optional (Qty 0): cleanly routes internal V3 5V USB-A output straight to WM8960 5V/GND pins without an external short USB-A -> USB-C loop.'
+        }
+      ];
+
+      const STORAGE_KEY = 'pocket_streamer_cart_v5';
+      let currentFilter = 'all';
+      let userState = {};
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            userState = JSON.parse(raw) || {};
+          }
+        } catch (_err) {
+          userState = {};
+        }
+        for (const item of DEFAULT_ITEMS) {
+          if (!userState[item.id] || typeof userState[item.id].qty !== 'number') {
+            userState[item.id] = { qty: item.defaultQty, checked: Boolean(item.defaultChecked) };
+          }
+        }
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(userState));
+        } catch (_err) {
+          // Ignore storage restrictions in private previews
+        }
+      }
+
+      function fmtUsd(val) {
+        return `$${val.toFixed(2)}`;
+      }
+
+      function updateKPIs() {
+        const totals = {
+          brain: 0,
+          dac: 0,
+          wiring: 0,
+          optional: 0
+        };
+        let checkedCore = 0;
+        let coreCount = 0;
+        let checkedAll = 0;
+
+        for (const item of DEFAULT_ITEMS) {
+          const st = userState[item.id];
+          totals[item.kpiGroup] = (totals[item.kpiGroup] || 0) + item.unit * st.qty;
+          if (item.tier === 'Core') {
+            coreCount += 1;
+            if (st.checked) checkedCore += 1;
+          }
+          if (st.checked) checkedAll += 1;
+        }
+
+        const grand = totals.brain + totals.dac + totals.wiring + totals.optional;
+        document.getElementById('kpi-brain').textContent = fmtUsd(totals.brain);
+        document.getElementById('kpi-dac').textContent = fmtUsd(totals.dac);
+        document.getElementById('kpi-wiring').textContent = fmtUsd(totals.wiring);
+        document.getElementById('kpi-optional').textContent = fmtUsd(totals.optional);
+        document.getElementById('kpi-total').textContent = fmtUsd(grand);
+        document.getElementById('kpi-progress').textContent = `${checkedCore}/${coreCount} core (${checkedAll}/${DEFAULT_ITEMS.length})`;
+      }
+
+      function renderTable() {
+        const tbody = document.getElementById('haul-tbody');
+        tbody.textContent = '';
+
+        const filtered = currentFilter === 'all'
+          ? DEFAULT_ITEMS
+          : DEFAULT_ITEMS.filter(it => it.tier === currentFilter);
+
+        for (const item of filtered) {
+          const st = userState[item.id];
+          const tr = document.createElement('tr');
+          if (st.checked) tr.style.opacity = '0.72';
+
+          // Col 1: Row header (Sticky in desktop & container mobile mode)
+          const th = document.createElement('th');
+          th.scope = 'row';
+          th.className = 'py-3 pr-3 align-top font-normal';
+          const titleDiv = document.createElement('div');
+          titleDiv.className = 'font-semibold text-[var(--foreground)]';
+          titleDiv.textContent = item.name;
+          const specDiv = document.createElement('div');
+          specDiv.className = 'text-xs text-[var(--muted-foreground)] mt-0.5';
+          specDiv.textContent = item.spec;
+          th.append(titleDiv, specDiv);
+          tr.appendChild(th);
+
+          // Col 2: Checkbox with progressive fallback markup
+          const tdCheck = document.createElement('td');
+          tdCheck.className = 'py-3 px-3 align-top whitespace-nowrap';
+          const lbl = document.createElement('label');
+          lbl.className = 'cart-check-label text-xs';
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.className = 'cart-check-input';
+          cb.checked = st.checked;
+          cb.setAttribute('aria-label', `Mark ${item.name} in cart`);
+          cb.addEventListener('change', () => {
+            userState[item.id].checked = cb.checked;
+            saveState();
+            updateKPIs();
+            renderTable();
+          });
+          const lblTxt = document.createElement('span');
+          lblTxt.textContent = st.checked ? (item.defaultChecked ? 'Ordered' : 'In Cart') : 'Add';
+          lbl.append(cb, lblTxt);
+          tdCheck.appendChild(lbl);
+          tr.appendChild(tdCheck);
+
+          // Col 3: Tier
+          const tdTier = document.createElement('td');
+          tdTier.className = 'py-3 px-3 align-top whitespace-nowrap';
+          const badge = document.createElement('span');
+          badge.className = 'px-2 py-0.5 rounded-full border border-[var(--border)] bg-[var(--background)] font-medium text-xs';
+          badge.style.color = item.tier === 'Core' ? 'var(--success)' : 'var(--muted-foreground)';
+          badge.textContent = item.tier;
+          tdTier.appendChild(badge);
+          tr.appendChild(tdTier);
+
+          // Col 4: Unit price
+          const tdUnit = document.createElement('td');
+          tdUnit.className = 'py-3 px-3 align-top text-right font-mono tabular-nums whitespace-nowrap';
+          tdUnit.textContent = fmtUsd(item.unit);
+          tr.appendChild(tdUnit);
+
+          // Col 5: Qty stepper
+          const tdQty = document.createElement('td');
+          tdQty.className = 'py-3 px-3 align-top whitespace-nowrap';
+          const qtyWrap = document.createElement('div');
+          qtyWrap.className = 'inline-flex items-center gap-1.5';
+          const btnMinus = document.createElement('button');
+          btnMinus.type = 'button';
+          btnMinus.textContent = '−';
+          btnMinus.setAttribute('aria-label', `Decrease quantity for ${item.name}`);
+          btnMinus.className = 'w-6 h-6 rounded border border-[var(--border)] bg-[var(--background)] font-bold hover:border-[var(--primary)]';
+          btnMinus.addEventListener('click', () => {
+            userState[item.id].qty = Math.max(0, userState[item.id].qty - 1);
+            saveState();
+            updateKPIs();
+            renderTable();
+          });
+          const qtyVal = document.createElement('span');
+          qtyVal.className = 'w-5 text-center font-mono font-semibold tabular-nums';
+          qtyVal.textContent = String(st.qty);
+          const btnPlus = document.createElement('button');
+          btnPlus.type = 'button';
+          btnPlus.textContent = '+';
+          btnPlus.setAttribute('aria-label', `Increase quantity for ${item.name}`);
+          btnPlus.className = 'w-6 h-6 rounded border border-[var(--border)] bg-[var(--background)] font-bold hover:border-[var(--primary)]';
+          btnPlus.addEventListener('click', () => {
+            userState[item.id].qty = Math.min(10, userState[item.id].qty + 1);
+            saveState();
+            updateKPIs();
+            renderTable();
+          });
+          qtyWrap.append(btnMinus, qtyVal, btnPlus);
+          tdQty.appendChild(qtyWrap);
+          tr.appendChild(tdQty);
+
+          // Col 6: Subtotal
+          const tdSub = document.createElement('td');
+          tdSub.className = 'py-3 px-3 align-top text-right font-mono font-semibold tabular-nums whitespace-nowrap';
+          tdSub.textContent = fmtUsd(item.unit * st.qty);
+          tr.appendChild(tdSub);
+
+          // Col 7: Amazon link + backups + SKU check note
+          const tdLink = document.createElement('td');
+          tdLink.className = 'py-3 pl-3 align-top space-y-1';
+          const linkRow = document.createElement('div');
+          linkRow.className = 'flex flex-wrap items-center gap-2';
+
+          const aMain = document.createElement('a');
+          aMain.href = item.url;
+          aMain.target = '_blank';
+          aMain.rel = 'noopener noreferrer';
+          aMain.className = 'inline-block font-semibold text-[var(--primary)] underline hover:opacity-80';
+          aMain.textContent = item.linkLabel + ' ↗';
+          linkRow.appendChild(aMain);
+
+          if (Array.isArray(item.backups)) {
+            for (const bak of item.backups) {
+              const sep = document.createElement('span');
+              sep.className = 'text-[var(--muted-foreground)]';
+              sep.textContent = '·';
+              const aBak = document.createElement('a');
+              aBak.href = bak.url;
+              aBak.target = '_blank';
+              aBak.rel = 'noopener noreferrer';
+              aBak.className = 'text-[var(--muted-foreground)] underline hover:text-[var(--foreground)]';
+              aBak.textContent = bak.label;
+              linkRow.append(sep, aBak);
+            }
+          }
+
+          const noteDiv = document.createElement('div');
+          noteDiv.className = 'text-xs text-[var(--muted-foreground)]';
+          noteDiv.textContent = item.note;
+
+          tdLink.append(linkRow, noteDiv);
+          tr.appendChild(tdLink);
+
+          tbody.appendChild(tr);
+        }
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          const active = btn.dataset.filter === currentFilter;
+          btn.style.background = active ? 'var(--primary)' : 'transparent';
+          btn.style.color = active ? '#ffffff' : 'var(--muted-foreground)';
+        });
+      }
+
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentFilter = btn.dataset.filter;
+          renderTable();
+        });
+      });
+
+      document.getElementById('btn-reset-defaults').addEventListener('click', () => {
+        for (const item of DEFAULT_ITEMS) {
+          userState[item.id] = { qty: item.defaultQty, checked: Boolean(item.defaultChecked) };
+        }
+        saveState();
+        updateKPIs();
+        renderTable();
+      });
+
+      loadState();
+      updateKPIs();
+      renderTable();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Option P5-Card — Assembled 3D Explorer (1.91&quot; AMOLED · 72 × 98 × 18 mm)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    html {
+      color-scheme: light dark;
+      accent-color: var(--primary);
+    }
+
+    :where(button, input, a, summary, [tabindex]):focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* Native range slider styled cleanly per modern-web-guidance (slider) */
+    input[type="range"].cad-slider {
+      --slider-track-size: 0.5rem;
+      --slider-thumb-size: 1.25rem;
+      --slider-track-radius: 999px;
+      --slider-thumb-radius: 50%;
+      --slider-track-color: var(--border);
+      --slider-fill-color: var(--primary);
+      --slider-thumb-color: var(--primary);
+      --slider-direction: to right;
+      --attr-min: attr(min type(<number>), 0);
+      --attr-max: attr(max type(<number>), 100);
+      --control-value: attr(value type(<number>), 0);
+      --slider-progress: calc(
+        progress(var(--control-value), var(--attr-min), var(--attr-max)) * 100%
+      );
+
+      -webkit-appearance: none;
+      appearance: none;
+      inline-size: 100%;
+      block-size: 2.5rem;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    input[type="range"].cad-slider:dir(rtl) {
+      --slider-direction: to left;
+    }
+
+    @supports not (opacity: progress(1, 0, 100)) {
+      input[type="range"].cad-slider {
+        --slider-progress: calc(
+          (var(--control-value) - var(--attr-min)) /
+          (var(--attr-max) - var(--attr-min)) * 100%
+        );
+      }
+    }
+
+    input[type="range"].cad-slider::-webkit-slider-runnable-track {
+      block-size: var(--slider-track-size);
+      border: 0;
+      border-radius: var(--slider-track-radius);
+      background: linear-gradient(
+        var(--slider-direction),
+        var(--slider-fill-color) var(--slider-progress),
+        var(--slider-track-color) var(--slider-progress)
+      );
+    }
+
+    input[type="range"].cad-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      inline-size: var(--slider-thumb-size);
+      block-size: var(--slider-thumb-size);
+      margin-block-start: calc(
+        (var(--slider-track-size) - var(--slider-thumb-size)) / 2
+      );
+      border: 2px solid var(--card);
+      border-radius: var(--slider-thumb-radius);
+      background: var(--slider-thumb-color);
+    }
+
+    input[type="range"].cad-slider::-moz-range-track {
+      block-size: var(--slider-track-size);
+      border: 0;
+      border-radius: var(--slider-track-radius);
+      background: var(--slider-track-color);
+    }
+
+    input[type="range"].cad-slider::-moz-range-progress {
+      block-size: var(--slider-track-size);
+      border-radius: var(--slider-track-radius);
+      background: var(--slider-fill-color);
+    }
+
+    input[type="range"].cad-slider::-moz-range-thumb {
+      inline-size: var(--slider-thumb-size);
+      block-size: var(--slider-thumb-size);
+      border: 2px solid var(--card);
+      border-radius: var(--slider-thumb-radius);
+      background: var(--slider-thumb-color);
+    }
+
+    input[type="range"].cad-slider:focus-visible {
+      outline: 2px solid var(--slider-fill-color);
+      outline-offset: 4px;
+    }
+
+    /* Checkboxes with @supports not fallback per modern-web-guidance (brand-consistent-forms) */
+    .cad-check-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      cursor: pointer;
+    }
+
+    .cad-check-input {
+      width: 1rem;
+      height: 1rem;
+      cursor: pointer;
+    }
+
+    @supports not (accent-color: var(--primary)) {
+      .cad-check-input {
+        position: absolute !important;
+        clip-path: inset(50%) !important;
+        overflow: hidden !important;
+        width: 1px !important;
+        height: 1px !important;
+        margin: -1px !important;
+        padding: 0 !important;
+        border: 0 !important;
+        white-space: nowrap !important;
+      }
+
+      .cad-check-label {
+        position: relative;
+        padding-left: 1.45rem;
+      }
+
+      .cad-check-input + span::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid var(--border);
+        border-radius: 0.25rem;
+        background: var(--background);
+        box-sizing: border-box;
+      }
+
+      .cad-check-input:focus-visible + span::before {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+
+      .cad-check-input:checked + span::before {
+        background: var(--primary);
+        border-color: var(--primary);
+      }
+
+      .cad-check-input:checked + span::after {
+        content: "✓";
+        position: absolute;
+        left: 0.2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 0.72rem;
+      }
+    }
+
+    /* Responsive pinout table per modern-web-guidance (responsive-table) */
+    .table-wrapper {
+      overflow: auto;
+      max-inline-size: 100%;
+      max-block-size: min(560px, 78vh);
+      container-type: inline-size;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    @supports not (scrollbar-color: auto) {
+      .table-wrapper::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      .table-wrapper::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 5px;
+      }
+
+      .table-wrapper::-webkit-scrollbar-track {
+        background: transparent;
+      }
+    }
+
+    .pinout-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      --label-2: "Signal / Function";
+      --label-3: "Module Pad";
+      --label-4: "Target Pin (T-Display-S3 / Bus)";
+      --label-5: "30 AWG Note";
+    }
+
+    .pinout-table thead {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 2;
+      background: var(--card);
+    }
+
+    .pinout-table tbody th {
+      position: sticky;
+      inset-inline-start: 0;
+      z-index: 1;
+      background: var(--card);
+      text-align: left;
+    }
+
+    @container (width < 680px) {
+      .pinout-table,
+      .pinout-table tbody,
+      .pinout-table tr,
+      .pinout-table th,
+      .pinout-table td {
+        display: block;
+      }
+
+      .pinout-table thead {
+        display: none;
+      }
+
+      .pinout-table tr {
+        margin-block-end: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        background: var(--background);
+      }
+
+      .pinout-table tbody th {
+        position: sticky;
+        inset-block-start: 0;
+        inset-inline-start: auto;
+        z-index: 2;
+        background: var(--background);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.4rem;
+        margin-bottom: 0.35rem;
+      }
+
+      .pinout-table td {
+        padding: 0.3rem 0;
+        border: 0 !important;
+      }
+
+      .pinout-table td:nth-child(2)::before { content: var(--label-2) ": "; font-weight: 600; color: var(--muted-foreground); margin-right: 0.4rem; }
+      .pinout-table td:nth-child(3)::before { content: var(--label-3) ": "; font-weight: 600; color: var(--muted-foreground); margin-right: 0.4rem; }
+      .pinout-table td:nth-child(4)::before { content: var(--label-4) ": "; font-weight: 600; color: var(--muted-foreground); margin-right: 0.4rem; }
+      .pinout-table td:nth-child(5)::before { content: var(--label-5) ": "; font-weight: 600; color: var(--muted-foreground); margin-right: 0.4rem; }
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased m-0 p-4 md:p-6">
+  <div class="max-w-7xl mx-auto space-y-5">
+    <!-- Header -->
+    <header class="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-[var(--border)]">
+      <div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <h1 class="text-lg md:text-xl font-semibold tracking-tight">
+            Option P5-Card — Assembled Handheld 3D Explorer (1.91&quot; RM67162 AMOLED · 72 × 98 × 18 mm)
+          </h1>
+          <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[var(--card)] border border-[var(--border)] text-[var(--success)]">
+            0 Collisions · 1300mAh LiPo · 5V BT TX + 3.5mm DAC · INMP441 Mic · 1-Plate P2S Ready
+          </span>
+        </div>
+        <p class="text-xs text-[var(--muted-foreground)] mt-1">
+          Exact 1:1 CAD preview built for your finalized 9-module build: <strong>LILYGO T-Display-S3 AMOLED</strong>, <strong>GY-PCM5102</strong> DAC + tucked <strong>Acxico KCX_BT_EMITTER</strong>, <strong>5V 2A Boost</strong>, <strong>INMP441</strong> behind a <code>Ø9.6 mm</code> 21-dot crosshair grille, <strong>Mini 3.3V MicroSD</strong>, <strong>503759 LiPo</strong>, <strong>KY-023</strong> with a compact <code>Ø16.0 mm</code> coral concave thumb-disc in a <code>Ø25.0 mm</code> recessed basin, and <code>2×4</code> tactile keypads.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <span class="px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] font-mono">
+          72.0 × 98.0 × 18.0 mm (127.0 cm³ · ~102 g)
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Split Workbench: 3D Interactive Canvas + Live AMOLED Handheld Simulator -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+      <!-- Left 8 cols: 3D Interactive Viewport -->
+      <section class="lg:col-span-8 bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 sm:p-4 space-y-3">
+        <!-- Toolbar row 1: Shell Modes + Camera Presets -->
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div role="group" aria-label="Shell Visibility Mode" class="inline-flex flex-wrap rounded-lg border border-[var(--border)] bg-[var(--background)] p-0.5 text-xs gap-1">
+            <button type="button" data-shell="transparent" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Transparent</button>
+            <button type="button" data-shell="smoke" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Smoked</button>
+            <button type="button" data-shell="solid" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Matte Black</button>
+            <button type="button" data-shell="open" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">PCBs + Cradles</button>
+          </div>
+
+          <div role="group" aria-label="Camera View Presets" class="inline-flex flex-wrap rounded-lg border border-[var(--border)] bg-[var(--background)] p-0.5 text-xs gap-1">
+            <button type="button" data-cam="hero" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">3/4 Hero</button>
+            <button type="button" data-cam="front" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Front</button>
+            <button type="button" data-cam="side" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Left 18mm</button>
+            <button type="button" data-cam="top" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Top Ports</button>
+          </div>
+        </div>
+
+        <!-- 3D Canvas -->
+        <div class="relative rounded-xl border border-[var(--border)] bg-[var(--background)] overflow-hidden">
+          <canvas id="cad-canvas" class="block w-full cursor-grab active:cursor-grabbing touch-none" style="height: 450px;" aria-label="Interactive 3D Option P5-Card hardware assembly canvas; drag to orbit view"></canvas>
+          <div id="canvas-hint" class="pointer-events-none absolute left-3 bottom-2.5 px-2.5 py-1 rounded-md text-xs font-mono bg-[var(--card)]/90 border border-[var(--border)] text-[var(--muted-foreground)]">
+            Drag to orbit 360° · Top = 3.5mm + Boost USB-C · Left = AMOLED USB-C · Right = MicroSD
+          </div>
+        </div>
+
+        <!-- Toolbar row 2: Explode Stack Slider + Toggles -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center pt-1">
+          <div class="sm:col-span-5 space-y-0.5">
+            <div class="flex items-center justify-between text-xs">
+              <label for="explode-slider" class="font-medium text-[var(--foreground)]">Explode Z-Stack</label>
+              <span id="explode-readout" class="font-mono font-semibold text-[var(--primary)] tabular-nums">0% (Assembled)</span>
+            </div>
+            <input type="range" id="explode-slider" class="cad-slider" min="0" max="100" step="1" value="0" aria-valuetext="0 percent exploded" />
+          </div>
+
+          <div class="sm:col-span-7 flex flex-wrap sm:justify-end items-center gap-3.5 text-xs">
+            <label class="cad-check-label">
+              <input type="checkbox" id="toggle-dual-view" class="cad-check-input" />
+              <span>Side-by-Side (Transparent | Exploded)</span>
+            </label>
+            <label class="cad-check-label">
+              <input type="checkbox" id="toggle-cradles" class="cad-check-input" checked />
+              <span>PCB Cradles</span>
+            </label>
+            <label class="cad-check-label">
+              <input type="checkbox" id="toggle-wires" class="cad-check-input" checked />
+              <span>30 AWG + BT Bus</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right 4 cols: Live Interactive 1.91" AMOLED & Physical Control Deck -->
+      <aside class="lg:col-span-4 space-y-4">
+        <!-- Live 1.91" True-Black RM67162 AMOLED (536x240) Simulator -->
+        <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-semibold uppercase tracking-wide text-[var(--primary)]">
+              Live 1.91&quot; AMOLED (536×240)
+            </h2>
+            <span id="hud-mode-badge" class="text-xs font-mono text-[var(--success)]">AUDIOBOOKSHELF</span>
+          </div>
+
+          <div class="rounded-lg border-2 border-[var(--border)] bg-[#000000] p-2 flex flex-col items-center">
+            <canvas id="ips-canvas" width="335" height="150" class="w-full max-w-[335px] h-auto rounded" aria-label="Simulated 536 by 240 true-black 1.91 inch AMOLED display showing audiobook and streaming playback UI"></canvas>
+          </div>
+
+          <!-- Physical 2x4 Key Matrix (Top Row B1..B4 Charcoal Black, Bottom Row B5..B8 Pastel) -->
+          <div class="space-y-2.5">
+            <div class="space-y-1.5 text-xs">
+              <div class="grid grid-cols-4 gap-1.5">
+                <button type="button" id="btn-play" class="py-2 px-1 rounded-lg border border-[#334155] bg-[#1e293b] text-white font-semibold hover:border-[var(--primary)]">
+                  ▶/⏸
+                </button>
+                <button type="button" id="btn-mode" class="py-2 px-1 rounded-lg border border-[#334155] bg-[#1e293b] text-white font-semibold hover:border-[var(--primary)]">
+                  MODE
+                </button>
+                <button type="button" id="btn-bt" class="py-2 px-1 rounded-lg border border-[#334155] bg-[#1e293b] text-white font-semibold hover:border-[var(--primary)]">
+                  BT TX
+                </button>
+                <button type="button" id="btn-fav" class="py-2 px-1 rounded-lg border border-[#334155] bg-[#1e293b] text-white font-semibold hover:border-[var(--primary)]">
+                  ★ FAV
+                </button>
+              </div>
+              <div class="grid grid-cols-4 gap-1.5">
+                <button type="button" id="btn-back15" class="py-2 px-1 rounded-lg border border-[#b45309] bg-[#e3a84b] text-[#111827] font-bold hover:opacity-90">
+                  ↺ -15s
+                </button>
+                <button type="button" id="btn-prev" class="py-2 px-1 rounded-lg border border-[#0f766e] bg-[#45b09c] text-[#042f2e] font-bold hover:opacity-90">
+                  ◀ PREV
+                </button>
+                <button type="button" id="btn-next" class="py-2 px-1 rounded-lg border border-[#a16207] bg-[#ebd15e] text-[#111827] font-bold hover:opacity-90">
+                  ▶ NEXT
+                </button>
+                <button type="button" id="btn-ptt" class="py-2 px-1 rounded-lg border border-[#c2410c] bg-[#e0634e] text-white font-bold hover:opacity-90">
+                  🎙 MIC
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-3 pt-2 border-t border-[var(--border)]">
+              <div class="text-xs text-[var(--muted-foreground)] space-y-0.5">
+                <div class="font-semibold text-[var(--foreground)]">KY-023 Concave Thumb-Disc</div>
+                <div>Ø16mm in Ø25mm well · Vol (<span id="vol-readout" class="font-mono font-semibold text-[var(--foreground)]">72%</span>)</div>
+              </div>
+              <div class="grid grid-cols-3 gap-1 text-xs font-mono">
+                <span></span>
+                <button type="button" data-joy="up" class="joy-btn w-7 h-7 rounded border border-[var(--border)] bg-[var(--background)] hover:border-[var(--primary)]" aria-label="Thumbstick Up Volume Up">▲</button>
+                <span></span>
+                <button type="button" data-joy="left" class="joy-btn w-7 h-7 rounded border border-[var(--border)] bg-[var(--background)] hover:border-[var(--primary)]" aria-label="Thumbstick Left Previous Item">◀</button>
+                <button type="button" data-joy="click" class="joy-btn w-7 h-7 rounded-full border border-[#c2410c] bg-[#e0634e] text-white font-bold" aria-label="Thumbstick Click Play Pause">●</button>
+                <button type="button" data-joy="right" class="joy-btn w-7 h-7 rounded border border-[var(--border)] bg-[var(--background)] hover:border-[var(--primary)]" aria-label="Thumbstick Right Next Item">▶</button>
+                <span></span>
+                <button type="button" data-joy="down" class="joy-btn w-7 h-7 rounded border border-[var(--border)] bg-[var(--background)] hover:border-[var(--primary)]" aria-label="Thumbstick Down Volume Down">▼</button>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Compact P5-Card Internal Architecture Card -->
+        <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-2 text-xs">
+          <h2 class="font-semibold uppercase tracking-wide text-[var(--primary)]">
+            Inside Option P5-Card (72.0 × 98.0 × 18.0 mm)
+          </h2>
+          <ul class="space-y-1.5 text-[var(--muted-foreground)]">
+            <li><strong class="text-[var(--foreground)]">Faceplate (<code>Z: 14.8..18.0</code>):</strong> <code>Ø9.6 mm</code> 21-dot + crosshair mic grille above AMOLED, <code>Ø25.0 mm</code> recessed basin w/ <code>4.5 mm</code> moat around the <code>Ø16.0 mm</code> coral disc, and <code>2×4</code> captive caps.</li>
+            <li><strong class="text-[var(--foreground)]">Upper Bay (<code>Z: 2.0..16.0</code>):</strong> <code>GY-PCM5102</code> (<code>3.5 mm</code> jack top-left) directly above <code>Acxico KCX_BT_EMITTER</code>, center <code>5V 2A Boost</code> USB-C, <code>INMP441</code> gasket collar, and right-wall <code>MicroSD</code>.</li>
+            <li><strong class="text-[var(--foreground)]">Mid + Lower Bays:</strong> <code>503759</code> 1300mAh LiPo behind AMOLED (<code>Z: 1.8..6.8</code> under <code>0.8 mm</code> shield), <code>KY-023</code> lower-left (<code>Z: 2.4</code>), <code>2× 1×4</code> keypads lower-right (<code>Z: 6.4</code>).</li>
+            <li><strong class="text-[var(--foreground)]">Single-Plate P2S Print:</strong> <code>p5_card_single_plate_all_parts.stl</code> packs all 11 pieces flat (<code>minZ = 0.00 mm</code>) into 4 spaced AMS color zones.</li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+
+    <!-- Complete 22-Wire Pinout Reference Table -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-sm font-semibold">Complete 22-Wire Option P5-Card Solder Map (17-Pin ESP32-S3 Bus + 5-Wire Acxico BT TX)</h2>
+        <span class="text-xs text-[var(--muted-foreground)]">GY-PCM5102 jumpers: SCK→GND, H1L/H2L/H4L→GND, H3L (XSMT)→3.3V · Slide switch OFF before USB-C flash!</span>
+      </div>
+
+      <div tabindex="0" role="region" aria-labelledby="pinout-table-caption" class="table-wrapper">
+        <table class="pinout-table text-xs">
+          <caption id="pinout-table-caption" class="sr-only">
+            Complete 22-wire connection map for Option P5-Card connecting LILYGO T-Display-S3 AMOLED, GY-PCM5102, Acxico KCX_BT_EMITTER, INMP441, Mini 3.3V MicroSD, KY-023, 2x 1x4 keypads, and 5V 2A Boost
+          </caption>
+          <thead>
+            <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
+              <th scope="col" class="py-2 pr-3 font-semibold text-left">Module</th>
+              <th scope="col" class="py-2 px-3 font-semibold text-left">Signal / Function</th>
+              <th scope="col" class="py-2 px-3 font-semibold text-left">Module Pad</th>
+              <th scope="col" class="py-2 px-3 font-semibold text-left">Target Pin (T-Display-S3 / Bus)</th>
+              <th scope="col" class="py-2 pl-3 font-semibold text-left">30 AWG Note</th>
+            </tr>
+          </thead>
+          <tbody id="pinout-tbody" class="divide-y divide-[var(--border)]"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      let standaloneApplied = false;
+      function applyThemeVariables(isDark) {
+        const s = document.documentElement.style;
+        s.colorScheme = isDark ? 'dark' : 'light';
+        if (isDark) {
+          s.setProperty('--background', '#0b0f17');
+          s.setProperty('--card', '#131924');
+          s.setProperty('--border', '#253042');
+          s.setProperty('--foreground', '#e6edf6');
+          s.setProperty('--muted-foreground', '#94a3b8');
+          s.setProperty('--primary', '#38bdf8');
+          s.setProperty('--success', '#34d399');
+        } else {
+          s.setProperty('--background', '#f6f8fb');
+          s.setProperty('--card', '#ffffff');
+          s.setProperty('--border', '#dbe2ec');
+          s.setProperty('--foreground', '#0f172a');
+          s.setProperty('--muted-foreground', '#64748b');
+          s.setProperty('--primary', '#0284c7');
+          s.setProperty('--success', '#059669');
+        }
+      }
+
+      function getThemeColors() {
+        const cs = getComputedStyle(document.documentElement);
+        return {
+          bg: cs.getPropertyValue('--background').trim() || '#0b0f17',
+          card: cs.getPropertyValue('--card').trim() || '#131924',
+          border: cs.getPropertyValue('--border').trim() || '#253042',
+          fg: cs.getPropertyValue('--foreground').trim() || '#e6edf6',
+          muted: cs.getPropertyValue('--muted-foreground').trim() || '#94a3b8',
+          primary: cs.getPropertyValue('--primary').trim() || '#38bdf8',
+          success: cs.getPropertyValue('--success').trim() || '#34d399'
+        };
+      }
+
+      function ensureStandaloneTokens() {
+        const bg = getComputedStyle(document.documentElement).getPropertyValue('--background').trim();
+        if (!bg || standaloneApplied) {
+          standaloneApplied = true;
+          const dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          applyThemeVariables(dark);
+        }
+        drawScene();
+        drawScreen();
+      }
+
+      // ---- Simulated Firmware / AMOLED State ----
+      const AUDIOBOOKS = [
+        { title: 'The Way of Kings', author: 'Brandon Sanderson · Ch. 04', status: 'SD Offline · BT TX + 3.5mm', durSec: 1620, art: 'hailmary', pct: 0.34 },
+        { title: 'Project Hail Mary', author: 'Andy Weir · Ch. 14', status: 'Saved on SD · Wi-Fi Sync', durSec: 970, art: 'dune', pct: 0.58 },
+        { title: 'Neuromancer', author: 'William Gibson · Ch. 07', status: 'ABS Stream · Cached Ch. 08', durSec: 840, art: 'matrix', pct: 0.22 }
+      ];
+      const TRACKS = [
+        { title: 'Midnight City', artist: 'M83', album: 'Hurry Up · Wi-Fi / BT TX', durSec: 243, art: 'synthwave' },
+        { title: 'Instant Crush', artist: 'Daft Punk', album: 'RAM · PCM5102 32-Bit DAC', durSec: 337, art: 'helmet' },
+        { title: 'Resonance', artist: 'HOME', album: 'Odyssey · MicroSD FLAC', durSec: 212, art: 'sunset' },
+        { title: 'Let It Happen', artist: 'Tame Impala', album: 'Currents · AirPods BT TX', durSec: 467, art: 'vortex' }
+      ];
+      const MODES = ['AUDIOBOOKSHELF', 'SPOTIFY WIFI', 'SD CARD MP3', 'GEMINI LIVE'];
+
+      const uiState = {
+        modeIdx: 0,
+        bookIdx: 0,
+        trackIdx: 0,
+        playing: true,
+        btTxOn: true,
+        fav: false,
+        pttActive: false,
+        batteryPct: 91,
+        volume: 72,
+        progress: 0.34,
+        joyTiltX: 0,
+        joyTiltY: 0,
+        shellMode: 'transparent',
+        explode: 0,
+        dualView: false,
+        showCradles: true,
+        showWires: true,
+        yaw: -0.58,
+        pitch: -0.44,
+        phase: 0
+      };
+
+      // ---- Complete 22-Wire Option P5-Card Solder Map ----
+      const PINOUT_ROWS = [
+        { mod: 'LILYGO T-Display-S3 AMOLED', sig: 'On-Board QSPI RM67162 + ESP32-S3R8', from: '536×240 AMOLED + 8MB PSRAM', to: 'Internal Flex (0 Wires)', wire: 'Zero display wires' },
+        { mod: 'KY-023 Thumbstick', sig: '3.3V Analog Reference', from: 'VCC / +5V Pad', to: 'T-Display-S3 3.3V', wire: 'Remove 90° header' },
+        { mod: 'KY-023 Thumbstick', sig: 'Common Ground', from: 'GND Pad', to: 'T-Display-S3 GND', wire: '30 AWG Black' },
+        { mod: 'KY-023 Thumbstick', sig: 'X-Axis Seek / Skip (ADC1)', from: 'VRx Pad', to: 'GPIO 1', wire: '30 AWG Yellow' },
+        { mod: 'KY-023 Thumbstick', sig: 'Y-Axis Volume / Scroll (ADC1)', from: 'VRy Pad', to: 'GPIO 10', wire: '30 AWG Green' },
+        { mod: 'KY-023 Thumbstick', sig: 'Center Push Select', from: 'SW Pad', to: 'GPIO 11 (INPUT_PULLUP)', wire: '30 AWG Blue' },
+        { mod: 'GY-PCM5102 Stereo DAC', sig: 'Clean 5V Analog LDO Supply', from: 'VIN + Bridges (SCK/FLT/DEMP/FMT→GND)', to: '5V Boost OUT+ · H3L (XSMT)→3.3V', wire: 'Mandatory H3L un-mute!' },
+        { mod: 'GY-PCM5102 + INMP441', sig: 'Shared I2S0 Bit Clock', from: 'BCK / SCK', to: 'GPIO 12', wire: 'Shared Y-tap (30 AWG)' },
+        { mod: 'GY-PCM5102 + INMP441', sig: 'Shared I2S0 Word Select', from: 'LCK / WS', to: 'GPIO 13', wire: 'Shared Y-tap (30 AWG)' },
+        { mod: 'GY-PCM5102 Stereo DAC', sig: 'I2S DAC Audio Out', from: 'DIN', to: 'GPIO 14', wire: '30 AWG White' },
+        { mod: 'EGSCST INMP441 Mic', sig: '3.3V Logic + Left Channel Select', from: 'VDD / L/R / GND', to: '3.3V / GND', wire: 'Sealed under Ø9.6 grille' },
+        { mod: 'EGSCST INMP441 Mic', sig: 'I2S Mic Serial Data', from: 'SD (+ 100 kΩ → GND)', to: 'GPIO 15', wire: '100k pull-down on SD' },
+        { mod: 'WWZMDiB Mini 3.3V MicroSD', sig: '3.3V Supply + Ground', from: 'VCC / GND', to: 'T-Display-S3 3.3V / GND', wire: 'Strictly 3.3V!' },
+        { mod: 'WWZMDiB Mini 3.3V MicroSD', sig: 'Dedicated HSPI Bus', from: 'CS / MOSI / SCK / MISO', to: 'GPIO 16 / 39 / 40 / 41', wire: 'Short rear jumpers' },
+        { mod: '2×4 Tactile Keypads', sig: 'Row 1 (B1–B4) / Row 2 (B5–B8)', from: 'Top COM / Bot COM', to: 'GPIO 42 / GPIO 43', wire: 'Pads on PCB underside' },
+        { mod: '2×4 Tactile Keypads', sig: 'Shared Matrix Columns 1..4', from: 'K1 / K2 / K3 / K4', to: 'GPIO 44 / 45 / 2 / 3', wire: 'GPIO 46 stays free' },
+        { mod: '5V 2A Type-C Boost + LiPo', sig: '503759 1300mAh + Switched 5V Rail', from: 'B+/B- → OUT+ (5V)', to: 'Slide Switch → VSYS + PCM5102 VIN', wire: 'Switch OFF to flash USB-C!' },
+        { mod: 'Acxico KCX_BT_EMITTER', sig: 'Switched 5V Power Bus (Under DAC)', from: '+5V / PGND', to: 'Switched Boost 5V / GND', wire: 'Paired to BT headphones' },
+        { mod: 'Acxico KCX_BT_EMITTER', sig: 'Stereo Line-In From DAC (3 short leads)', from: 'IN_L / IN_R / AGND', to: 'GY-PCM5102 L / R / G Pads', wire: '~15 mm vertical leads' }
+      ];
+
+      function renderPinoutTable() {
+        const tbody = document.getElementById('pinout-tbody');
+        tbody.textContent = '';
+        for (const r of PINOUT_ROWS) {
+          const tr = document.createElement('tr');
+          const th = document.createElement('th');
+          th.scope = 'row';
+          th.className = 'py-2 pr-3 font-medium text-[var(--foreground)] whitespace-nowrap';
+          th.textContent = r.mod;
+
+          const tdSig = document.createElement('td');
+          tdSig.className = 'py-2 px-3 text-[var(--muted-foreground)]';
+          tdSig.textContent = r.sig;
+
+          const tdFrom = document.createElement('td');
+          tdFrom.className = 'py-2 px-3 font-mono text-[var(--foreground)] whitespace-nowrap';
+          tdFrom.textContent = r.from;
+
+          const tdTo = document.createElement('td');
+          tdTo.className = 'py-2 px-3 font-mono text-[var(--primary)] whitespace-nowrap';
+          tdTo.textContent = r.to;
+
+          const tdWire = document.createElement('td');
+          tdWire.className = 'py-2 pl-3 font-mono whitespace-nowrap text-[var(--success)]';
+          tdWire.textContent = r.wire;
+
+          tr.append(th, tdSig, tdFrom, tdTo, tdWire);
+          tbody.appendChild(tr);
+        }
+      }
+
+      // ---- Procedural Album Cover Art ----
+      function drawAlbumArt(ctx, ax, ay, size, kind, phase) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(ax, ay, size, size, 9);
+        ctx.clip();
+
+        if (kind === 'synthwave') {
+          const sky = ctx.createLinearGradient(ax, ay, ax, ay + size);
+          sky.addColorStop(0, '#1e1b4b');
+          sky.addColorStop(0.55, '#a21caf');
+          sky.addColorStop(1, '#090d16');
+          ctx.fillStyle = sky;
+          ctx.fillRect(ax, ay, size, size);
+
+          const sunGrad = ctx.createLinearGradient(ax, ay + size * 0.2, ax, ay + size * 0.65);
+          sunGrad.addColorStop(0, '#fde047');
+          sunGrad.addColorStop(0.5, '#f97316');
+          sunGrad.addColorStop(1, '#ec4899');
+          ctx.fillStyle = sunGrad;
+          ctx.beginPath();
+          ctx.arc(ax + size * 0.5, ay + size * 0.44, size * 0.26, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#0f172a';
+          const bldgs = [0.16, 0.28, 0.2, 0.36, 0.24, 0.32, 0.18];
+          const bw = size / bldgs.length;
+          bldgs.forEach((bh, idx) => ctx.fillRect(ax + idx * bw, ay + size * (0.68 - bh * 0.4), bw + 1, size * bh));
+        } else if (kind === 'helmet') {
+          ctx.fillStyle = '#111827';
+          ctx.fillRect(ax, ay, size, size);
+          ctx.fillStyle = '#facc15';
+          ctx.beginPath();
+          ctx.arc(ax + size * 0.5, ay + size * 0.52, size * 0.33, Math.PI * 0.5, Math.PI * 1.5);
+          ctx.fill();
+          ctx.fillStyle = '#cbd5e1';
+          ctx.beginPath();
+          ctx.arc(ax + size * 0.5, ay + size * 0.52, size * 0.33, -Math.PI * 0.5, Math.PI * 0.5);
+          ctx.fill();
+          ctx.fillStyle = '#06b6d4';
+          ctx.fillRect(ax + size * 0.24, ay + size * 0.44, size * 0.52, size * 0.14);
+        } else if (kind === 'sunset') {
+          const bands = ['#311042', '#7c2d12', '#c2410c', '#ea580c', '#f59e0b', '#fbbf24'];
+          const bh = (size * 0.66) / bands.length;
+          bands.forEach((col, i) => { ctx.fillStyle = col; ctx.fillRect(ax, ay + i * bh, size, bh + 1); });
+          ctx.fillStyle = '#18181b';
+          ctx.fillRect(ax, ay + size * 0.66, size, size * 0.34);
+        } else if (kind === 'hailmary') {
+          const sky = ctx.createLinearGradient(ax, ay, ax + size, ay + size);
+          sky.addColorStop(0, '#09182c');
+          sky.addColorStop(0.55, '#1e3a5f');
+          sky.addColorStop(1, '#d97706');
+          ctx.fillStyle = sky;
+          ctx.fillRect(ax, ay, size, size);
+          const sun = ctx.createRadialGradient(ax + size * 0.72, ay + size * 0.32, 4, ax + size * 0.72, ay + size * 0.32, size * 0.6);
+          sun.addColorStop(0, '#fef08a');
+          sun.addColorStop(0.45, '#f97316');
+          sun.addColorStop(1, 'rgba(15,23,42,0)');
+          ctx.fillStyle = sun;
+          ctx.fillRect(ax, ay, size, size);
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath();
+          ctx.moveTo(ax, ay + size * 0.8);
+          ctx.lineTo(ax + size * 0.36, ay + size * 0.56);
+          ctx.lineTo(ax + size * 0.74, ay + size * 0.85);
+          ctx.lineTo(ax + size, ay + size * 0.68);
+          ctx.lineTo(ax + size, ay + size);
+          ctx.lineTo(ax, ay + size);
+          ctx.closePath();
+          ctx.fill();
+        } else if (kind === 'dune') {
+          const arr = ctx.createLinearGradient(ax, ay, ax, ay + size);
+          arr.addColorStop(0, '#451a03');
+          arr.addColorStop(0.55, '#c2410c');
+          arr.addColorStop(1, '#fbbf24');
+          ctx.fillStyle = arr;
+          ctx.fillRect(ax, ay, size, size);
+          ctx.fillStyle = '#fef3c7';
+          ctx.beginPath();
+          ctx.arc(ax + size * 0.64, ay + size * 0.36, size * 0.19, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (kind === 'matrix') {
+          ctx.fillStyle = '#030712';
+          ctx.fillRect(ax, ay, size, size);
+          for (let col = 0; col < 6; col++) {
+            const xPos = ax + 10 + col * 16;
+            const drop = ((col * 23 + phase * 14) % size);
+            ctx.fillStyle = '#34d399';
+            ctx.fillRect(xPos, ay + drop * 0.5, 4, size * 0.38);
+          }
+        } else {
+          const g = ctx.createRadialGradient(ax + size * 0.5, ay + size * 0.5, 4, ax + size * 0.5, ay + size * 0.5, size * 0.65);
+          g.addColorStop(0, '#f43f5e');
+          g.addColorStop(0.45, '#8b5cf6');
+          g.addColorStop(0.8, '#06b6d4');
+          g.addColorStop(1, '#0f172a');
+          ctx.fillStyle = g;
+          ctx.fillRect(ax, ay, size, size);
+        }
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(ax + 0.5, ay + 0.5, size - 1, size - 1);
+        ctx.restore();
+      }
+
+      function fmtSec(sec) {
+        const s = Math.max(0, Math.floor(sec));
+        return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+      }
+
+      // ---- 1.91" 536x240 RM67162 True-Black AMOLED Display Simulator ----
+      function drawScreen() {
+        const cvs = document.getElementById('ips-canvas');
+        if (!cvs) return;
+        const ctx = cvs.getContext('2d');
+        const W = cvs.width;
+        const H = cvs.height;
+
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, W, H);
+
+        const mode = MODES[uiState.modeIdx];
+        document.getElementById('hud-mode-badge').textContent = mode;
+        const isAbs = mode === 'AUDIOBOOKSHELF';
+
+        // Top AMOLED status bar
+        ctx.fillStyle = uiState.pttActive ? '#e0634e' : (isAbs ? '#d97706' : '#0284c7');
+        ctx.beginPath();
+        ctx.roundRect(8, 6, 112, 16, 4);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 9px ui-sans-serif, system-ui, sans-serif';
+        ctx.fillText(uiState.pttActive ? '● INMP441 MIC' : mode, 14, 17);
+
+        ctx.fillStyle = uiState.btTxOn ? '#1e3a8a' : '#1f2937';
+        ctx.beginPath();
+        ctx.roundRect(126, 6, 62, 16, 4);
+        ctx.fill();
+        ctx.fillStyle = uiState.btTxOn ? '#60a5fa' : '#94a3b8';
+        ctx.font = 'bold 9px ui-monospace, monospace';
+        ctx.fillText(uiState.btTxOn ? 'BT TX ON' : '3.5mm', 133, 17);
+
+        ctx.fillStyle = '#34d399';
+        ctx.fillText('LiPo ' + uiState.batteryPct + '%', 198, 17);
+
+        ctx.fillStyle = uiState.fav ? '#facc15' : '#e2e8f0';
+        ctx.textAlign = 'right';
+        ctx.fillText((uiState.fav ? '★ ' : '') + uiState.volume + '%', W - 10, 17);
+        ctx.textAlign = 'left';
+
+        if (uiState.pttActive) {
+          const cx = 66, cy = 84;
+          const pulse = 28 + Math.sin(uiState.phase * 3) * 4;
+          const orb = ctx.createRadialGradient(cx, cy, 4, cx, cy, pulse + 14);
+          orb.addColorStop(0, '#ffffff');
+          orb.addColorStop(0.38, '#38bdf8');
+          orb.addColorStop(0.75, '#e0634e');
+          orb.addColorStop(1, 'rgba(224, 99, 78, 0)');
+          ctx.fillStyle = orb;
+          ctx.beginPath();
+          ctx.arc(cx, cy, pulse + 14, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 13.5px ui-sans-serif, system-ui, sans-serif';
+          ctx.fillText('"Play Ch. 4 Hail Mary"', 130, 50);
+          ctx.fillStyle = '#fb923c';
+          ctx.font = '10px ui-monospace, monospace';
+          ctx.fillText('INMP441 (Ø9.6 Crosshair Grille)', 130, 67);
+
+          const eqCols = ['#e0634e', '#ebd15e', '#45b09c', '#38bdf8', '#a855f7', '#e3a84b'];
+          for (let i = 0; i < 14; i++) {
+            const amp = 6 + Math.abs(Math.sin(uiState.phase * 4.2 + i * 0.65)) * 34;
+            ctx.fillStyle = eqCols[i % eqCols.length];
+            ctx.fillRect(130 + i * 13, 118 - amp, 9, amp);
+          }
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '9.5px ui-monospace, monospace';
+          ctx.fillText('GPIO15 (+100kΩ) · 48kHz Shared I2S0', 130, 138);
+          return;
+        }
+
+        if (isAbs) {
+          const bk = AUDIOBOOKS[uiState.bookIdx];
+          drawAlbumArt(ctx, 10, 30, 104, bk.art, uiState.phase);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 14px ui-sans-serif, system-ui, sans-serif';
+          ctx.fillText(bk.title, 126, 46);
+          ctx.fillStyle = '#ebd15e';
+          ctx.font = '600 10.5px ui-sans-serif, system-ui, sans-serif';
+          ctx.fillText(bk.author + (uiState.playing ? '' : ' (PAUSED)'), 126, 63);
+          ctx.fillStyle = '#45b09c';
+          ctx.font = '9.5px ui-monospace, monospace';
+          ctx.fillText(bk.status, 126, 79);
+
+          ctx.fillStyle = '#1e293b';
+          ctx.beginPath();
+          ctx.roundRect(126, 90, 44, 20, 4);
+          ctx.roundRect(176, 90, 64, 20, 4);
+          ctx.roundRect(246, 90, 46, 20, 4);
+          ctx.fill();
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = 'bold 9.5px ui-monospace, monospace';
+          ctx.fillText('-15s', 135, 103);
+          ctx.fillStyle = '#ebd15e';
+          ctx.fillText(uiState.playing ? '▶ 1.15x' : '⏸ 1.15x', 186, 103);
+          ctx.fillStyle = '#cbd5e1';
+          ctx.fillText('+30s', 257, 103);
+
+          ctx.fillStyle = '#1f2937';
+          ctx.beginPath();
+          ctx.roundRect(126, 122, 196, 4.5, 3);
+          ctx.fill();
+          ctx.fillStyle = '#e0634e';
+          ctx.beginPath();
+          ctx.roundRect(126, 122, Math.max(8, 196 * uiState.progress), 4.5, 3);
+          ctx.fill();
+          ctx.fillStyle = '#94a3b8';
+          ctx.fillText(fmtSec(bk.durSec * uiState.progress), 126, 140);
+          ctx.fillText(fmtSec(bk.durSec), 290, 140);
+          return;
+        }
+
+        const tr = TRACKS[uiState.trackIdx];
+        drawAlbumArt(ctx, 10, 30, 104, tr.art, uiState.phase);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 14.5px ui-sans-serif, system-ui, sans-serif';
+        ctx.fillText(tr.title, 126, 46);
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '600 11px ui-sans-serif, system-ui, sans-serif';
+        ctx.fillText(tr.artist + (uiState.playing ? '' : ' (PAUSED)'), 126, 63);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '9.5px ui-monospace, monospace';
+        ctx.fillText(tr.album, 126, 79);
+
+        const pal = ['#e0634e', '#e3a84b', '#45b09c', '#38bdf8', '#a855f7'];
+        for (let i = 0; i < 14; i++) {
+          const amp = uiState.playing ? 5 + Math.abs(Math.sin(uiState.phase * 2.4 + i * 0.6)) * 24 : 4;
+          ctx.fillStyle = pal[i % pal.length];
+          ctx.fillRect(126 + i * 13, 114 - amp, 9, amp);
+        }
+        ctx.fillStyle = '#1f2937';
+        ctx.beginPath();
+        ctx.roundRect(126, 122, 196, 4.5, 3);
+        ctx.fill();
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.roundRect(126, 122, Math.max(8, 196 * uiState.progress), 4.5, 3);
+        ctx.fill();
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(fmtSec(tr.durSec * uiState.progress), 126, 140);
+        ctx.fillText(fmtSec(tr.durSec), 290, 140);
+      }
+
+      // ---- Pure-JS 3D Geometry Primitives (Exact CAD X/Y/Z in mm) ----
+      function makeBox(cx, cy, cz, w, h, d, color, edgeColor, alpha, tag) {
+        const hw = w / 2, hh = h / 2, hd = d / 2;
+        const verts = [
+          [cx - hw, cy - hh, cz - hd],
+          [cx + hw, cy - hh, cz - hd],
+          [cx + hw, cy + hh, cz - hd],
+          [cx - hw, cy + hh, cz - hd],
+          [cx - hw, cy - hh, cz + hd],
+          [cx + hw, cy - hh, cz + hd],
+          [cx + hw, cy + hh, cz + hd],
+          [cx - hw, cy + hh, cz + hd]
+        ];
+        const faces = [
+          [0, 1, 2, 3, -0.18],
+          [4, 5, 6, 7, 0.08],
+          [0, 1, 5, 4, 0.16],
+          [3, 2, 6, 7, -0.24],
+          [0, 3, 7, 4, -0.08],
+          [1, 2, 6, 5, 0.04]
+        ];
+        return { verts, faces, color, edgeColor, alpha: alpha ?? 1, tag };
+      }
+
+      // Map CAD coordinates (X: 0..72, Y: 0..98, Z: 0..18) -> centered 3D view coords
+      function cadBox(x0, x1, y0, y1, z0, z1, zOff, color, edgeColor, alpha, tag) {
+        const cx = (x0 + x1) * 0.5 - 36.0;
+        const cy = 49.0 - (y0 + y1) * 0.5;
+        const cz = (z0 + z1) * 0.5 - 9.0 + zOff;
+        return makeBox(cx, cy, cz, Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0), color, edgeColor, alpha, tag);
+      }
+
+      function cadCyl(cadX, cadY, z0, z1, r, segs, zOff, color, edgeColor, alpha, tag) {
+        const cx = cadX - 36.0;
+        const cy = 49.0 - cadY;
+        const cz0 = z0 - 9.0 + zOff;
+        const cz1 = z1 - 9.0 + zOff;
+        const verts = [];
+        for (let i = 0; i < segs; i++) {
+          const a = (i / segs) * Math.PI * 2;
+          verts.push([cx + r * Math.cos(a), cy + r * Math.sin(a), cz0]);
+        }
+        for (let i = 0; i < segs; i++) {
+          const a = (i / segs) * Math.PI * 2;
+          verts.push([cx + r * Math.cos(a), cy + r * Math.sin(a), cz1]);
+        }
+        const faces = [];
+        const bot = [], top = [];
+        for (let i = 0; i < segs; i++) { bot.push(segs - 1 - i); top.push(segs + i); }
+        bot.push(-0.18); top.push(0.10);
+        faces.push(bot, top);
+        for (let i = 0; i < segs; i++) {
+          const n = (i + 1) % segs;
+          faces.push([i, n, segs + n, segs + i, Math.sin((i / segs) * Math.PI * 2) * 0.14]);
+        }
+        return { verts, faces, color, edgeColor, alpha: alpha ?? 1, tag };
+      }
+
+      function shadeHex(hex, delta) {
+        if (!hex || hex[0] !== '#' || hex.length !== 7) return hex;
+        const clamp = v => Math.max(0, Math.min(255, Math.round(v)));
+        const r = clamp(parseInt(hex.slice(1, 3), 16) + delta * 255);
+        const g = clamp(parseInt(hex.slice(3, 5), 16) + delta * 255);
+        const b = clamp(parseInt(hex.slice(5, 7), 16) + delta * 255);
+        return `rgb(${r},${g},${b})`;
+      }
+
+      function projectPoint(p, yaw, pitch, cx, cy, scale) {
+        const cyw = Math.cos(yaw), syw = Math.sin(yaw);
+        const cpi = Math.cos(pitch), spi = Math.sin(pitch);
+        const x1 = p[0] * cyw + p[2] * syw;
+        const z1 = -p[0] * syw + p[2] * cyw;
+        const y1 = p[1];
+        const y2 = y1 * cpi - z1 * spi;
+        const z2 = y1 * spi + z1 * cpi;
+        const camDist = 260;
+        const persp = camDist / (camDist - z2);
+        return { x: cx + x1 * scale * persp, y: cy + y2 * scale * persp, z: z2 };
+      }
+
+      function buildP5Scene(explodeVal, shellMode) {
+        const ex = explodeVal; // 0..1
+        const zTray = -ex * 34;
+        const zLipo = -ex * 16;
+        const zMid = 0;
+        const zAmoled = ex * 18;
+        const zCaps = ex * 30;
+        const zLid = ex * 44;
+
+        const boxes = [];
+        const shellCfg = {
+          transparent: { fill: '#dbeafe', edge: '#60a5fa', alpha: 0.17, dashed: false },
+          smoke:       { fill: '#1e293b', edge: '#94a3b8', alpha: 0.34, dashed: false },
+          solid:       { fill: '#262930', edge: '#52525b', alpha: 0.96, dashed: false },
+          open:        null
+        }[shellMode];
+
+        // 1. Bottom Tray (72 x 98 x 16.2 mm) + Port Walls + Cradles
+        if (shellCfg) {
+          const s = shellCfg;
+          // Base plate & 4 walls with left AMOLED USB-C, right MicroSD, top 3.5mm & Boost USB-C cutouts
+          boxes.push(cadBox(0, 72, 0, 98, 0, 1.8, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(0, 1.8, 0, 54.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(0, 1.8, 64.4, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(70.2, 72.0, 0, 75.5, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(70.2, 72.0, 90.0, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(1.8, 70.2, 0, 1.8, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(1.8, 11.0, 96.2, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(17.5, 35.1, 96.2, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(45.5, 70.2, 96.2, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+        }
+
+        if (uiState.showCradles) {
+          const cCol = '#5c7c9e', cEdg = '#93c5fd', cAlp = shellMode === 'solid' ? 0.98 : 0.86;
+          // 4x Hollow M2 Bosses
+          for (const [bx, by] of [[1.8, 1.8], [66.6, 1.8], [1.8, 92.6], [66.6, 92.6]]) {
+            boxes.push(cadBox(bx, bx + 3.6, by, by + 3.6, 1.8, 16.2, zTray, cCol, cEdg, cAlp, 'cradle'));
+          }
+          // LiPo rails, Keypad 3-rails, AMOLED shelves, Top bay cradles
+          boxes.push(cadBox(5.5, 6.4, 41.0, 78.0, 1.8, 7.0, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(65.6, 66.5, 41.0, 78.0, 1.8, 7.0, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(32.0, 34.5, 6.0, 37.5, 1.8, 6.4, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(49.0, 51.5, 6.0, 37.5, 1.8, 6.4, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(66.5, 69.0, 6.0, 37.5, 1.8, 6.4, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(59.5, 70.2, 46.5, 72.0, 8.0, 12.0, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(3.5, 7.8, 79.0, 92.4, 7.5, 9.5, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(29.1, 29.7, 79.0, 95.5, 1.8, 9.5, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(52.2, 70.2, 73.5, 92.0, 1.8, 9.8, zTray, cCol, cEdg, cAlp, 'cradle'));
+        }
+
+        // 2. 503759 1300 mAh LiPo + Kapton Tape + 0.8mm EMI Shield Rib
+        boxes.push(cadBox(6.5, 65.5, 41.0, 78.0, 1.8, 6.8, zLipo, '#cbd5e1', '#94a3b8', 1, 'lipo'));
+        boxes.push(cadBox(6.5, 11.2, 41.0, 78.0, 1.9, 6.9, zLipo, '#eab308', '#fef08a', 1, 'lipo_tape'));
+        boxes.push(cadBox(6.0, 66.0, 40.5, 78.5, 7.0, 7.8, zLipo + ex * 4, '#334155', '#64748b', 0.88, 'shield'));
+
+        // 3. Lower Bay Controls (KY-023 + 2x 1x4 Keypads) & Upper Bay Electronics
+        boxes.push(cadBox(4.5, 30.5, 5.8, 39.8, 2.4, 4.0, zMid, '#1e293b', '#64748b', 1, 'ky_pcb'));
+        boxes.push(cadBox(9.5, 25.5, 13.8, 29.8, 4.0, 14.4, zMid, '#94a3b8', '#cbd5e1', 1, 'ky_gimbal'));
+
+        boxes.push(cadBox(32.0, 69.0, 6.0, 21.0, 6.4, 8.0, zMid, '#15803d', '#4ade80', 1, 'pad_bot'));
+        boxes.push(cadBox(32.0, 69.0, 22.5, 37.5, 6.4, 8.0, zMid, '#15803d', '#4ade80', 1, 'pad_top'));
+        const capXs = [36.5, 45.7, 54.9, 64.1];
+        for (const cx of capXs) {
+          boxes.push(cadBox(cx - 3, cx + 3, 10.5, 16.5, 8.0, 15.2, zMid, '#0f172a', '#475569', 1, 'sw_bot'));
+          boxes.push(cadBox(cx - 3, cx + 3, 27.0, 33.0, 8.0, 15.2, zMid, '#0f172a', '#475569', 1, 'sw_top'));
+        }
+
+        // Top Bay: Acxico KCX_BT_EMITTER (under GY-PCM5102), 5V 2A Boost, GY-PCM5102 + 3.5mm, MicroSD
+        boxes.push(cadBox(5.5, 29.0, 79.0, 94.5, 2.0, 4.5, zMid - ex * 3, '#1d4ed8', '#60a5fa', 1, 'bt_tx'));
+        boxes.push(cadBox(29.8, 50.8, 79.0, 96.2, 2.0, 3.8, zMid, '#1e293b', '#64748b', 1, 'boost_pcb'));
+        boxes.push(cadBox(35.8, 44.8, 91.5, 98.0, 3.6, 6.8, zMid, '#cbd5e1', '#94a3b8', 1, 'boost_usbc'));
+
+        boxes.push(cadBox(6.0, 38.0, 79.0, 96.0, 9.5, 11.2, zMid + ex * 6, '#7e22ce', '#c084fc', 1, 'pcm_pcb'));
+        boxes.push(cadBox(10.0, 18.5, 84.0, 98.2, 11.1, 15.0, zMid + ex * 6, '#0f172a', '#475569', 1, 'pcm_trs'));
+        boxes.push(cadBox(11.6, 16.9, 96.0, 98.5, 11.6, 14.5, zMid + ex * 6, '#eab308', '#fef08a', 1, 'pcm_ring'));
+
+        boxes.push(cadBox(52.2, 70.2, 73.5, 92.0, 9.8, 11.4, zMid + ex * 6, '#0284c7', '#7dd3fc', 1, 'sd_pcb'));
+        boxes.push(cadBox(55.7, 70.2, 75.8, 89.8, 11.4, 13.8, zMid + ex * 6, '#cbd5e1', '#94a3b8', 1, 'sd_cage'));
+
+        // 4. LILYGO T-Display-S3 AMOLED + INMP441 MEMS Mic
+        boxes.push(cadBox(3.2, 62.0, 46.5, 72.0, 12.0, 13.6, zAmoled, '#0f172a', '#475569', 1, 'amoled_pcb'));
+        boxes.push(cadBox(8.5, 58.5, 48.0, 69.5, 13.6, 16.2, zAmoled, '#05080f', '#38bdf8', 1, 'amoled_glass'));
+        boxes.push(cadBox(0.0, 6.8, 54.7, 63.7, 12.0, 15.2, zAmoled, '#cbd5e1', '#94a3b8', 1, 'amoled_usbc'));
+        boxes.push(cadCyl(45.0, 86.5, 13.0, 14.6, 7.0, 12, zAmoled - ex * 4, '#1e293b', '#64748b', 1, 'inmp_pcb'));
+        boxes.push(cadCyl(45.0, 86.5, 14.6, 16.0, 4.5, 12, zAmoled - ex * 4, '#0f172a', '#475569', 1, 'inmp_gasket'));
+
+        // 5. Matte Coral Ø16.0mm Concave Thumb-Disc + 8x Chamfered Keycaps
+        const jX = 17.5 + uiState.joyTiltX * 2.2;
+        const jY = 21.8 - uiState.joyTiltY * 2.2;
+        boxes.push(cadCyl(jX, jY, 14.8, 18.6, 8.0, 14, zCaps, '#e0634e', '#fca5a5', 1, 'thumb_disc'));
+
+        const botCols = ['#e3a84b', '#45b09c', '#ebd15e', '#eb876b'];
+        const botEdges = ['#fef08a', '#99f6e4', '#fef08a', '#fecaca'];
+        capXs.forEach((cx, i) => {
+          boxes.push(cadBox(cx - 4.1, cx + 4.1, 25.9, 34.1, 16.2, 19.0, zCaps, '#262930', '#64748b', 1, 'cap_top_' + i));
+          boxes.push(cadBox(cx - 4.1, cx + 4.1, 9.4, 17.6, 16.2, 19.0, zCaps, botCols[i], botEdges[i], 1, 'cap_bot_' + i));
+        });
+
+        // 6. Top Faceplate Shell (Z: 16.2..18.0 + Ø25mm Well Ring + INMP441 Ring)
+        if (shellCfg) {
+          const s = shellCfg;
+          boxes.push(cadBox(0, 72, 71.0, 98.0, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(0, 8.5, 46.5, 71.0, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(58.5, 72.0, 46.5, 71.0, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(0, 72.0, 37.5, 46.5, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(0, 5.0, 0, 37.5, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(30.0, 72.0, 0, 9.1, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(30.0, 72.0, 17.9, 25.6, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(30.0, 72.0, 34.4, 37.5, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          // Ø25mm recessed thumbstick well skirt + Ø9.6mm mic well frame
+          boxes.push(cadCyl(17.5, 21.8, 14.8, 18.0, 13.8, 16, zLid, s.fill, s.edge, Math.min(0.45, s.alpha + 0.08), 'stick_well'));
+          boxes.push(cadCyl(45.0, 86.5, 14.6, 18.0, 5.8, 14, zLid, s.fill, s.edge, Math.min(0.45, s.alpha + 0.08), 'mic_collar'));
+        }
+
+        // 7. 30 AWG Internal Wires + 5-Wire Acxico BT TX Bus
+        const wires = [];
+        if (uiState.showWires) {
+          wires.push({ a: [26 - 36, 49 - 78, 13 - 9 + zAmoled], b: [20 - 36, 49 - 88, 10 - 9 + zMid], color: '#c084fc' });
+          wires.push({ a: [38 - 36, 49 - 72, 13 - 9 + zAmoled], b: [45 - 36, 49 - 86, 14 - 9 + zAmoled], color: '#facc15' });
+          wires.push({ a: [52 - 36, 49 - 72, 13 - 9 + zAmoled], b: [56 - 36, 49 - 82, 10.5 - 9 + zMid], color: '#38bdf8' });
+          wires.push({ a: [22 - 36, 49 - 47, 12.5 - 9 + zAmoled], b: [18 - 36, 49 - 35, 3 - 9 + zMid], color: '#34d399' });
+          wires.push({ a: [44 - 36, 49 - 47, 12.5 - 9 + zAmoled], b: [48 - 36, 49 - 34, 7.2 - 9 + zMid], color: '#f97316' });
+          wires.push({ a: [40 - 36, 49 - 82, 3 - 9 + zMid], b: [16 - 36, 49 - 68, 12.5 - 9 + zAmoled], color: '#ef4444' });
+          // Acxico KCX_BT_EMITTER 5 short leads to GY-PCM5102 L/R/G + Boost 5V
+          wires.push({ a: [14 - 36, 49 - 86, 3.2 - 9 + zMid], b: [14 - 36, 49 - 86, 10.2 - 9 + zMid + ex * 6], color: '#ef4444' });
+          wires.push({ a: [20 - 36, 49 - 86, 3.2 - 9 + zMid], b: [20 - 36, 49 - 86, 10.2 - 9 + zMid + ex * 6], color: '#eab308' });
+          wires.push({ a: [26 - 36, 49 - 86, 3.2 - 9 + zMid], b: [34 - 36, 49 - 86, 3.0 - 9 + zMid], color: '#60a5fa' });
+        }
+
+        return { boxes, wires, zAmoled, zLid, zCaps, zMid, zTray };
+      }
+
+      function renderModelInRegion(ctx, rx, ry, rw, rh, explodeVal, shellMode, subLabel, theme) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(rx, ry, rw, rh);
+        ctx.clip();
+
+        const cx = rx + rw / 2;
+        const cy = ry + rh / 2 + 8;
+        const scale = Math.min(rw, rh) / (128 + explodeVal * 26);
+
+        // CAD Floor Grid
+        ctx.strokeStyle = theme.border;
+        ctx.lineWidth = 0.6;
+        ctx.globalAlpha = 0.35;
+        for (let gx = -54; gx <= 54; gx += 18) {
+          const p1 = projectPoint([gx, 49, -18], uiState.yaw, uiState.pitch, cx, cy, scale);
+          const p2 = projectPoint([gx, 49, 18], uiState.yaw, uiState.pitch, cx, cy, scale);
+          ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+
+        const { boxes, wires, zAmoled, zLid, zCaps } = buildP5Scene(explodeVal, shellMode);
+
+        // Sort Faces Painter's Algorithm
+        const quads = [];
+        for (const box of boxes) {
+          const pv = box.verts.map(v => projectPoint(v, uiState.yaw, uiState.pitch, cx, cy, scale));
+          for (const f of box.faces) {
+            const pts = [];
+            let sumZ = 0;
+            for (let k = 0; k < f.length - 1; k++) {
+              pts.push(pv[f[k]]);
+              sumZ += pv[f[k]].z;
+            }
+            const avgZ = sumZ / pts.length;
+            quads.push({
+              pts,
+              avgZ,
+              fill: shadeHex(box.color, f[f.length - 1]),
+              stroke: box.edgeColor,
+              alpha: box.alpha,
+              isShell: box.tag === 'shell' || box.tag === 'shell_lid'
+            });
+          }
+        }
+        quads.sort((a, b) => a.avgZ - b.avgZ);
+
+        function drawWires() {
+          for (const wr of wires) {
+            const a = projectPoint(wr.a, uiState.yaw, uiState.pitch, cx, cy, scale);
+            const b = projectPoint(wr.b, uiState.yaw, uiState.pitch, cx, cy, scale);
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.quadraticCurveTo((a.x + b.x) / 2, Math.min(a.y, b.y) - 10, b.x, b.y);
+            ctx.strokeStyle = wr.color;
+            ctx.lineWidth = 1.8;
+            ctx.stroke();
+          }
+        }
+
+        let wiresDone = false;
+        for (const q of quads) {
+          if (!wiresDone && q.avgZ > 1.5) {
+            drawWires();
+            wiresDone = true;
+          }
+          ctx.save();
+          ctx.globalAlpha = q.alpha;
+          ctx.beginPath();
+          ctx.moveTo(q.pts[0].x, q.pts[0].y);
+          for (let i = 1; i < q.pts.length; i++) ctx.lineTo(q.pts[i].x, q.pts[i].y);
+          ctx.closePath();
+          ctx.fillStyle = q.fill;
+          ctx.fill();
+          ctx.strokeStyle = q.stroke;
+          ctx.lineWidth = q.isShell ? 0.85 : 0.7;
+          ctx.stroke();
+          ctx.restore();
+        }
+        if (!wiresDone) drawWires();
+
+        // Project Glowing Live AMOLED Cover Art + 21-Dot Crosshair Mic Grille + Corner M2 Screws when front-facing
+        if (Math.cos(uiState.yaw) > -0.25) {
+          const tl = projectPoint([8.5 - 36, 49 - 69.5, 7.6 + zAmoled], uiState.yaw, uiState.pitch, cx, cy, scale);
+          const br = projectPoint([58.5 - 36, 49 - 48.0, 7.6 + zAmoled], uiState.yaw, uiState.pitch, cx, cy, scale);
+          const ox = Math.min(tl.x, br.x), oy = Math.min(tl.y, br.y);
+          const ow = Math.abs(br.x - tl.x), oh = Math.abs(br.y - tl.y);
+          if (ow > 18 && oh > 10) {
+            const artSize = Math.min(oh - 5, ow * 0.36);
+            const ag = ctx.createLinearGradient(ox + 3, oy + 2, ox + 3, oy + 2 + artSize);
+            ag.addColorStop(0, '#0f172a');
+            ag.addColorStop(0.55, '#c2410c');
+            ag.addColorStop(1, '#fbbf24');
+            ctx.fillStyle = ag;
+            ctx.fillRect(ox + 3, oy + 2.5, artSize, artSize);
+
+            const rxText = ox + artSize + 6;
+            const rwText = Math.max(6, ow - artSize - 10);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(rxText, oy + 4, rwText * 0.82, 2.5);
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(rxText, oy + 9, rwText * 0.56, 2);
+            const eqCols = ['#e0634e', '#ebd15e', '#45b09c', '#38bdf8', '#a855f7'];
+            for (let k = 0; k < 5; k++) {
+              const barH = Math.max(2, oh * (0.2 + 0.35 * Math.abs(Math.sin(uiState.phase * 2.1 + k))));
+              ctx.fillStyle = eqCols[k];
+              ctx.fillRect(rxText + k * (rwText / 5), oy + oh - barH - 2, Math.max(1.5, rwText / 7), barH);
+            }
+          }
+
+          // Project Ø9.6mm 21-dot + Crosshair Mic Grille onto Front Faceplate
+          if (shellMode !== 'open') {
+            const mc = projectPoint([45 - 36, 49 - 86.5, 9.05 + zLid], uiState.yaw, uiState.pitch, cx, cy, scale);
+            const rMic = 4.6 * scale;
+            if (rMic > 3) {
+              ctx.strokeStyle = '#94a3b8';
+              ctx.lineWidth = 1.0;
+              ctx.beginPath();
+              ctx.arc(mc.x, mc.y, rMic, 0, Math.PI * 2);
+              ctx.moveTo(mc.x - rMic * 1.3, mc.y); ctx.lineTo(mc.x + rMic * 1.3, mc.y);
+              ctx.moveTo(mc.x, mc.y - rMic * 1.3); ctx.lineTo(mc.x, mc.y + rMic * 1.3);
+              ctx.stroke();
+
+              ctx.fillStyle = '#090d16';
+              for (const dx of [-3.0, -1.5, 0, 1.5, 3.0]) {
+                for (const dy of [-3.0, -1.5, 0, 1.5, 3.0]) {
+                  if (Math.abs(dx) + Math.abs(dy) < 5.5) {
+                    const dp = projectPoint([45 + dx - 36, 49 - (86.5 + dy), 9.06 + zLid], uiState.yaw, uiState.pitch, cx, cy, scale);
+                    ctx.beginPath(); ctx.arc(dp.x, dp.y, Math.max(1.0, 0.42 * scale), 0, Math.PI * 2); ctx.fill();
+                  }
+                }
+              }
+            }
+
+            // 4x Corner M2 Screw Heads
+            ctx.fillStyle = '#0f172a';
+            ctx.strokeStyle = '#94a3b8';
+            for (const [sx, sy] of [[3.6, 3.6], [68.4, 3.6], [3.6, 94.4], [68.4, 94.4]]) {
+              const sp = projectPoint([sx - 36, 49 - sy, 9.05 + zLid], uiState.yaw, uiState.pitch, cx, cy, scale);
+              ctx.beginPath(); ctx.arc(sp.x, sp.y, Math.max(2.0, 1.5 * scale), 0, Math.PI * 2);
+              ctx.fill(); ctx.stroke();
+            }
+          }
+
+          // Concave Thumb-Disc inner shadow ring
+          const dc = projectPoint([17.5 + uiState.joyTiltX * 2.2 - 36, 49 - (21.8 - uiState.joyTiltY * 2.2), 9.65 + zCaps], uiState.yaw, uiState.pitch, cx, cy, scale);
+          ctx.strokeStyle = 'rgba(120, 40, 20, 0.55)';
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.arc(dc.x, dc.y, Math.max(3, 5.6 * scale), 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        if (subLabel) {
+          ctx.fillStyle = theme.primary;
+          ctx.font = 'bold 11px ui-monospace, monospace';
+          ctx.fillText(subLabel, rx + 12, ry + 20);
+        }
+        ctx.restore();
+      }
+
+      function drawScene() {
+        const cvs = document.getElementById('cad-canvas');
+        if (!cvs) return;
+        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+        const rect = cvs.getBoundingClientRect();
+        const w = Math.max(300, Math.floor(rect.width));
+        const h = Math.max(300, Math.floor(rect.height));
+        if (cvs.width !== w * dpr || cvs.height !== h * dpr) {
+          cvs.width = w * dpr;
+          cvs.height = h * dpr;
+        }
+        const ctx = cvs.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        const theme = getThemeColors();
+        ctx.fillStyle = theme.bg;
+        ctx.fillRect(0, 0, w, h);
+
+        if (uiState.dualView) {
+          const halfW = Math.floor(w / 2);
+          renderModelInRegion(ctx, 0, 0, halfW, h, 0.0, 'transparent', 'FULLY TRANSPARENT ASSEMBLED (72×98×18 mm)', theme);
+          ctx.strokeStyle = theme.border;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(halfW, 12); ctx.lineTo(halfW, h - 12); ctx.stroke();
+          renderModelInRegion(ctx, halfW, 0, w - halfW, h, 1.0, 'transparent', 'VERTICALLY EXPLODED Z-STACK (ALL 9 MODULES)', theme);
+        } else {
+          renderModelInRegion(ctx, 0, 0, w, h, uiState.explode, uiState.shellMode, null, theme);
+        }
+      }
+
+      // ---- Pointer Orbit ----
+      const cadCanvas = document.getElementById('cad-canvas');
+      let dragging = false, lastX = 0, lastY = 0;
+      cadCanvas.addEventListener('pointerdown', e => {
+        dragging = true; lastX = e.clientX; lastY = e.clientY;
+        cadCanvas.setPointerCapture(e.pointerId);
+      });
+      cadCanvas.addEventListener('pointermove', e => {
+        if (!dragging) return;
+        const dx = e.clientX - lastX, dy = e.clientY - lastY;
+        lastX = e.clientX; lastY = e.clientY;
+        uiState.yaw += dx * 0.011;
+        uiState.pitch = Math.max(-1.35, Math.min(1.35, uiState.pitch - dy * 0.011));
+        drawScene();
+      });
+      cadCanvas.addEventListener('pointerup', () => { dragging = false; });
+      cadCanvas.addEventListener('pointercancel', () => { dragging = false; });
+
+      // ---- Slider Sync per modern-web-guidance (slider) ----
+      const explodeSlider = document.getElementById('explode-slider');
+      const explodeReadout = document.getElementById('explode-readout');
+      function syncSliderValue() {
+        const val = Number(explodeSlider.value);
+        explodeSlider.style.setProperty('--attr-min', explodeSlider.min || 0);
+        explodeSlider.style.setProperty('--attr-max', explodeSlider.max || 100);
+        explodeSlider.style.setProperty('--control-value', val);
+        explodeSlider.setAttribute('aria-valuetext', `${val} percent exploded`);
+        explodeReadout.textContent = val === 0 ? '0% (Assembled)' : `${val}% Exploded`;
+        uiState.explode = val / 100;
+        drawScene();
+      }
+      explodeSlider.addEventListener('input', () => {
+        if (uiState.dualView) {
+          uiState.dualView = false;
+          document.getElementById('toggle-dual-view').checked = false;
+        }
+        syncSliderValue();
+      });
+
+      // ---- Toolbar Controls ----
+      function refreshButtons() {
+        document.querySelectorAll('.shell-btn').forEach(btn => {
+          const active = !uiState.dualView && btn.dataset.shell === uiState.shellMode;
+          btn.style.background = active ? 'var(--primary)' : 'transparent';
+          btn.style.color = active ? '#ffffff' : 'var(--muted-foreground)';
+        });
+      }
+
+      document.querySelectorAll('.shell-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          uiState.shellMode = btn.dataset.shell;
+          uiState.dualView = false;
+          document.getElementById('toggle-dual-view').checked = false;
+          refreshButtons();
+          drawScene();
+        });
+      });
+
+      const CAM_PRESETS = {
+        hero:  { yaw: -0.58, pitch: -0.44 },
+        front: { yaw: 0.0,   pitch: 0.0 },
+        side:  { yaw: 1.55,  pitch: -0.02 },
+        top:   { yaw: 0.0,   pitch: -1.32 }
+      };
+      document.querySelectorAll('.cam-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = CAM_PRESETS[btn.dataset.cam];
+          if (p) { uiState.yaw = p.yaw; uiState.pitch = p.pitch; drawScene(); }
+        });
+      });
+
+      document.getElementById('toggle-dual-view').addEventListener('change', e => {
+        uiState.dualView = e.target.checked;
+        refreshButtons();
+        drawScene();
+      });
+      document.getElementById('toggle-cradles').addEventListener('change', e => {
+        uiState.showCradles = e.target.checked;
+        drawScene();
+      });
+      document.getElementById('toggle-wires').addEventListener('change', e => {
+        uiState.showWires = e.target.checked;
+        drawScene();
+      });
+
+      // ---- Live 8-Button Keypad & Concave Thumbstick Actions ----
+      document.getElementById('btn-play').addEventListener('click', () => { uiState.playing = !uiState.playing; drawScreen(); });
+      document.getElementById('btn-mode').addEventListener('click', () => {
+        uiState.modeIdx = (uiState.modeIdx + 1) % MODES.length;
+        uiState.pttActive = uiState.modeIdx === 3;
+        drawScreen();
+      });
+      document.getElementById('btn-bt').addEventListener('click', () => { uiState.btTxOn = !uiState.btTxOn; drawScreen(); });
+      document.getElementById('btn-fav').addEventListener('click', () => { uiState.fav = !uiState.fav; drawScreen(); });
+      document.getElementById('btn-back15').addEventListener('click', () => { uiState.progress = Math.max(0.02, uiState.progress - 0.08); drawScreen(); });
+      document.getElementById('btn-prev').addEventListener('click', () => {
+        if (MODES[uiState.modeIdx] === 'AUDIOBOOKSHELF') {
+          uiState.bookIdx = (uiState.bookIdx + AUDIOBOOKS.length - 1) % AUDIOBOOKS.length;
+          uiState.progress = AUDIOBOOKS[uiState.bookIdx].pct;
+        } else {
+          uiState.trackIdx = (uiState.trackIdx + TRACKS.length - 1) % TRACKS.length;
+          uiState.progress = 0.05;
+        }
+        drawScreen();
+      });
+      document.getElementById('btn-next').addEventListener('click', () => {
+        if (MODES[uiState.modeIdx] === 'AUDIOBOOKSHELF') {
+          uiState.bookIdx = (uiState.bookIdx + 1) % AUDIOBOOKS.length;
+          uiState.progress = AUDIOBOOKS[uiState.bookIdx].pct;
+        } else {
+          uiState.trackIdx = (uiState.trackIdx + 1) % TRACKS.length;
+          uiState.progress = 0.05;
+        }
+        drawScreen();
+      });
+      document.getElementById('btn-ptt').addEventListener('click', () => { uiState.pttActive = !uiState.pttActive; drawScreen(); });
+
+      document.querySelectorAll('.joy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const dir = btn.dataset.joy;
+          uiState.joyTiltX = dir === 'left' ? -1 : (dir === 'right' ? 1 : 0);
+          uiState.joyTiltY = dir === 'up' ? -1 : (dir === 'down' ? 1 : 0);
+          if (dir === 'left') document.getElementById('btn-prev').click();
+          else if (dir === 'right') document.getElementById('btn-next').click();
+          else if (dir === 'up') uiState.volume = Math.min(100, uiState.volume + 6);
+          else if (dir === 'down') uiState.volume = Math.max(0, uiState.volume - 6);
+          else if (dir === 'click') uiState.playing = !uiState.playing;
+          document.getElementById('vol-readout').textContent = `${uiState.volume}%`;
+          drawScreen();
+          drawScene();
+          setTimeout(() => { uiState.joyTiltX = 0; uiState.joyTiltY = 0; drawScene(); }, 220);
+        });
+      });
+
+      setInterval(() => {
+        uiState.phase += 0.18;
+        if (uiState.playing) uiState.progress = (uiState.progress + 0.004) % 1;
+        drawScreen();
+        drawScene();
+      }, 220);
+
+      window.addEventListener('themechange', ensureStandaloneTokens);
+      if (window.matchMedia) {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        if (mq && mq.addEventListener) {
+          mq.addEventListener('change', () => {
+            if (standaloneApplied) applyThemeVariables(mq.matches);
+            drawScene();
+            drawScreen();
+          });
+        }
+      }
+      window.addEventListener('resize', drawScene);
+
+      renderPinoutTable();
+      ensureStandaloneTokens();
+      refreshButtons();
+      syncSliderValue();
+    })();
+  </script>
+</body>
+</html>

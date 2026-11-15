@@ -1,0 +1,9 @@
+.DS_Store
+*.usdz
+pocket_streamer_*.png
+parts_1to1_3d/*
+!parts_1to1_3d/renders/
+parts_1to1_3d/renders/*
+!parts_1to1_3d/renders/render_15h_p5_card_topdown_mic_and_joystick.jpg
+!parts_1to1_3d/renders/render_15i_p5_card_side_profile_recessed_stick.jpg
+!parts_1to1_3d/renders/render_15j_p5_card_transparent_and_exploded.jpg
