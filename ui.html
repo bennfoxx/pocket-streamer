@@ -1,0 +1,2366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>fbox — 1.91&quot; True-Black AMOLED UI &amp; Hardware Simulator</title>
+  <style>
+    :root {
+      --bg-light: #f3f5f8;
+      --bg-dark: #090c12;
+      --card-light: #ffffff;
+      --card-dark: #111622;
+      --card-alt-light: #f8fafc;
+      --card-alt-dark: #161d2c;
+      --border-light: #d7dee8;
+      --border-dark: #253045;
+      --fg-light: #0f172a;
+      --fg-dark: #f1f5f9;
+      --muted-light: #475569;
+      --muted-dark: #94a3b8;
+      --primary-light: #c84b36;
+      --primary-dark: #e0634e;
+      --teal-light: #0f766e;
+      --teal-dark: #45b09c;
+      --amber-light: #b45309;
+      --amber-dark: #e3a84b;
+      --blue-light: #0284c7;
+      --blue-dark: #38bdf8;
+      --scrollbar-track-light: #e2e8f0;
+      --scrollbar-track-dark: #151b26;
+      --scrollbar-thumb-light: #64748b;
+      --scrollbar-thumb-dark: #526179;
+
+      --bg: var(--bg-light);
+      --card: var(--card-light);
+      --card-alt: var(--card-alt-light);
+      --border: var(--border-light);
+      --fg: var(--fg-light);
+      --muted: var(--muted-light);
+      --primary: var(--primary-light);
+      --teal: var(--teal-light);
+      --amber: var(--amber-light);
+      --blue: var(--blue-light);
+      --scrollbar-track: var(--scrollbar-track-light);
+      --scrollbar-thumb: var(--scrollbar-thumb-light);
+
+      @media (prefers-color-scheme: dark) {
+        --bg: var(--bg-dark);
+        --card: var(--card-dark);
+        --card-alt: var(--card-alt-dark);
+        --border: var(--border-dark);
+        --fg: var(--fg-dark);
+        --muted: var(--muted-dark);
+        --primary: var(--primary-dark);
+        --teal: var(--teal-dark);
+        --amber: var(--amber-dark);
+        --blue: var(--blue-dark);
+        --scrollbar-track: var(--scrollbar-track-dark);
+        --scrollbar-thumb: var(--scrollbar-thumb-dark);
+      }
+
+      @supports (color: light-dark(white, black)) {
+        --bg: light-dark(var(--bg-light), var(--bg-dark));
+        --card: light-dark(var(--card-light), var(--card-dark));
+        --card-alt: light-dark(var(--card-alt-light), var(--card-alt-dark));
+        --border: light-dark(var(--border-light), var(--border-dark));
+        --fg: light-dark(var(--fg-light), var(--fg-dark));
+        --muted: light-dark(var(--muted-light), var(--muted-dark));
+        --primary: light-dark(var(--primary-light), var(--primary-dark));
+        --teal: light-dark(var(--teal-light), var(--teal-dark));
+        --amber: light-dark(var(--amber-light), var(--amber-dark));
+        --blue: light-dark(var(--blue-light), var(--blue-dark));
+        --scrollbar-track: light-dark(var(--scrollbar-track-light), var(--scrollbar-track-dark));
+        --scrollbar-thumb: light-dark(var(--scrollbar-thumb-light), var(--scrollbar-thumb-dark));
+      }
+
+      color-scheme: light dark;
+      accent-color: var(--primary);
+      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      scrollbar-width: thin;
+    }
+
+    @supports not (scrollbar-color: auto) {
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb);
+        border-radius: 999px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--scrollbar-track);
+      }
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 1.25rem;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .mono {
+      font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sr-only:where(:not(:focus-within, :active)) {
+      position: absolute !important;
+      clip-path: inset(50%) !important;
+      overflow: hidden !important;
+      width: 1px !important;
+      height: 1px !important;
+      margin: -1px !important;
+      padding: 0 !important;
+      border: 0 !important;
+      white-space: nowrap !important;
+    }
+
+    :where(button, input, a, summary, [tabindex]):focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .shell {
+      max-width: 1380px;
+      margin: 0 auto;
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    /* Header */
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.625rem;
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: #0d1117;
+      color: #f8fafc;
+      border: 1px solid #2b3648;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e0634e;
+      box-shadow: 0 0 8px rgba(224, 99, 78, 0.75);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.22rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+    }
+
+    .subline {
+      margin: 0.3rem 0 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pill-btn {
+      min-height: 36px;
+      min-width: 36px;
+      padding: 0.4rem 0.85rem;
+      border-radius: 0.6rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--fg);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition:
+        border-color 140ms ease,
+        background-color 140ms ease,
+        transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .pill-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    .pill-btn:active {
+      transform: scale(0.95);
+    }
+
+    .pill-btn[aria-pressed="true"] {
+      border-color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 13%, var(--card));
+    }
+
+    .pill-badge {
+      padding: 0.18rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--teal);
+    }
+
+    /* Main Split Workbench */
+    .workbench {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1080px) {
+      .workbench {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1rem 1.1rem;
+    }
+
+    .panel-title {
+      margin: 0 0 0.65rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    /* Component-specific Dark Chassis Override per modern-web-guidance */
+    .fbox-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .fbox-device-wrap {
+      width: 100%;
+      overflow-x: auto;
+      display: flex;
+      justify-content: center;
+      padding: 0.35rem 0 0.5rem;
+    }
+
+    .fbox-chassis {
+      color-scheme: only dark;
+      background: linear-gradient(155deg, #1a202c 0%, #0f131b 55%, #090c12 100%);
+      color: #f8fafc;
+      accent-color: #e0634e;
+      --chassis-scale: 1.18;
+      width: calc(460px * var(--chassis-scale));
+      max-width: 100%;
+      border-radius: 26px;
+      border: 1.5px solid #2b3546;
+      box-shadow:
+        0 24px 54px rgba(0, 0, 0, 0.48),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -2px 8px rgba(0, 0, 0, 0.6);
+      padding: 14px 16px 18px;
+      position: relative;
+      display: grid;
+      gap: 12px;
+      transition: border-color 180ms ease;
+    }
+
+    .fbox-chassis[data-locked="true"] {
+      border-color: rgba(227, 168, 75, 0.55);
+    }
+
+    .fbox-chassis[data-ptt="true"] {
+      border-color: rgba(224, 99, 78, 0.72);
+      box-shadow:
+        0 24px 54px rgba(0, 0, 0, 0.52),
+        0 0 28px rgba(224, 99, 78, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .edge-ports-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 10px;
+      color: #94a3b8;
+      padding: 0 6px;
+    }
+
+    .port-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #0a0e16;
+      border: 1px solid #253043;
+      color: #cbd5e1;
+      white-space: nowrap;
+    }
+
+    .port-chip[data-active="true"] {
+      border-color: #38bdf8;
+      color: #7dd3fc;
+    }
+
+    /* Upper Faceplate: Branding + Recessed 21-dot Crosshair INMP441 Mic Grille */
+    .faceplate-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 2px 6px 0;
+    }
+
+    .chassis-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .screw-head {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #475569, #0f172a 72%);
+      border: 1px solid #334155;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+      flex: none;
+    }
+
+    .chassis-wordmark {
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      color: #e2e8f0;
+      text-transform: lowercase;
+    }
+
+    .chassis-dim {
+      font-size: 10px;
+      color: #64748b;
+    }
+
+    /* Ø9.6 mm 21-dot + crosshair INMP441 Mic Grille */
+    .mic-grille-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mic-grille-label {
+      font-size: 9.5px;
+      color: #94a3b8;
+      text-align: right;
+      line-height: 1.2;
+    }
+
+    .mic-grille {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #05070b 65%, #161d29 100%);
+      border: 1.5px solid #2b3648;
+      display: grid;
+      place-items: center;
+      position: relative;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.9);
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    .fbox-chassis[data-ptt="true"] .mic-grille {
+      border-color: #e0634e;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 14px rgba(224, 99, 78, 0.65);
+    }
+
+    /* 1.91" RM67162 536x240 True-Black AMOLED Window */
+    .amoled-bezel {
+      background: #030407;
+      border-radius: 14px;
+      padding: 8px;
+      border: 1.5px solid #222c3c;
+      box-shadow:
+        inset 0 3px 12px rgba(0, 0, 0, 0.95),
+        0 1px 0 rgba(255, 255, 255, 0.05);
+      position: relative;
+    }
+
+    #fbox-amoled {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 536 / 240;
+      border-radius: 8px;
+      background: #000000;
+      cursor: pointer;
+    }
+
+    .side-port-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 9.5px;
+      color: #64748b;
+      padding: 0 4px;
+    }
+
+    /* Lower Control Deck: Left KY-023 Concave Disc + Right 2x4 Tactile Keypad */
+    .control-deck {
+      display: grid;
+      grid-template-columns: 152px minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+      padding-top: 2px;
+    }
+
+    @media (max-width: 540px) {
+      .control-deck {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stick-bay {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stick-well {
+      width: 118px;
+      height: 118px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, #05070b 0%, #090d14 70%, #141b26 100%);
+      border: 2px solid #283244;
+      box-shadow:
+        inset 0 6px 16px rgba(0, 0, 0, 0.92),
+        0 1px 0 rgba(255, 255, 255, 0.06);
+      position: relative;
+      display: grid;
+      place-items: center;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: grab;
+    }
+
+    .stick-well:active {
+      cursor: grabbing;
+    }
+
+    .stick-crosshair {
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      border: 1px dashed rgba(148, 163, 184, 0.16);
+      pointer-events: none;
+    }
+
+    .stick-disc {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 38% 34%, #f28472 0%, #e0634e 45%, #b5422f 88%, #8f2d1e 100%);
+      border: 2px solid #f59b8c;
+      box-shadow:
+        0 8px 16px rgba(0, 0, 0, 0.72),
+        inset 0 5px 10px rgba(70, 14, 7, 0.55),
+        inset 0 -3px 6px rgba(255, 210, 200, 0.2);
+      display: grid;
+      place-items: center;
+      color: #fff5f2;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      transform: translate3d(0, 0, 0);
+      transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 180ms ease;
+      pointer-events: none;
+    }
+
+    .stick-well[data-dragging="true"] .stick-disc {
+      transition: none;
+    }
+
+    .stick-well[data-pressed="true"] .stick-disc {
+      box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.85),
+        inset 0 7px 14px rgba(45, 7, 3, 0.72);
+    }
+
+    .stick-dpad {
+      display: grid;
+      grid-template-columns: repeat(5, 24px);
+      gap: 4px;
+    }
+
+    .dpad-btn {
+      min-width: 24px;
+      min-height: 24px;
+      padding: 0;
+      border-radius: 6px;
+      border: 1px solid #2b3648;
+      background: #141b26;
+      color: #cbd5e1;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition:
+        border-color 140ms ease,
+        color 140ms ease,
+        transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .dpad-btn:hover {
+      border-color: #e0634e;
+      color: #ffffff;
+      transform: scale(1.08);
+    }
+
+    .dpad-btn:active {
+      transform: scale(0.86);
+    }
+
+    .dpad-btn.center {
+      background: #e0634e;
+      border-color: #f59b8c;
+      color: #ffffff;
+    }
+
+    /* 2x4 Hardware Tactile Keypad Matrix */
+    .keypad-bay {
+      display: grid;
+      gap: 9px;
+    }
+
+    .keypad-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .hw-key {
+      min-height: 54px;
+      border-radius: 10px;
+      border: 1.5px solid #2d384b;
+      padding: 6px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      position: relative;
+      box-shadow:
+        0 4px 0 rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.14);
+      transition:
+        transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 180ms ease,
+        filter 140ms ease;
+    }
+
+    .hw-key:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px) scale(1.015);
+    }
+
+    .hw-key:active,
+    .hw-key[data-pressed="true"] {
+      transform: translateY(3px) scale(0.95, 0.92);
+      box-shadow:
+        0 1px 0 rgba(0, 0, 0, 0.65),
+        inset 0 2px 6px rgba(0, 0, 0, 0.35);
+    }
+
+    .hw-key .k-num {
+      font-size: 8.5px;
+      font-weight: 700;
+      opacity: 0.72;
+      letter-spacing: 0.04em;
+    }
+
+    .hw-key .k-main {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .hw-key .k-hold {
+      font-size: 8px;
+      opacity: 0.78;
+    }
+
+    /* Matte Black Top Row (B1-B4) */
+    .hw-key.key-black {
+      background: linear-gradient(180deg, #243042 0%, #171f2c 100%);
+      border-color: #37465d;
+      color: #f8fafc;
+    }
+
+    /* Hardware Accent Bottom Row (B5-B8) */
+    .hw-key.key-amber {
+      background: linear-gradient(180deg, #ebb65f 0%, #d99732 100%);
+      border-color: #f6cd84;
+      color: #14110b;
+    }
+
+    .hw-key.key-teal {
+      background: linear-gradient(180deg, #52bfa9 0%, #3a9c89 100%);
+      border-color: #79d8c4;
+      color: #05211c;
+    }
+
+    .hw-key.key-gold {
+      background: linear-gradient(180deg, #f2da72 0%, #dfc041 100%);
+      border-color: #faea9e;
+      color: #161408;
+    }
+
+    .hw-key.key-coral {
+      background: linear-gradient(180deg, #eb735f 0%, #d4523d 100%);
+      border-color: #f79b8c;
+      color: #ffffff;
+    }
+
+    .chassis-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2px 6px 0;
+      font-size: 9.5px;
+      color: #64748b;
+    }
+
+    /* Native Range Sliders per modern-web-guidance (slider) */
+    input[type="range"].fbox-slider {
+      --slider-track-size: 0.45rem;
+      --slider-thumb-size: 1.15rem;
+      --slider-track-radius: 999px;
+      --slider-thumb-radius: 50%;
+      --slider-track-color: var(--border);
+      --slider-fill-color: var(--primary);
+      --slider-thumb-color: var(--primary);
+      --slider-direction: to right;
+      --attr-min: attr(min type(<number>), 0);
+      --attr-max: attr(max type(<number>), 100);
+      --control-value: attr(value type(<number>), 50);
+      --slider-progress: calc(
+        progress(var(--control-value), var(--attr-min), var(--attr-max)) * 100%
+      );
+
+      -webkit-appearance: none;
+      appearance: none;
+      inline-size: 100%;
+      block-size: 2rem;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    input[type="range"].fbox-slider:dir(rtl) {
+      --slider-direction: to left;
+    }
+
+    @supports not (opacity: progress(1, 0, 100)) {
+      input[type="range"].fbox-slider {
+        --slider-progress: calc(
+          (var(--control-value) - var(--attr-min)) /
+          (var(--attr-max) - var(--attr-min)) * 100%
+        );
+      }
+    }
+
+    input[type="range"].fbox-slider::-webkit-slider-runnable-track {
+      block-size: var(--slider-track-size);
+      border: 0;
+      border-radius: var(--slider-track-radius);
+      background: linear-gradient(
+        var(--slider-direction),
+        var(--slider-fill-color) var(--slider-progress),
+        var(--slider-track-color) var(--slider-progress)
+      );
+    }
+
+    input[type="range"].fbox-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      inline-size: var(--slider-thumb-size);
+      block-size: var(--slider-thumb-size);
+      margin-block-start: calc(
+        (var(--slider-track-size) - var(--slider-thumb-size)) / 2
+      );
+      border: 2px solid var(--card);
+      border-radius: var(--slider-thumb-radius);
+      background: var(--slider-thumb-color);
+    }
+
+    input[type="range"].fbox-slider::-moz-range-track {
+      block-size: var(--slider-track-size);
+      border: 0;
+      border-radius: var(--slider-track-radius);
+      background: var(--slider-track-color);
+    }
+
+    input[type="range"].fbox-slider::-moz-range-progress {
+      block-size: var(--slider-track-size);
+      border-radius: var(--slider-track-radius);
+      background: var(--slider-fill-color);
+    }
+
+    input[type="range"].fbox-slider::-moz-range-thumb {
+      inline-size: var(--slider-thumb-size);
+      block-size: var(--slider-thumb-size);
+      border: 2px solid var(--card);
+      border-radius: var(--slider-thumb-radius);
+      background: var(--slider-thumb-color);
+    }
+
+    input[type="range"].fbox-slider:focus-visible {
+      outline: 2px solid var(--slider-fill-color);
+      outline-offset: 4px;
+    }
+
+    /* Right Column Workbench Cards */
+    .aside-stack {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .screen-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.45rem;
+    }
+
+    @media (max-width: 540px) {
+      .screen-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .nav-btn {
+      min-height: 36px;
+      padding: 0.45rem 0.6rem;
+      border-radius: 0.55rem;
+      border: 1px solid var(--border);
+      background: var(--card-alt);
+      color: var(--fg);
+      font-size: 0.77rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition:
+        border-color 140ms ease,
+        background-color 140ms ease,
+        transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .nav-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    .nav-btn:active {
+      transform: scale(0.95);
+    }
+
+    .nav-btn[aria-current="page"] {
+      border-color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 14%, var(--card));
+    }
+
+    .prompt-list {
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    .prompt-btn {
+      min-height: 34px;
+      padding: 0.45rem 0.65rem;
+      border-radius: 0.55rem;
+      border: 1px solid var(--border);
+      background: var(--card-alt);
+      color: var(--fg);
+      font-size: 0.78rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      transition:
+        border-color 140ms ease,
+        transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .prompt-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px) scale(1.015);
+    }
+
+    .prompt-btn:active {
+      transform: scale(0.96);
+    }
+
+    .custom-prompt-form {
+      display: flex;
+      gap: 0.45rem;
+      margin-top: 0.6rem;
+    }
+
+    .custom-prompt-input {
+      flex: 1;
+      min-width: 0;
+      min-height: 36px;
+      padding: 0.4rem 0.65rem;
+      border-radius: 0.55rem;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--fg);
+      font-size: 0.8rem;
+    }
+
+    .slider-group {
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .slider-row {
+      display: grid;
+      gap: 0.1rem;
+    }
+
+    .slider-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+    }
+
+    .gpio-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.45rem;
+      font-size: 0.73rem;
+    }
+
+    .gpio-cell {
+      padding: 0.45rem 0.55rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      background: var(--card-alt);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .gpio-cell[data-active="true"] {
+      border-color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 12%, var(--card));
+    }
+
+    .kbd-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem 0.75rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    kbd {
+      padding: 0.1rem 0.35rem;
+      border-radius: 0.3rem;
+      border: 1px solid var(--border);
+      background: var(--card-alt);
+      color: var(--fg);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.72rem;
+    }
+
+    @keyframes fbox-bounce-pop {
+      0% { transform: scale(0.93); }
+      45% { transform: scale(1.07, 0.95); }
+      75% { transform: scale(0.98, 1.03); }
+      100% { transform: scale(1); }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .hw-key[data-pop="true"],
+      .pill-btn[data-pop="true"],
+      .nav-btn[data-pop="true"],
+      .dpad-btn[data-pop="true"],
+      .stick-disc[data-pop="true"] {
+        animation: fbox-bounce-pop 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hw-key, .stick-disc, .mic-grille, .fbox-chassis, .pill-btn, .nav-btn, .dpad-btn, .prompt-btn {
+        transition-property: border-color, background-color, color, opacity;
+        animation: none;
+      }
+      .hw-key:hover, .hw-key:active, .hw-key[data-pressed="true"],
+      .pill-btn:hover, .pill-btn:active,
+      .nav-btn:hover, .nav-btn:active,
+      .dpad-btn:hover, .dpad-btn:active,
+      .prompt-btn:hover, .prompt-btn:active {
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div>
+        <div class="brand-row">
+          <span class="brand-mark">
+            <span class="brand-dot" aria-hidden="true"></span>
+            fbox OS
+          </span>
+          <h1>fbox — On-Device AMOLED UI &amp; Hardware Simulator</h1>
+          <span id="header-state-pill" class="pill-badge mono">HOME_LAUNCHER · BT TX</span>
+        </div>
+        <p class="subline">
+          1:1 72 &times; 98 &times; 18 mm Handheld &bull; 1.91&Prime; 536&times;240 True-Black RM67162 AMOLED &bull; KY-023 Concave Coral Thumb-Disc + 2&times;4 Tactile Keypad + INMP441 Mic
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" id="btn-output-toggle" class="pill-btn" aria-pressed="true">
+          Output: BT TX (AirPods)
+        </button>
+        <button type="button" id="btn-earcons" class="pill-btn" aria-pressed="true">
+          Earcons: On
+        </button>
+        <button type="button" id="btn-pocket-lock" class="pill-btn" aria-pressed="false">
+          Pocket Lock (L)
+        </button>
+      </div>
+    </header>
+
+    <div id="a11y-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <main class="workbench">
+      <!-- Left Stage: 1:1 Interactive fbox Hardware Handheld -->
+      <section class="panel fbox-stage" aria-labelledby="device-heading">
+        <div style="width: 100%; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem;">
+          <h2 id="device-heading" class="panel-title" style="margin: 0;">Interactive fbox Handheld (72 &times; 98 &times; 18 mm)</h2>
+          <span id="screen-hint-pill" class="mono" style="font-size: 0.75rem; color: var(--muted);">Click AMOLED screen or use B1–B8 &amp; thumb-disc</span>
+        </div>
+
+        <div class="fbox-device-wrap">
+          <div id="fbox-chassis" class="fbox-chassis" data-locked="false" data-ptt="false">
+            <!-- Top Edge Port Indicators -->
+            <div class="edge-ports-top mono">
+              <span id="port-35mm" class="port-chip" data-active="false">TOP: 3.5mm PCM5102</span>
+              <span id="port-bttx" class="port-chip" data-active="true">INT: KCX_BT_EMITTER TX</span>
+              <span class="port-chip">TOP: 5V USB-C</span>
+            </div>
+
+            <!-- Upper Faceplate Row: Screws, Wordmark, Recessed 21-Dot Crosshair INMP441 Mic Grille -->
+            <div class="faceplate-top-row">
+              <div class="chassis-title-group">
+                <span class="screw-head" aria-hidden="true"></span>
+                <span class="chassis-wordmark">fbox</span>
+                <span class="chassis-dim mono">S3R8 &bull; 8MB PSRAM</span>
+              </div>
+
+              <div class="mic-grille-wrap">
+                <div class="mic-grille-label mono">
+                  <div>INMP441 MEMS</div>
+                  <div id="mic-grille-status">&Oslash;9.6mm 21-dot</div>
+                </div>
+                <div class="mic-grille" aria-hidden="true">
+                  <svg viewBox="0 0 36 36" width="32" height="32">
+                    <line x1="18" y1="3" x2="18" y2="33" stroke="#334155" stroke-width="1" />
+                    <line x1="3" y1="18" x2="33" y2="18" stroke="#334155" stroke-width="1" />
+                    <g fill="#0b0f17" stroke="#475569" stroke-width="0.6">
+                      <circle cx="18" cy="7" r="1.35" />
+                      <circle cx="13" cy="10" r="1.35" /><circle cx="18" cy="10" r="1.35" /><circle cx="23" cy="10" r="1.35" />
+                      <circle cx="8" cy="14" r="1.35" /><circle cx="13" cy="14" r="1.35" /><circle cx="18" cy="14" r="1.35" /><circle cx="23" cy="14" r="1.35" /><circle cx="28" cy="14" r="1.35" />
+                      <circle cx="7" cy="18" r="1.35" /><circle cx="13" cy="18" r="1.35" /><circle cx="18" cy="18" r="1.65" /><circle cx="23" cy="18" r="1.35" /><circle cx="29" cy="18" r="1.35" />
+                      <circle cx="8" cy="22" r="1.35" /><circle cx="13" cy="22" r="1.35" /><circle cx="18" cy="22" r="1.35" /><circle cx="23" cy="22" r="1.35" /><circle cx="28" cy="22" r="1.35" />
+                      <circle cx="13" cy="26" r="1.35" /><circle cx="18" cy="26" r="1.35" /><circle cx="23" cy="26" r="1.35" />
+                    </g>
+                  </svg>
+                </div>
+                <span class="screw-head" aria-hidden="true"></span>
+              </div>
+            </div>
+
+            <!-- 1.91" 536x240 RM67162 True-Black AMOLED Display -->
+            <div class="amoled-bezel">
+              <canvas
+                id="fbox-amoled"
+                width="536"
+                height="240"
+                aria-label="fbox 1.91 inch 536 by 240 true-black AMOLED display"
+              ></canvas>
+            </div>
+
+            <div class="side-port-row mono">
+              <span>LEFT: AMOLED USB-C</span>
+              <span id="amoled-fps-readout">QSPI RM67162 &bull; 536&times;240</span>
+              <span>RIGHT: MicroSD HSPI</span>
+            </div>
+
+            <!-- Lower Control Deck: KY-023 Coral Concave Thumb-Disc + 2x4 Tactile Keypad -->
+            <div class="control-deck">
+              <div class="stick-bay">
+                <div
+                  id="stick-well"
+                  class="stick-well"
+                  data-dragging="false"
+                  data-pressed="false"
+                  role="application"
+                  aria-label="KY-023 Analog Thumb-Disc drag surface; drag to tilt or click for center press"
+                >
+                  <div class="stick-crosshair" aria-hidden="true"></div>
+                  <div id="stick-disc" class="stick-disc mono">SW</div>
+                </div>
+
+                <div class="stick-dpad" aria-label="Thumbstick directional nudge buttons">
+                  <button type="button" class="dpad-btn" data-nudge="left" aria-label="Tilt thumbstick left">&#9664;</button>
+                  <button type="button" class="dpad-btn" data-nudge="up" aria-label="Tilt thumbstick up">&#9650;</button>
+                  <button type="button" class="dpad-btn center" data-nudge="click" aria-label="Press thumbstick center switch">&#9679;</button>
+                  <button type="button" class="dpad-btn" data-nudge="down" aria-label="Tilt thumbstick down">&#9660;</button>
+                  <button type="button" class="dpad-btn" data-nudge="right" aria-label="Tilt thumbstick right">&#9654;</button>
+                </div>
+
+                <div id="stick-adc-readout" class="mono" style="font-size: 10px; color: #94a3b8;">
+                  VRx:2048 &middot; VRy:2048
+                </div>
+              </div>
+
+              <!-- 2x4 Tactile Keypad Matrix -->
+              <div class="keypad-bay" role="group" aria-label="2 by 4 hardware tactile keypad">
+                <!-- Top Row B1-B4: Matte Black -->
+                <div class="keypad-row">
+                  <button type="button" id="hw-b1" data-key="B1" class="hw-key key-black" aria-label="B1 Home launcher; hold for System and Output">
+                    <span class="k-num mono">B1</span>
+                    <span class="k-main">HOME</span>
+                    <span class="k-hold mono">Hold: SYS</span>
+                  </button>
+                  <button type="button" id="hw-b2" data-key="B2" class="hw-key key-black" aria-label="B2 Library or Up">
+                    <span class="k-num mono">B2</span>
+                    <span class="k-main">LIB / &#9650;</span>
+                    <span class="k-hold mono">Hold: Top</span>
+                  </button>
+                  <button type="button" id="hw-b3" data-key="B3" class="hw-key key-black" aria-label="B3 Output toggle or Down">
+                    <span class="k-num mono">B3</span>
+                    <span class="k-main">OUT / &#9660;</span>
+                    <span class="k-hold mono">Hold: Sys</span>
+                  </button>
+                  <button type="button" id="hw-b4" data-key="B4" class="hw-key key-black" aria-label="B4 Save Bookmark; hold for Marks tab">
+                    <span class="k-num mono">B4</span>
+                    <span class="k-main">&#9733; MARK</span>
+                    <span class="k-hold mono">Hold: List</span>
+                  </button>
+                </div>
+
+                <!-- Bottom Row B5-B8: Amber, Teal, Gold, Coral -->
+                <div class="keypad-row">
+                  <button type="button" id="hw-b5" data-key="B5" class="hw-key key-amber" aria-label="B5 Rewind 15 seconds or Back; hold B1 plus B5 to lock">
+                    <span class="k-num mono">B5</span>
+                    <span class="k-main">&#8634; -15s</span>
+                    <span class="k-hold mono">Back / Lock</span>
+                  </button>
+                  <button type="button" id="hw-b6" data-key="B6" class="hw-key key-teal" aria-label="B6 Previous item, switch tab, or toggle Gemini/Memo; hold to cycle speed">
+                    <span class="k-num mono">B6</span>
+                    <span class="k-main">&#9664; PREV</span>
+                    <span class="k-hold mono">Hold: Spd</span>
+                  </button>
+                  <button type="button" id="hw-b7" data-key="B7" class="hw-key key-gold" aria-label="B7 Play or Pause or Confirm; hold to skip forward 30 seconds">
+                    <span class="k-num mono">B7</span>
+                    <span class="k-main">&#9654;/&#9208; PLAY</span>
+                    <span class="k-hold mono">Hold: +30s</span>
+                  </button>
+                  <button type="button" id="hw-b8" data-key="B8" class="hw-key key-coral" aria-label="B8 AI Assistant or Voice Notes; hold to talk or record via INMP441 microphone">
+                    <span class="k-num mono">B8</span>
+                    <span class="k-main">&#127897; AI/REC</span>
+                    <span class="k-hold mono">Hold: PTT</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="chassis-footer mono">
+              <span style="display:flex;align-items:center;gap:6px;"><span class="screw-head" aria-hidden="true"></span><span>503759 1300mAh LiPo</span></span>
+              <span id="chassis-lock-note">Hold B1+B5 (0.6s) or L to Lock</span>
+              <span class="screw-head" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kbd-legend">
+          <span><kbd>1</kbd>–<kbd>8</kbd> Tap/Hold B1–B8</span>
+          <span><kbd>Space</kbd> Play/Pause</span>
+          <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / Arrows: Stick</span>
+          <span><kbd>Enter</kbd> Stick Click</span>
+          <span><kbd>V</kbd> Hold: AI PTT</span>
+          <span><kbd>L</kbd> Pocket Lock</span>
+        </div>
+      </section>
+
+      <!-- Right Column: Workbench Controls, Voice Tester & Hardware Telemetry -->
+      <aside class="aside-stack" aria-label="Simulator Controls and Hardware Telemetry">
+        <!-- Quick Screen Switcher -->
+        <section class="panel" aria-labelledby="screens-heading">
+          <h2 id="screens-heading" class="panel-title">fbox OS Screen Switcher</h2>
+          <div class="screen-grid">
+            <button type="button" class="nav-btn" data-screen="HOME_LAUNCHER" aria-current="page">Home Launcher</button>
+            <button type="button" class="nav-btn" data-screen="NOW_PLAYING">Now Playing</button>
+            <button type="button" class="nav-btn" data-screen="LIBRARY_BROWSER">Library &amp; Chapters</button>
+            <button type="button" class="nav-btn" data-screen="VOICE_AI">Gemini AI &amp; Notes</button>
+            <button type="button" class="nav-btn" data-screen="SYSTEM_OUTPUT">Output &amp; System</button>
+            <button type="button" class="nav-btn" data-screen="POCKET_LOCK">Pocket Lock</button>
+          </div>
+        </section>
+
+        <!-- AI Voice & Voice Notes Tester -->
+        <section class="panel" aria-labelledby="ai-tester-heading">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;margin-bottom:0.65rem;">
+            <h2 id="ai-tester-heading" class="panel-title" style="margin:0;">Gemini AI &amp; INMP441 Voice Tester</h2>
+            <div style="display:flex;gap:0.4rem;">
+              <button type="button" id="btn-flip-voice-mode" class="pill-btn" style="min-height:30px;padding:0.25rem 0.6rem;font-size:0.74rem;">
+                Mode: Gemini AI
+              </button>
+              <button type="button" id="btn-test-wav-note" class="pill-btn" style="min-height:30px;padding:0.25rem 0.6rem;font-size:0.74rem;">
+                + Record WAV Memo
+              </button>
+            </div>
+          </div>
+
+          <div id="prompt-presets-list" class="prompt-list"></div>
+
+          <form id="custom-prompt-form" class="custom-prompt-form">
+            <label for="custom-prompt-input" class="sr-only">Custom voice command prompt</label>
+            <input
+              id="custom-prompt-input"
+              class="custom-prompt-input"
+              type="text"
+              placeholder="Type a voice command (e.g. Switch to 3.5mm)..."
+              autocomplete="off"
+            />
+            <button type="submit" class="pill-btn" style="min-height:36px;">Ask Gemini</button>
+          </form>
+        </section>
+
+        <!-- Hardware Parameters (Native Range Sliders) -->
+        <section class="panel" aria-labelledby="sliders-heading">
+          <h2 id="sliders-heading" class="panel-title">Hardware &amp; Display Parameters</h2>
+          <div class="slider-group">
+            <div class="slider-row">
+              <div class="slider-head">
+                <label for="slider-scale">Handheld Display Scale</label>
+                <span id="val-scale" class="mono">1.18&times;</span>
+              </div>
+              <input id="slider-scale" class="fbox-slider" type="range" min="80" max="150" step="2" value="118" />
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-head">
+                <label for="slider-volume">Audio Output Gain</label>
+                <span id="val-volume" class="mono">74%</span>
+              </div>
+              <input id="slider-volume" class="fbox-slider" type="range" min="0" max="100" step="2" value="74" />
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-head">
+                <label for="slider-battery">503759 1300mAh LiPo Level</label>
+                <span id="val-battery" class="mono">86% (3.98V)</span>
+              </div>
+              <input id="slider-battery" class="fbox-slider" type="range" min="5" max="100" step="1" value="86" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Live 17-Pin ESP32-S3 Hardware & GPIO Telemetry -->
+        <section class="panel" aria-labelledby="gpio-heading">
+          <h2 id="gpio-heading" class="panel-title">Live ESP32-S3R8 17-Pin GPIO Telemetry</h2>
+          <div class="gpio-grid mono">
+            <div class="gpio-cell" data-active="true">
+              <span>GPIO 38 AMOLED_EN</span>
+              <span style="color:var(--teal);">HIGH</span>
+            </div>
+            <div class="gpio-cell" id="gpio-stick-cell" data-active="false">
+              <span>GPIO 1/10/11 KY-023</span>
+              <span id="gpio-stick-val">2048,2048,H</span>
+            </div>
+            <div class="gpio-cell" id="gpio-i2s-cell" data-active="true">
+              <span>GPIO 12/13/14 I2S0</span>
+              <span id="gpio-i2s-val">44.1k TX</span>
+            </div>
+            <div class="gpio-cell" id="gpio-mic-cell" data-active="false">
+              <span>GPIO 15 INMP441</span>
+              <span id="gpio-mic-val">IDLE</span>
+            </div>
+            <div class="gpio-cell" id="gpio-sd-cell" data-active="false">
+              <span>GPIO 16/39-41 HSPI</span>
+              <span id="gpio-sd-val">MOUNTED</span>
+            </div>
+            <div class="gpio-cell" id="gpio-matrix-cell" data-active="false">
+              <span>GPIO 42/43 &times; 44,45,2,3</span>
+              <span id="gpio-matrix-val">NONE</span>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <footer style="text-align:center;font-size:0.76rem;color:var(--muted);padding-top:0.25rem;">
+      fbox OS Simulator &bull; Modular engines in <code>Pocket Streamer UI/modules/</code> &bull; Hardware spec in <code>ON_DEVICE_UI_ARCHITECTURE.md</code>
+    </footer>
+  </div>
+
+  <!-- Subagent UI Engines (file:// compatible classic scripts) -->
+  <script src="./modules/fbox_home_player.js"></script>
+  <script src="./modules/fbox_voice_ai.js"></script>
+  <script src="./modules/fbox_library_browser.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var HomePlayer = window.FBoxHomePlayer;
+      var VoiceAI = window.FBoxVoiceAI;
+      var LibraryBrowser = window.FBoxLibraryBrowser;
+
+      // Shared fbox OS State
+      var state = {
+        screen: 'HOME_LAUNCHER',
+        prevScreen: 'HOME_LAUNCHER',
+        launcherIdx: 0,
+        activeSource: 'ABS',
+        playing: true,
+        volume: 74,
+        speedIdx: 1,
+        btTxOn: true,
+        batteryPct: 86,
+        batteryVolts: 3.98,
+        wifiRssi: -51,
+        locked: false,
+        lockFlashUntil: 0,
+        toast: { text: '', color: '#45B09C', until: 0 },
+        phase: 0,
+        stick: {
+          x: 0,
+          y: 0,
+          adcX: 2048,
+          adcY: 2048,
+          pressed: false,
+          scrubDeltaSec: 0,
+          scrollVel: 0
+        },
+        absBookIdx: 0,
+        absChapterIdx: 2,
+        spotifyTrackIdx: 0,
+        sdFileIdx: 0,
+        positionSec: 1458,
+        durationSec: 3420,
+        bookmarks: [
+          { id: 'bm-1', source: 'ABS', bookIdx: 0, chapterIdx: 2, itemTitle: 'Project Hail Mary', title: 'Project Hail Mary', subtitle: 'Ch. 4 — Rocky', chapter: 'Ch. 4 — Rocky', positionSec: 1458, timeSec: 1458, note: 'Xenonite wall first contact' },
+          { id: 'bm-2', source: 'ABS', bookIdx: 1, chapterIdx: 1, itemTitle: 'Dungeon Crawler Carl', title: 'Dungeon Crawler Carl', subtitle: 'Ch. 12 — Safe Room', chapter: 'Ch. 12 — Safe Room', positionSec: 815, timeSec: 815, note: 'Mordecai crafting recipe' },
+          { id: 'bm-3', source: 'MICROSD', fileIdx: 0, itemTitle: 'Stanford CS229 Lecture 04.mp3', title: 'Stanford CS229 Lecture 04.mp3', subtitle: '/LECTURES · Offline MP3', chapter: 'Offline MP3', positionSec: 1940, timeSec: 1940, note: 'Gradient descent proof' }
+        ],
+        libTabIdx: 0,
+        libCursor: 0,
+        libScrollOffset: 0,
+        voiceSubMode: 'GEMINI',
+        pttPhase: 'IDLE',
+        pttHoldMs: 0,
+        micRmsHistory: new Array(32).fill(0.08),
+        activePromptIdx: 0,
+        lastTranscript: 'Bookmark this part and summarize Chapter 4 so far',
+        lastAiResponse: "Saved bookmark at 24:18. In Chapter 4, Grace measures the alien ship's petrova signature and discovers a cylinder made of xenonite.",
+        lastAiActionBadge: '★ Bookmark 24:18 + ABS Ch.4 Summary',
+        voiceNotes: [
+          { id: 'VN-042', title: 'Hail Mary — Xenonite theory', linkedTo: 'Project Hail Mary · 24:18', durationSec: 14, date: 'Today 14:52' },
+          { id: 'VN-041', title: 'Hardware print tolerance note', linkedTo: 'Standalone Memo', durationSec: 22, date: 'Yesterday' }
+        ],
+        sleepTimerMin: 0
+      };
+
+      var earconsOn = true;
+      var audioCtx = null;
+      var canvasHitboxes = [];
+
+      function announce(msg) {
+        var el = document.getElementById('a11y-announcer');
+        if (el && msg) el.textContent = msg;
+      }
+
+      function triggerToast(text, color, ms) {
+        state.toast = {
+          text: String(text || ''),
+          color: color || '#45B09C',
+          until: Date.now() + (ms || 1800)
+        };
+        announce(text);
+      }
+
+      function playEarcon(type) {
+        if (!earconsOn) return;
+        try {
+          if (!audioCtx) {
+            var AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) return;
+            audioCtx = new AC();
+          }
+          if (audioCtx.state === 'suspended') audioCtx.resume();
+          var now = audioCtx.currentTime;
+
+          function tone(freq, startOffset, dur, gainVal, wave) {
+            var osc = audioCtx.createOscillator();
+            var gain = audioCtx.createGain();
+            osc.type = wave || 'sine';
+            osc.frequency.setValueAtTime(freq, now + startOffset);
+            gain.gain.setValueAtTime(0.0001, now + startOffset);
+            gain.gain.exponentialRampToValueAtTime(gainVal || 0.055, now + startOffset + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + startOffset + dur);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now + startOffset);
+            osc.stop(now + startOffset + dur + 0.02);
+          }
+
+          if (type === 'ptt_open') {
+            tone(523.25, 0, 0.07, 0.06, 'sine');
+            tone(783.99, 0.065, 0.09, 0.06, 'sine');
+          } else if (type === 'ptt_send') {
+            tone(783.99, 0, 0.06, 0.05, 'triangle');
+            tone(659.25, 0.055, 0.08, 0.05, 'triangle');
+          } else if (type === 'bookmark' || type === 'confirm') {
+            tone(440, 0, 0.075, 0.06, 'sine');
+            tone(659.25, 0.07, 0.1, 0.06, 'sine');
+          } else if (type === 'lock') {
+            tone(330, 0, 0.07, 0.05, 'triangle');
+            tone(261.6, 0.08, 0.09, 0.05, 'triangle');
+          } else if (type === 'unlock') {
+            tone(330, 0, 0.07, 0.05, 'triangle');
+            tone(659.25, 0.075, 0.1, 0.06, 'triangle');
+          } else if (type === 'denied') {
+            tone(220, 0, 0.06, 0.04, 'square');
+          } else {
+            tone(580, 0, 0.03, 0.025, 'sine');
+          }
+        } catch (_err) {
+          // AudioContext unavailable
+        }
+      }
+
+      var helpers = {
+        hitboxes: canvasHitboxes,
+        registerHitbox: function (box) {
+          canvasHitboxes.push(box);
+        },
+        triggerToast: triggerToast,
+        playEarcon: playEarcon
+      };
+
+      var reduceMotionMq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+
+      function fireCanvasBounce(name, impulse) {
+        if (HomePlayer && typeof HomePlayer.triggerBounce === 'function') {
+          HomePlayer.triggerBounce(name, impulse == null ? 6.0 : impulse);
+        }
+      }
+
+      function pulseElementBounce(el) {
+        if (!el || (reduceMotionMq && reduceMotionMq.matches)) return;
+        if (el._popTimer) clearTimeout(el._popTimer);
+        el.removeAttribute('data-pop');
+        void el.offsetWidth;
+        el.setAttribute('data-pop', 'true');
+        el._popTimer = setTimeout(function () {
+          el.removeAttribute('data-pop');
+        }, 300);
+      }
+
+      function emitScreenBounce(scr) {
+        fireCanvasBounce('screen_enter', 6.0);
+        fireCanvasBounce('top_home', 5.2);
+        if (scr === 'HOME_LAUNCHER') {
+          fireCanvasBounce('launcher_' + (state.launcherIdx || 0), 6.4);
+          fireCanvasBounce('home_nowpill', 5.0);
+        } else if (scr === 'NOW_PLAYING') {
+          fireCanvasBounce('np_disc', 6.4);
+          fireCanvasBounce('np_play', 5.6);
+        } else if (scr === 'SYSTEM_OUTPUT') {
+          fireCanvasBounce(state.btTxOn ? 'sys_bt' : 'sys_wired', 6.4);
+        }
+      }
+
+      function normalizeScreen(scr) {
+        var u = String(scr || 'NOW_PLAYING').toUpperCase();
+        if (u === 'HOME') return 'HOME_LAUNCHER';
+        if (u === 'AI_VOICE' || u === 'VOICE' || u === 'AI') return 'VOICE_AI';
+        if (u === 'SYSTEM' || u === 'OUTPUT' || u === 'STATUS') return 'SYSTEM_OUTPUT';
+        if (u === 'LIBRARY_BROWSE') return 'LIBRARY_BROWSER';
+        if (u === 'LOCK') return 'POCKET_LOCK';
+        return u;
+      }
+
+      function setScreen(scr) {
+        var next = normalizeScreen(scr);
+        if (next === 'POCKET_LOCK') {
+          if (!state.locked) state.prevScreen = normalizeScreen(state.screen);
+          state.locked = true;
+          state.screen = 'POCKET_LOCK';
+          fireCanvasBounce('lock_squash', 6.8);
+        } else {
+          state.locked = false;
+          if (state.screen !== 'POCKET_LOCK') state.prevScreen = normalizeScreen(state.screen);
+          state.screen = next;
+          emitScreenBounce(next);
+        }
+        syncChromeControls();
+      }
+
+      function togglePocketLock() {
+        if (state.locked || normalizeScreen(state.screen) === 'POCKET_LOCK') {
+          state.locked = false;
+          state.screen = state.prevScreen && state.prevScreen !== 'POCKET_LOCK' ? state.prevScreen : 'HOME_LAUNCHER';
+          emitScreenBounce(state.screen);
+          triggerToast('fbox Unlocked', '#45B09C', 1400);
+          playEarcon('unlock');
+        } else {
+          state.prevScreen = normalizeScreen(state.screen);
+          state.locked = true;
+          state.screen = 'POCKET_LOCK';
+          fireCanvasBounce('lock_squash', 7.2);
+          playEarcon('lock');
+          announce('fbox locked');
+        }
+        syncChromeControls();
+      }
+
+      function toggleOutput(explicitBt) {
+        state.btTxOn = typeof explicitBt === 'boolean' ? explicitBt : !state.btTxOn;
+        fireCanvasBounce('top_output', 6.2);
+        fireCanvasBounce('np_output', 6.2);
+        fireCanvasBounce(state.btTxOn ? 'sys_bt' : 'sys_wired', 6.8);
+        fireCanvasBounce(state.btTxOn ? 'sys_wired' : 'sys_bt', -3.4);
+        triggerToast(
+          state.btTxOn ? 'BT TX Active · KCX_BT_EMITTER' : 'Wired Audio · 3.5mm PCM5102',
+          state.btTxOn ? '#38BDF8' : '#45B09C',
+          1700
+        );
+        playEarcon('confirm');
+        syncChromeControls();
+      }
+
+      function syncSliderValue(slider) {
+        if (!slider) return;
+        slider.style.setProperty('--attr-min', slider.min || 0);
+        slider.style.setProperty('--attr-max', slider.max || 100);
+        slider.style.setProperty('--control-value', slider.value);
+      }
+
+      function syncChromeControls() {
+        var scr = normalizeScreen(state.screen);
+        var chassis = document.getElementById('fbox-chassis');
+        if (chassis) {
+          chassis.setAttribute('data-locked', String(state.locked || scr === 'POCKET_LOCK'));
+          chassis.setAttribute('data-ptt', String(state.pttPhase === 'LISTENING'));
+        }
+
+        var port35 = document.getElementById('port-35mm');
+        var portBt = document.getElementById('port-bttx');
+        if (port35) port35.setAttribute('data-active', String(!state.btTxOn));
+        if (portBt) portBt.setAttribute('data-active', String(state.btTxOn));
+
+        var micLabel = document.getElementById('mic-grille-status');
+        if (micLabel) {
+          micLabel.textContent = state.pttPhase === 'LISTENING' ? '● LIVE I2S0' : 'Ø9.6mm 21-dot';
+          micLabel.style.color = state.pttPhase === 'LISTENING' ? '#fb7185' : '#94a3b8';
+        }
+
+        var headerPill = document.getElementById('header-state-pill');
+        if (headerPill) {
+          headerPill.textContent = scr + ' · ' + (state.btTxOn ? 'BT TX' : '3.5mm');
+        }
+
+        var outBtn = document.getElementById('btn-output-toggle');
+        if (outBtn) {
+          outBtn.setAttribute('aria-pressed', String(state.btTxOn));
+          outBtn.textContent = state.btTxOn ? 'Output: BT TX (AirPods)' : 'Output: 3.5mm PCM5102';
+        }
+
+        var lockBtn = document.getElementById('btn-pocket-lock');
+        if (lockBtn) {
+          lockBtn.setAttribute('aria-pressed', String(state.locked || scr === 'POCKET_LOCK'));
+          lockBtn.textContent = state.locked ? 'Unlock fbox (L)' : 'Pocket Lock (L)';
+        }
+
+        document.querySelectorAll('.nav-btn[data-screen]').forEach(function (btn) {
+          if (btn.getAttribute('data-screen') === scr) {
+            btn.setAttribute('aria-current', 'page');
+          } else {
+            btn.removeAttribute('aria-current');
+          }
+        });
+
+        var voiceModeBtn = document.getElementById('btn-flip-voice-mode');
+        if (voiceModeBtn) {
+          voiceModeBtn.textContent = state.voiceSubMode === 'VOICE_NOTE' ? 'Mode: WAV Voice Notes' : 'Mode: Gemini AI';
+        }
+
+        // Sync volume & battery sliders
+        var volSlider = document.getElementById('slider-volume');
+        var volVal = document.getElementById('val-volume');
+        if (volSlider && Number(volSlider.value) !== state.volume) {
+          volSlider.value = String(state.volume);
+          syncSliderValue(volSlider);
+        }
+        if (volVal) volVal.textContent = state.volume + '%';
+
+        // Sync GPIO telemetry cells
+        var stickCell = document.getElementById('gpio-stick-cell');
+        var stickVal = document.getElementById('gpio-stick-val');
+        if (stickVal) {
+          stickVal.textContent = state.stick.adcX + ',' + state.stick.adcY + ',' + (state.stick.pressed ? 'L' : 'H');
+        }
+        if (stickCell) {
+          stickCell.setAttribute('data-active', String(Math.abs(state.stick.x) > 0.14 || Math.abs(state.stick.y) > 0.14 || state.stick.pressed));
+        }
+
+        var i2sCell = document.getElementById('gpio-i2s-cell');
+        var i2sVal = document.getElementById('gpio-i2s-val');
+        if (i2sCell && i2sVal) {
+          i2sCell.setAttribute('data-active', String(state.playing));
+          i2sVal.textContent = state.playing ? '44.1k TX' : 'PAUSED';
+        }
+
+        var micCell = document.getElementById('gpio-mic-cell');
+        var micVal = document.getElementById('gpio-mic-val');
+        if (micCell && micVal) {
+          var liveMic = state.pttPhase === 'LISTENING';
+          micCell.setAttribute('data-active', String(liveMic));
+          micVal.textContent = liveMic ? 'RX LIVE' : 'IDLE';
+        }
+
+        var sdCell = document.getElementById('gpio-sd-cell');
+        var sdVal = document.getElementById('gpio-sd-val');
+        if (sdCell && sdVal) {
+          var sdActive = state.activeSource === 'MICROSD' || (scr === 'VOICE_AI' && state.voiceSubMode === 'VOICE_NOTE');
+          sdCell.setAttribute('data-active', String(sdActive));
+          sdVal.textContent = sdActive ? 'READ/WR' : 'MOUNTED';
+        }
+      }
+
+      // -----------------------------------------------------------------------
+      // Physical 2x4 Hardware Key Actions (Short Tap vs Hold)
+      // -----------------------------------------------------------------------
+      var pressedKeys = new Set();
+      var keyTimers = new Map();
+      var comboLockTimer = null;
+
+      function handleKeyTap(keyId) {
+        var scr = normalizeScreen(state.screen);
+        if (state.locked || scr === 'POCKET_LOCK') {
+          state.lockFlashUntil = Date.now() + 900;
+          fireCanvasBounce('lock_squash', 6.8);
+          playEarcon('denied');
+          return;
+        }
+
+        if (keyId === 'B1') {
+          if (scr !== 'HOME_LAUNCHER') {
+            setScreen('HOME_LAUNCHER');
+          } else {
+            emitScreenBounce('HOME_LAUNCHER');
+          }
+          playEarcon('tick');
+          return;
+        }
+
+        if (keyId === 'B2') {
+          if (scr === 'LIBRARY_BROWSER') {
+            LibraryBrowser.moveCursor(state, -1);
+            playEarcon('tick');
+          } else if (scr === 'HOME_LAUNCHER') {
+            state.launcherIdx = (state.launcherIdx + 3) % 4;
+            fireCanvasBounce('launcher_' + state.launcherIdx, 6.4);
+            playEarcon('tick');
+          } else if (scr === 'VOICE_AI') {
+            VoiceAI.cycleSelection(state, -1, helpers);
+          } else if (scr === 'SYSTEM_OUTPUT') {
+            setScreen('LIBRARY_BROWSER');
+            playEarcon('tick');
+          } else {
+            setScreen('LIBRARY_BROWSER');
+            playEarcon('tick');
+          }
+          return;
+        }
+
+        if (keyId === 'B3') {
+          if (scr === 'LIBRARY_BROWSER') {
+            LibraryBrowser.moveCursor(state, 1);
+            playEarcon('tick');
+          } else if (scr === 'HOME_LAUNCHER') {
+            state.launcherIdx = (state.launcherIdx + 1) % 4;
+            fireCanvasBounce('launcher_' + state.launcherIdx, 6.4);
+            playEarcon('tick');
+          } else if (scr === 'VOICE_AI') {
+            VoiceAI.cycleSelection(state, 1, helpers);
+          } else {
+            toggleOutput();
+          }
+          return;
+        }
+
+        if (keyId === 'B4') {
+          var res = HomePlayer.toggleBookmark(state);
+          fireCanvasBounce('np_mark', 7.0);
+          fireCanvasBounce('np_disc', 4.4);
+          playEarcon('bookmark');
+          if (res && res.added) triggerToast('★ Bookmark Saved', '#EBD15E', 1600);
+          return;
+        }
+
+        if (keyId === 'B5') {
+          if (scr === 'NOW_PLAYING') {
+            HomePlayer.seekRelative(state, -15);
+            triggerToast('↺ -15s', '#E3A84B', 1100);
+            playEarcon('tick');
+          } else {
+            setScreen('NOW_PLAYING');
+            playEarcon('tick');
+          }
+          return;
+        }
+
+        if (keyId === 'B6') {
+          if (scr === 'HOME_LAUNCHER') {
+            state.launcherIdx = (state.launcherIdx + 3) % 4;
+            fireCanvasBounce('launcher_' + state.launcherIdx, 6.4);
+            playEarcon('tick');
+          } else if (scr === 'LIBRARY_BROWSER') {
+            LibraryBrowser.switchTab(state, 1, false);
+            playEarcon('tick');
+          } else if (scr === 'VOICE_AI') {
+            VoiceAI.toggleSubMode(state, helpers);
+            syncChromeControls();
+          } else {
+            HomePlayer.prevItem(state);
+            triggerToast('◀ Previous', '#45B09C', 1100);
+            playEarcon('tick');
+          }
+          return;
+        }
+
+        if (keyId === 'B7') {
+          if (scr === 'HOME_LAUNCHER') {
+            HomePlayer.activateLauncher(state, state.launcherIdx);
+            state.screen = normalizeScreen(state.screen);
+            emitScreenBounce(state.screen);
+            syncChromeControls();
+            playEarcon('confirm');
+          } else if (scr === 'LIBRARY_BROWSER') {
+            LibraryBrowser.activateSelectedRow(state, helpers);
+            state.screen = normalizeScreen(state.screen);
+            emitScreenBounce(state.screen);
+            syncChromeControls();
+          } else if (scr === 'VOICE_AI') {
+            VoiceAI.triggerPrimaryAction(state, helpers);
+          } else if (scr === 'SYSTEM_OUTPUT') {
+            toggleOutput();
+          } else {
+            HomePlayer.togglePlay(state);
+            playEarcon('tick');
+          }
+          return;
+        }
+
+        if (keyId === 'B8') {
+          if (scr !== 'VOICE_AI') {
+            setScreen('VOICE_AI');
+            playEarcon('tick');
+          } else {
+            VoiceAI.toggleSubMode(state, helpers);
+            syncChromeControls();
+          }
+        }
+      }
+
+      function handleKeyHold(keyId) {
+        var scr = normalizeScreen(state.screen);
+        if (state.locked || scr === 'POCKET_LOCK') return;
+
+        if (keyId === 'B1' || keyId === 'B3') {
+          setScreen('SYSTEM_OUTPUT');
+          playEarcon('confirm');
+        } else if (keyId === 'B2') {
+          if (scr === 'LIBRARY_BROWSER') {
+            state.libCursor = 0;
+            state.libScrollOffset = 0;
+            triggerToast('Top of list', '#94A3B8', 1000);
+          } else {
+            setScreen('LIBRARY_BROWSER');
+          }
+        } else if (keyId === 'B4') {
+          state.libTabIdx = 4;
+          state.libCursor = 0;
+          state.libScrollOffset = 0;
+          setScreen('LIBRARY_BROWSER');
+          triggerToast('★ Marks & Notes', '#E0634E', 1300);
+          playEarcon('confirm');
+        } else if (keyId === 'B5') {
+          setScreen('NOW_PLAYING');
+        } else if (keyId === 'B6') {
+          var spd = HomePlayer.cycleSpeed(state);
+          triggerToast('Speed ' + spd.toFixed(2).replace(/\.00$/, '.0') + 'x', '#EBD15E', 1300);
+          playEarcon('confirm');
+        } else if (keyId === 'B7') {
+          HomePlayer.seekRelative(state, 30);
+          triggerToast('+30s Forward', '#EBD15E', 1100);
+          playEarcon('tick');
+        }
+      }
+
+      function beginKeyPress(keyId) {
+        if (pressedKeys.has(keyId)) return;
+        pressedKeys.add(keyId);
+
+        var btnEl = document.querySelector('.hw-key[data-key="' + keyId + '"]');
+        if (btnEl) btnEl.setAttribute('data-pressed', 'true');
+
+        var matCell = document.getElementById('gpio-matrix-cell');
+        var matVal = document.getElementById('gpio-matrix-val');
+        if (matCell && matVal) {
+          matCell.setAttribute('data-active', 'true');
+          matVal.textContent = Array.from(pressedKeys).join('+');
+        }
+
+        // B1 + B5 Combo -> 600 ms Pocket Lock Toggle
+        if (pressedKeys.has('B1') && pressedKeys.has('B5')) {
+          clearTimeout(comboLockTimer);
+          comboLockTimer = setTimeout(function () {
+            if (pressedKeys.has('B1') && pressedKeys.has('B5')) {
+              keyTimers.forEach(function (info) { clearTimeout(info.timer); info.comboHandled = true; });
+              togglePocketLock();
+            }
+          }, 600);
+        }
+
+        var scr = normalizeScreen(state.screen);
+        if (state.locked || scr === 'POCKET_LOCK') {
+          keyTimers.set(keyId, { holdFired: false, pttStarted: false, timer: null });
+          return;
+        }
+
+        if (keyId === 'B8') {
+          var pttTimer = setTimeout(function () {
+            var rec = keyTimers.get('B8');
+            if (!rec || !pressedKeys.has('B8')) return;
+            rec.pttStarted = true;
+            rec.holdFired = true;
+            setScreen('VOICE_AI');
+            VoiceAI.startPtt(state, helpers);
+            playEarcon('ptt_open');
+            syncChromeControls();
+          }, 180);
+          keyTimers.set('B8', { holdFired: false, pttStarted: false, timer: pttTimer });
+          return;
+        }
+
+        var holdTimer = setTimeout(function () {
+          var rec = keyTimers.get(keyId);
+          if (!rec || !pressedKeys.has(keyId) || rec.comboHandled) return;
+          if (pressedKeys.has('B1') && pressedKeys.has('B5')) return;
+          rec.holdFired = true;
+          handleKeyHold(keyId);
+        }, 380);
+        keyTimers.set(keyId, { holdFired: false, comboHandled: false, timer: holdTimer });
+      }
+
+      function endKeyPress(keyId) {
+        if (!pressedKeys.has(keyId)) return;
+        pressedKeys.delete(keyId);
+
+        var btnEl = document.querySelector('.hw-key[data-key="' + keyId + '"]');
+        if (btnEl) {
+          btnEl.setAttribute('data-pressed', 'false');
+          pulseElementBounce(btnEl);
+        }
+
+        var matCell = document.getElementById('gpio-matrix-cell');
+        var matVal = document.getElementById('gpio-matrix-val');
+        if (matCell && matVal) {
+          matCell.setAttribute('data-active', String(pressedKeys.size > 0));
+          matVal.textContent = pressedKeys.size > 0 ? Array.from(pressedKeys).join('+') : 'NONE';
+        }
+
+        if (!pressedKeys.has('B1') || !pressedKeys.has('B5')) {
+          clearTimeout(comboLockTimer);
+        }
+
+        var rec = keyTimers.get(keyId);
+        keyTimers.delete(keyId);
+        if (rec && rec.timer) clearTimeout(rec.timer);
+
+        if (rec && rec.comboHandled) return;
+
+        if (keyId === 'B8' && rec && rec.pttStarted) {
+          VoiceAI.finishPttRelease(state, helpers);
+          playEarcon('ptt_send');
+          syncChromeControls();
+          return;
+        }
+
+        if (!rec || !rec.holdFired) {
+          handleKeyTap(keyId);
+        }
+      }
+
+      document.querySelectorAll('.hw-key[data-key]').forEach(function (btn) {
+        var keyId = btn.getAttribute('data-key');
+        btn.addEventListener('pointerdown', function (e) {
+          e.preventDefault();
+          try { btn.setPointerCapture(e.pointerId); } catch (_e) {}
+          beginKeyPress(keyId);
+        });
+        btn.addEventListener('pointerup', function () { endKeyPress(keyId); });
+        btn.addEventListener('pointercancel', function () { endKeyPress(keyId); });
+        btn.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (!e.repeat) beginKeyPress(keyId);
+          }
+        });
+        btn.addEventListener('keyup', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            endKeyPress(keyId);
+          }
+        });
+      });
+
+      // -----------------------------------------------------------------------
+      // Interactive 2D KY-023 Coral Concave Thumb-Disc
+      // -----------------------------------------------------------------------
+      var stickWell = document.getElementById('stick-well');
+      var stickDisc = document.getElementById('stick-disc');
+      var stickAdcReadout = document.getElementById('stick-adc-readout');
+      var stickDrag = { active: false, pointerId: null, startX: 0, startY: 0, moved: false };
+
+      function updateStickVisual(nx, ny) {
+        var clampedX = Math.max(-1, Math.min(1, nx));
+        var clampedY = Math.max(-1, Math.min(1, ny));
+        state.stick.x = clampedX;
+        state.stick.y = clampedY;
+        state.stick.adcX = Math.round(2048 + clampedX * 2047);
+        state.stick.adcY = Math.round(2048 - clampedY * 2047);
+
+        if (stickDisc) {
+          stickDisc.style.transform = 'translate3d(' + (clampedX * 22).toFixed(1) + 'px, ' + (clampedY * 22).toFixed(1) + 'px, 0)';
+        }
+        if (stickAdcReadout) {
+          stickAdcReadout.textContent = 'VRx:' + state.stick.adcX + ' · VRy:' + state.stick.adcY;
+        }
+      }
+
+      function handleStickClick() {
+        var scr = normalizeScreen(state.screen);
+        pulseElementBounce(stickDisc);
+        if (state.locked || scr === 'POCKET_LOCK') {
+          state.lockFlashUntil = Date.now() + 900;
+          fireCanvasBounce('lock_squash', 6.8);
+          playEarcon('denied');
+          return;
+        }
+        if (scr === 'HOME_LAUNCHER') {
+          HomePlayer.activateLauncher(state, state.launcherIdx);
+          state.screen = normalizeScreen(state.screen);
+          emitScreenBounce(state.screen);
+          syncChromeControls();
+          playEarcon('confirm');
+        } else if (scr === 'LIBRARY_BROWSER') {
+          LibraryBrowser.activateSelectedRow(state, helpers);
+          state.screen = normalizeScreen(state.screen);
+          emitScreenBounce(state.screen);
+          syncChromeControls();
+        } else if (scr === 'VOICE_AI') {
+          VoiceAI.triggerPrimaryAction(state, helpers);
+        } else if (scr === 'SYSTEM_OUTPUT') {
+          toggleOutput();
+        } else {
+          HomePlayer.togglePlay(state);
+          playEarcon('tick');
+        }
+      }
+
+      if (stickWell) {
+        stickWell.addEventListener('pointerdown', function (e) {
+          e.preventDefault();
+          stickDrag.active = true;
+          stickDrag.pointerId = e.pointerId;
+          stickDrag.startX = e.clientX;
+          stickDrag.startY = e.clientY;
+          stickDrag.moved = false;
+          state.stick.pressed = true;
+          stickWell.setAttribute('data-dragging', 'true');
+          stickWell.setAttribute('data-pressed', 'true');
+          try { stickWell.setPointerCapture(e.pointerId); } catch (_e) {}
+        });
+
+        stickWell.addEventListener('pointermove', function (e) {
+          if (!stickDrag.active || e.pointerId !== stickDrag.pointerId) return;
+          var dx = e.clientX - stickDrag.startX;
+          var dy = e.clientY - stickDrag.startY;
+          if (Math.hypot(dx, dy) > 4) stickDrag.moved = true;
+          var rect = stickWell.getBoundingClientRect();
+          var maxR = Math.max(24, rect.width * 0.34);
+          var dist = Math.hypot(dx, dy);
+          if (dist > maxR) {
+            dx = (dx / dist) * maxR;
+            dy = (dy / dist) * maxR;
+          }
+          updateStickVisual(dx / maxR, dy / maxR);
+        });
+
+        function releaseStick(e) {
+          if (!stickDrag.active || (e && e.pointerId !== stickDrag.pointerId)) return;
+          var wasClick = !stickDrag.moved;
+          stickDrag.active = false;
+          stickDrag.pointerId = null;
+          state.stick.pressed = false;
+          stickWell.setAttribute('data-dragging', 'false');
+          stickWell.setAttribute('data-pressed', 'false');
+          updateStickVisual(0, 0);
+          if (wasClick) handleStickClick();
+        }
+
+        stickWell.addEventListener('pointerup', releaseStick);
+        stickWell.addEventListener('pointercancel', releaseStick);
+      }
+
+      // Directional nudge D-Pad buttons
+      var nudgeTimer = null;
+      document.querySelectorAll('.dpad-btn[data-nudge]').forEach(function (btn) {
+        var dir = btn.getAttribute('data-nudge');
+        btn.addEventListener('pointerdown', function (e) {
+          e.preventDefault();
+          pulseElementBounce(btn);
+          if (dir === 'click') {
+            state.stick.pressed = true;
+            if (stickWell) stickWell.setAttribute('data-pressed', 'true');
+            handleStickClick();
+            return;
+          }
+          var nx = dir === 'left' ? -0.82 : (dir === 'right' ? 0.82 : 0);
+          var ny = dir === 'up' ? -0.82 : (dir === 'down' ? 0.82 : 0);
+          updateStickVisual(nx, ny);
+          clearTimeout(nudgeTimer);
+        });
+        function endNudge() {
+          if (dir === 'click') {
+            state.stick.pressed = false;
+            if (stickWell) stickWell.setAttribute('data-pressed', 'false');
+            return;
+          }
+          clearTimeout(nudgeTimer);
+          nudgeTimer = setTimeout(function () { updateStickVisual(0, 0); }, 110);
+        }
+        btn.addEventListener('pointerup', endNudge);
+        btn.addEventListener('pointercancel', endNudge);
+      });
+
+      // -----------------------------------------------------------------------
+      // Direct Canvas Pointer Interactions (AMOLED Tap)
+      // -----------------------------------------------------------------------
+      var amoledCanvas = document.getElementById('fbox-amoled');
+      if (amoledCanvas) {
+        amoledCanvas.addEventListener('click', function (e) {
+          var rect = amoledCanvas.getBoundingClientRect();
+          var x = ((e.clientX - rect.left) / rect.width) * 536;
+          var y = ((e.clientY - rect.top) / rect.height) * 240;
+
+          var scr = normalizeScreen(state.screen);
+          if (state.locked || scr === 'POCKET_LOCK') {
+            state.lockFlashUntil = Date.now() + 900;
+            fireCanvasBounce('lock_squash', 6.8);
+            playEarcon('denied');
+            return;
+          }
+
+          if (scr === 'VOICE_AI') {
+            if (VoiceAI.handlePointerTap(x, y, state, helpers)) {
+              syncChromeControls();
+              return;
+            }
+          }
+
+          for (var i = canvasHitboxes.length - 1; i >= 0; i--) {
+            var b = canvasHitboxes[i];
+            if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) {
+              if (b.action === 'goHome') {
+                setScreen('HOME_LAUNCHER');
+                playEarcon('tick');
+              }
+              else if (b.action === 'openSystem') {
+                setScreen('SYSTEM_OUTPUT');
+                playEarcon('tick');
+              }
+              else if (b.action === 'openNowPlaying') {
+                setScreen('NOW_PLAYING');
+                playEarcon('tick');
+              }
+              else if (b.action === 'toggleOutput') toggleOutput();
+              else if (b.action === 'setOutputWired') toggleOutput(false);
+              else if (b.action === 'setOutputBt') toggleOutput(true);
+              else if (b.action === 'togglePlay') { HomePlayer.togglePlay(state); playEarcon('tick'); }
+              else if (b.action === 'cycleSpeed') {
+                var sp = HomePlayer.cycleSpeed(state);
+                triggerToast('Speed ' + sp + 'x', '#EBD15E', 1200);
+                playEarcon('tick');
+              }
+              else if (b.action === 'seekRel') {
+                HomePlayer.seekRelative(state, b.delta || 0);
+                triggerToast((b.delta > 0 ? '+' : '') + b.delta + 's', '#E3A84B', 1000);
+                playEarcon('tick');
+              }
+              else if (b.action === 'toggleBookmark') {
+                HomePlayer.toggleBookmark(state);
+                fireCanvasBounce('np_mark', 7.0);
+                fireCanvasBounce('np_disc', 4.4);
+                playEarcon('bookmark');
+              }
+              else if (b.action === 'scrubTo') {
+                var ratio = Math.max(0, Math.min(1, (x - b.x) / b.w));
+                state.positionSec = Math.round(ratio * (state.durationSec || 1));
+                fireCanvasBounce('np_playhead', 6.2);
+                fireCanvasBounce('np_disc', 4.0);
+                playEarcon('tick');
+              }
+              else if (b.action === 'activateLauncher') {
+                HomePlayer.activateLauncher(state, b.idx);
+                state.screen = normalizeScreen(state.screen);
+                emitScreenBounce(state.screen);
+                syncChromeControls();
+                playEarcon('confirm');
+              }
+              else if (b.action === 'switchLibTab') {
+                LibraryBrowser.switchTab(state, b.tabIdx, true);
+                playEarcon('tick');
+              }
+              else if (b.action === 'activateLibRow') {
+                state.libCursor = b.rowIdx;
+                LibraryBrowser.activateSelectedRow(state, helpers);
+                state.screen = normalizeScreen(state.screen);
+                emitScreenBounce(state.screen);
+                syncChromeControls();
+              }
+              return;
+            }
+          }
+        });
+      }
+
+      // -----------------------------------------------------------------------
+      // Right Column Workbench Controls & Sliders
+      // -----------------------------------------------------------------------
+      document.querySelectorAll('.nav-btn[data-screen]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          pulseElementBounce(btn);
+          setScreen(btn.getAttribute('data-screen'));
+          playEarcon('tick');
+        });
+      });
+
+      document.getElementById('btn-output-toggle').addEventListener('click', function (e) {
+        pulseElementBounce(e.currentTarget);
+        toggleOutput();
+      });
+
+      document.getElementById('btn-earcons').addEventListener('click', function (e) {
+        earconsOn = !earconsOn;
+        e.currentTarget.setAttribute('aria-pressed', String(earconsOn));
+        e.currentTarget.textContent = earconsOn ? 'Earcons: On' : 'Earcons: Off';
+        pulseElementBounce(e.currentTarget);
+        if (earconsOn) playEarcon('confirm');
+      });
+
+      document.getElementById('btn-pocket-lock').addEventListener('click', function (e) {
+        pulseElementBounce(e.currentTarget);
+        togglePocketLock();
+      });
+
+      document.getElementById('btn-flip-voice-mode').addEventListener('click', function (e) {
+        pulseElementBounce(e.currentTarget);
+        setScreen('VOICE_AI');
+        VoiceAI.toggleSubMode(state, helpers);
+        syncChromeControls();
+      });
+
+      document.getElementById('btn-test-wav-note').addEventListener('click', function (e) {
+        pulseElementBounce(e.currentTarget);
+        setScreen('VOICE_AI');
+        state.voiceSubMode = 'VOICE_NOTE';
+        VoiceAI.startPtt(state, helpers);
+        state.pttHoldMs = 1400;
+        VoiceAI.finishPttRelease(state, helpers);
+        playEarcon('bookmark');
+        syncChromeControls();
+      });
+
+      // Populate Voice Prompt Preset Buttons
+      var presetsHost = document.getElementById('prompt-presets-list');
+      if (presetsHost && VoiceAI && Array.isArray(VoiceAI.PROMPT_PRESETS)) {
+        VoiceAI.PROMPT_PRESETS.forEach(function (p, idx) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'prompt-btn';
+          btn.innerHTML = '<span>&ldquo;' + p.prompt + '&rdquo;</span><span class="mono" style="font-size:0.7rem;color:var(--primary);">Run</span>';
+          btn.addEventListener('click', function () {
+            setScreen('VOICE_AI');
+            state.voiceSubMode = 'GEMINI';
+            VoiceAI.triggerPresetPrompt(state, idx, helpers);
+            playEarcon('ptt_send');
+            syncChromeControls();
+          });
+          presetsHost.appendChild(btn);
+        });
+      }
+
+      document.getElementById('custom-prompt-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var inp = document.getElementById('custom-prompt-input');
+        var val = (inp.value || '').trim();
+        if (!val) return;
+        setScreen('VOICE_AI');
+        state.voiceSubMode = 'GEMINI';
+        VoiceAI.handleCustomPrompt(state, val, helpers);
+        playEarcon('ptt_send');
+        inp.value = '';
+        syncChromeControls();
+      });
+
+      // Native Sliders
+      var scaleSlider = document.getElementById('slider-scale');
+      var volumeSlider = document.getElementById('slider-volume');
+      var batterySlider = document.getElementById('slider-battery');
+
+      [scaleSlider, volumeSlider, batterySlider].forEach(syncSliderValue);
+
+      if (scaleSlider) {
+        scaleSlider.addEventListener('input', function () {
+          syncSliderValue(scaleSlider);
+          var mult = Number(scaleSlider.value) / 100;
+          document.getElementById('val-scale').textContent = mult.toFixed(2) + '×';
+          document.getElementById('fbox-chassis').style.setProperty('--chassis-scale', String(mult));
+        });
+      }
+
+      if (volumeSlider) {
+        volumeSlider.addEventListener('input', function () {
+          syncSliderValue(volumeSlider);
+          state.volume = Number(volumeSlider.value);
+          document.getElementById('val-volume').textContent = state.volume + '%';
+        });
+      }
+
+      if (batterySlider) {
+        batterySlider.addEventListener('input', function () {
+          syncSliderValue(batterySlider);
+          state.batteryPct = Number(batterySlider.value);
+          state.batteryVolts = Number((3.35 + (state.batteryPct / 100) * 0.85).toFixed(2));
+          document.getElementById('val-battery').textContent = state.batteryPct + '% (' + state.batteryVolts.toFixed(2) + 'V)';
+        });
+      }
+
+      // -----------------------------------------------------------------------
+      // Keyboard Shortcuts
+      // -----------------------------------------------------------------------
+      var keyMap = { '1': 'B1', '2': 'B2', '3': 'B3', '4': 'B4', '5': 'B5', '6': 'B6', '7': 'B7', '8': 'B8' };
+      var activeStickKeys = new Set();
+
+      function syncKeyboardStick() {
+        if (stickDrag.active) return;
+        var kx = (activeStickKeys.has('right') ? 0.88 : 0) - (activeStickKeys.has('left') ? 0.88 : 0);
+        var ky = (activeStickKeys.has('down') ? 0.88 : 0) - (activeStickKeys.has('up') ? 0.88 : 0);
+        updateStickVisual(kx, ky);
+      }
+
+      window.addEventListener('keydown', function (e) {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+        var k = e.key;
+        if (keyMap[k]) {
+          if (!e.repeat) beginKeyPress(keyMap[k]);
+          return;
+        }
+        if (k === 'v' || k === 'V') {
+          if (!e.repeat) beginKeyPress('B8');
+          return;
+        }
+        if (k === ' ') {
+          e.preventDefault();
+          if (!e.repeat) beginKeyPress('B7');
+          return;
+        }
+        if (k === 'l' || k === 'L') {
+          if (!e.repeat) togglePocketLock();
+          return;
+        }
+        if (k === 'Enter') {
+          if (!e.repeat) {
+            state.stick.pressed = true;
+            if (stickWell) stickWell.setAttribute('data-pressed', 'true');
+            handleStickClick();
+          }
+          return;
+        }
+        var dirMap = {
+          ArrowLeft: 'left', a: 'left', A: 'left',
+          ArrowRight: 'right', d: 'right', D: 'right',
+          ArrowUp: 'up', w: 'up', W: 'up',
+          ArrowDown: 'down', s: 'down', S: 'down'
+        };
+        if (dirMap[k]) {
+          e.preventDefault();
+          activeStickKeys.add(dirMap[k]);
+          syncKeyboardStick();
+        }
+      });
+
+      window.addEventListener('keyup', function (e) {
+        var k = e.key;
+        if (keyMap[k]) { endKeyPress(keyMap[k]); return; }
+        if (k === 'v' || k === 'V') { endKeyPress('B8'); return; }
+        if (k === ' ') { endKeyPress('B7'); return; }
+        if (k === 'Enter') {
+          state.stick.pressed = false;
+          if (stickWell) stickWell.setAttribute('data-pressed', 'false');
+          return;
+        }
+        var dirMap = {
+          ArrowLeft: 'left', a: 'left', A: 'left',
+          ArrowRight: 'right', d: 'right', D: 'right',
+          ArrowUp: 'up', w: 'up', W: 'up',
+          ArrowDown: 'down', s: 'down', S: 'down'
+        };
+        if (dirMap[k]) {
+          activeStickKeys.delete(dirMap[k]);
+          syncKeyboardStick();
+        }
+      });
+
+      // -----------------------------------------------------------------------
+      // Main 60fps AMOLED Render & Physics Loop
+      // -----------------------------------------------------------------------
+      var ctx = amoledCanvas ? amoledCanvas.getContext('2d') : null;
+      var lastTs = performance.now();
+      var playbackAccum = 0;
+
+      function frame(ts) {
+        var dtMs = Math.min(80, Math.max(4, ts - lastTs));
+        var dtSec = dtMs / 1000;
+        lastTs = ts;
+
+        state.phase += dtSec * 3.0;
+
+        if (state.playing && !state.locked && state.pttPhase !== 'LISTENING') {
+          var spd = HomePlayer.SPEEDS[state.speedIdx] || 1.0;
+          playbackAccum += dtSec * spd;
+          if (playbackAccum >= 1) {
+            var whole = Math.floor(playbackAccum);
+            playbackAccum -= whole;
+            state.positionSec = Math.min(state.durationSec || 3600, state.positionSec + whole);
+            if (state.positionSec >= state.durationSec) {
+              HomePlayer.nextItem(state);
+            }
+          }
+        }
+
+        if (!state.locked && normalizeScreen(state.screen) !== 'POCKET_LOCK') {
+          LibraryBrowser.updateStickPhysics(state, dtSec, helpers);
+          VoiceAI.tickVoiceAI(state, dtMs);
+        }
+
+        if (ctx) {
+          canvasHitboxes.length = 0;
+          var scr = normalizeScreen(state.screen);
+          if (state.locked || scr === 'POCKET_LOCK') {
+            HomePlayer.renderPocketLock(ctx, state, helpers);
+          } else if (scr === 'HOME_LAUNCHER') {
+            HomePlayer.renderHomeLauncher(ctx, state, helpers);
+          } else if (scr === 'LIBRARY_BROWSER') {
+            LibraryBrowser.renderLibraryBrowser(ctx, state, helpers);
+          } else if (scr === 'VOICE_AI') {
+            VoiceAI.renderVoiceAI(ctx, state, helpers);
+          } else if (scr === 'SYSTEM_OUTPUT') {
+            HomePlayer.renderSystemOutputModal(ctx, state, helpers);
+          } else {
+            HomePlayer.renderNowPlaying(ctx, state, helpers);
+          }
+        }
+
+        syncChromeControls();
+        requestAnimationFrame(frame);
+      }
+
+      syncChromeControls();
+      requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html>
