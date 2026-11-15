@@ -286,13 +286,17 @@
           </span>
         </div>
         <p class="text-xs text-[var(--muted-foreground)] mt-1">
-          Exact 1:1 CAD preview built for your finalized 9-module build: <strong>LILYGO T-Display-S3 AMOLED</strong>, <strong>GY-PCM5102</strong> DAC + tucked <strong>Acxico KCX_BT_EMITTER</strong>, <strong>5V 2A Boost</strong>, <strong>INMP441</strong> behind a <code>Ø9.6 mm</code> 21-dot crosshair grille, <strong>Mini 3.3V MicroSD</strong>, <strong>503759 LiPo</strong>, <strong>KY-023</strong> with a compact <code>Ø16.0 mm</code> coral concave thumb-disc in a <code>Ø25.0 mm</code> recessed basin, and <code>2×4</code> tactile keypads.
+          Exact 1:1 CAD preview with pocket-friendly <code>R = 5.4 mm</code> rounded corners for your finalized 9-module build: <strong>LILYGO T-Display-S3 AMOLED</strong>, <strong>GY-PCM5102</strong> DAC + tucked <strong>Acxico KCX_BT_EMITTER</strong>, internal <strong>5V 2A Boost</strong>, <strong>INMP441</strong> behind a <code>Ø9.6 mm</code> 21-dot crosshair grille, <strong>Mini 3.3V MicroSD</strong>, <strong>503759 LiPo</strong>, <strong>KY-023</strong> with a compact <code>Ø16.0 mm</code> coral concave thumb-disc in a <code>Ø25.0 mm</code> recessed basin, and <code>2×4</code> tactile keypads.
         </p>
       </div>
       <div class="flex flex-wrap items-center gap-2 text-xs">
         <span class="px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] font-mono">
-          72.0 × 98.0 × 18.0 mm (127.0 cm³ · ~102 g)
+          72.0 × 98.0 × 18.0 mm · R5.4 mm (~126.5 cm³ · ~102 g)
         </span>
+        <nav aria-label="Layout Orientation" class="inline-flex rounded-lg border border-[var(--border)] bg-[var(--card)] p-0.5 gap-1">
+          <span class="px-2.5 py-1 rounded-md font-medium bg-[var(--primary)] text-[var(--primary-foreground)]">Portrait (Current)</span>
+          <a href="p5_horizontal_assembled_preview.html" class="px-2.5 py-1 rounded-md font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--background)] transition-colors no-underline">Horizontal Layout →</a>
+        </nav>
       </div>
     </header>
 
@@ -918,6 +922,41 @@
         return { verts, faces, color, edgeColor, alpha: alpha ?? 1, tag };
       }
 
+      function cadCornerSector(cadCx, cadCy, r, q, z0, z1, segs, zOff, color, edgeColor, alpha, tag) {
+        // q: 'tr' [0..90], 'tl' [90..180], 'bl' [180..270], 'br' [270..360] in CAD XY
+        const qAngles = { tr: [0, Math.PI * 0.5], tl: [Math.PI * 0.5, Math.PI], bl: [Math.PI, Math.PI * 1.5], br: [Math.PI * 1.5, Math.PI * 2] };
+        const [a0, a1] = qAngles[q];
+        const cx = cadCx - 36.0;
+        const cy = 49.0 - cadCy;
+        const cz0 = z0 - 9.0 + zOff;
+        const cz1 = z1 - 9.0 + zOff;
+        const n = segs + 2;
+        const verts = [];
+        verts.push([cx, cy, cz0]);
+        for (let i = 0; i <= segs; i++) {
+          const a = a0 + (i / segs) * (a1 - a0);
+          verts.push([cx + r * Math.cos(a), cy - r * Math.sin(a), cz0]);
+        }
+        verts.push([cx, cy, cz1]);
+        for (let i = 0; i <= segs; i++) {
+          const a = a0 + (i / segs) * (a1 - a0);
+          verts.push([cx + r * Math.cos(a), cy - r * Math.sin(a), cz1]);
+        }
+        const faces = [];
+        const bot = [0];
+        for (let i = 1; i <= segs + 1; i++) bot.push(i);
+        bot.push(-0.18);
+        const top = [n];
+        for (let i = segs + 1; i >= 1; i--) top.push(n + i);
+        top.push(0.10);
+        faces.push(bot, top);
+        for (let i = 1; i <= segs; i++) {
+          const aMid = a0 + ((i - 0.5) / segs) * (a1 - a0);
+          faces.push([i + 1, i, n + i, n + i + 1, Math.sin(aMid) * 0.14]);
+        }
+        return { verts, faces, color, edgeColor, alpha: alpha ?? 1, tag };
+      }
+
       function shadeHex(hex, delta) {
         if (!hex || hex[0] !== '#' || hex.length !== 7) return hex;
         const clamp = v => Math.max(0, Math.min(255, Math.round(v)));
@@ -957,25 +996,36 @@
           open:        null
         }[shellMode];
 
-        // 1. Bottom Tray (72 x 98 x 16.2 mm) + Port Walls + Cradles
+        // 1. Bottom Tray (72 x 98 x 16.2 mm, R=5.4mm rounded corners) + Port Walls + Cradles
+        const p5Corners = [
+          [5.4, 5.4, 'bl', 3.6, 3.6],
+          [66.6, 5.4, 'br', 68.4, 3.6],
+          [66.6, 92.6, 'tr', 68.4, 94.4],
+          [5.4, 92.6, 'tl', 3.6, 94.4]
+        ];
         if (shellCfg) {
           const s = shellCfg;
-          // Base plate & 4 walls with left AMOLED USB-C, right MicroSD, top 3.5mm & Boost USB-C cutouts
-          boxes.push(cadBox(0, 72, 0, 98, 0, 1.8, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(0, 1.8, 0, 54.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(0, 1.8, 64.4, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(70.2, 72.0, 0, 75.5, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(70.2, 72.0, 90.0, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(1.8, 70.2, 0, 1.8, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(1.8, 11.0, 96.2, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(17.5, 70.2, 96.2, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          // Base plate (with R=5.4mm rounded corners) & 4 walls (left AMOLED USB-C, right MicroSD, top 3.5mm TRS only)
+          boxes.push(cadBox(5.4, 66.6, 0, 98, 0, 1.8, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(0, 5.4, 5.4, 92.6, 0, 1.8, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(66.6, 72.0, 5.4, 92.6, 0, 1.8, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(0, 1.8, 5.4, 54.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(0, 1.8, 64.4, 92.6, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(70.2, 72.0, 5.4, 75.5, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(70.2, 72.0, 90.0, 92.6, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(5.4, 66.6, 0, 1.8, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(5.4, 11.0, 96.2, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(17.5, 66.6, 96.2, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          for (const [cx, cy, q] of p5Corners) {
+            boxes.push(cadCornerSector(cx, cy, 5.4, q, 0.0, 16.2, 10, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          }
         }
 
         if (uiState.showCradles) {
           const cCol = '#5c7c9e', cEdg = '#93c5fd', cAlp = shellMode === 'solid' ? 0.98 : 0.86;
-          // 4x Hollow M2 Bosses
-          for (const [bx, by] of [[1.8, 1.8], [66.6, 1.8], [1.8, 92.6], [66.6, 92.6]]) {
-            boxes.push(cadBox(bx, bx + 3.6, by, by + 3.6, 1.8, 16.2, zTray, cCol, cEdg, cAlp, 'cradle'));
+          // 4x Circular M2 Pilot Sleeves inside R=5.4mm Corner Pillars
+          for (const [, , , sx, sy] of p5Corners) {
+            boxes.push(cadCyl(sx, sy, 1.8, 16.2, 1.7, 14, zTray, cCol, cEdg, cAlp, 'cradle'));
           }
           // LiPo rails, Keypad 3-rails, split AMOLED shelves, Top bay cradles
           boxes.push(cadBox(5.5, 6.4, 38.0, 75.0, 1.8, 7.0, zTray, cCol, cEdg, cAlp, 'cradle'));
@@ -1047,17 +1097,22 @@
           boxes.push(cadBox(cx - 4.1, cx + 4.1, 9.4, 17.6, 16.2, 19.0, zCaps, botCols[i], botEdges[i], 1, 'cap_bot_' + i));
         });
 
-        // 6. Top Faceplate Shell (Z: 16.2..18.0 + Ø25mm Well Ring + INMP441 Ring)
+        // 6. Top Faceplate Shell (Z: 16.2..18.0, R=5.4mm rounded corners + Ø25mm Well Ring + INMP441 Ring)
         if (shellCfg) {
           const s = shellCfg;
-          boxes.push(cadBox(0, 72, 71.0, 98.0, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(0, 72.0, 71.0, 92.6, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(5.4, 66.6, 92.6, 98.0, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           boxes.push(cadBox(0, 8.5, 46.5, 71.0, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           boxes.push(cadBox(58.5, 72.0, 46.5, 71.0, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           boxes.push(cadBox(0, 72.0, 37.5, 46.5, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          boxes.push(cadBox(0, 5.0, 0, 37.5, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          boxes.push(cadBox(30.0, 72.0, 0, 9.1, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(0, 5.0, 5.4, 37.5, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(30.0, 66.6, 0, 9.1, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(66.6, 72.0, 5.4, 9.1, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           boxes.push(cadBox(30.0, 72.0, 17.9, 25.6, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           boxes.push(cadBox(30.0, 72.0, 34.4, 37.5, 16.2, 18.0, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          for (const [cx, cy, q] of p5Corners) {
+            boxes.push(cadCornerSector(cx, cy, 5.4, q, 16.2, 18.0, 10, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          }
           // Ø25mm recessed thumbstick well skirt + Ø9.6mm mic well frame
           boxes.push(cadCyl(17.5, 21.8, 14.8, 18.0, 13.8, 16, zLid, s.fill, s.edge, Math.min(0.45, s.alpha + 0.08), 'stick_well'));
           boxes.push(cadCyl(45.0, 86.5, 14.6, 18.0, 5.8, 14, zLid, s.fill, s.edge, Math.min(0.45, s.alpha + 0.08), 'mic_collar'));

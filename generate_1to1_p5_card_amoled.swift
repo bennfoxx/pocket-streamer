@@ -122,6 +122,70 @@ class STLMesh {
         }
     }
 
+    func addCornerSector(cx: Double, cy: Double, rCorner: Double, quadrant: Int,
+                         holeX: Double, holeY: Double, rHole: Double,
+                         z0: Double, z1: Double, arcSegs: Int = 24, edgeSegs: Int = 8) {
+        let fz0 = Float(min(z0, z1)), fz1 = Float(max(z0, z1))
+        let a0 = (1.0 + Double(quadrant) * 0.5) * .pi
+        let a1 = a0 + 0.5 * .pi
+        let ptEnd = SIMD2<Double>(cx + rCorner * cos(a0), cy + rCorner * sin(a0))
+        let ptStart = SIMD2<Double>(cx + rCorner * cos(a1), cy + rCorner * sin(a1))
+        let cornerPt = SIMD2<Double>(cx, cy)
+
+        var outerPts: [SIMD2<Double>] = []
+        for k in 0..<edgeSegs {
+            let t = Double(k) / Double(edgeSegs)
+            outerPts.append(ptStart * (1.0 - t) + cornerPt * t)
+        }
+        for k in 0..<edgeSegs {
+            let t = Double(k) / Double(edgeSegs)
+            outerPts.append(cornerPt * (1.0 - t) + ptEnd * t)
+        }
+        for k in 0..<arcSegs {
+            let a = a0 + (a1 - a0) * Double(k) / Double(arcSegs)
+            outerPts.append(SIMD2<Double>(cx + rCorner * cos(a), cy + rCorner * sin(a)))
+        }
+
+        let n = outerPts.count
+        if rHole <= 0.001 {
+            let cBot = SIMD3<Float>(Float(holeX), Float(holeY), fz0)
+            let cTop = SIMD3<Float>(Float(holeX), Float(holeY), fz1)
+            for i in 0..<n {
+                let p0 = outerPts[i]
+                let p1 = outerPts[(i + 1) % n]
+                let b0 = SIMD3<Float>(Float(p0.x), Float(p0.y), fz0)
+                let b1 = SIMD3<Float>(Float(p1.x), Float(p1.y), fz0)
+                let t0 = SIMD3<Float>(Float(p0.x), Float(p0.y), fz1)
+                let t1 = SIMD3<Float>(Float(p1.x), Float(p1.y), fz1)
+                tris.append(Tri(v1: cBot, v2: b1, v3: b0))
+                tris.append(Tri(v1: cTop, v2: t0, v3: t1))
+                addQuad(b0, b1, t1, t0)
+            }
+        } else {
+            let innerPts: [SIMD2<Double>] = outerPts.map { p in
+                let ang = atan2(p.y - holeY, p.x - holeX)
+                return SIMD2<Double>(holeX + rHole * cos(ang), holeY + rHole * sin(ang))
+            }
+            for i in 0..<n {
+                let j = (i + 1) % n
+                let pi0 = innerPts[i], pi1 = innerPts[j]
+                let po0 = outerPts[i], po1 = outerPts[j]
+                let bi0 = SIMD3<Float>(Float(pi0.x), Float(pi0.y), fz0)
+                let bi1 = SIMD3<Float>(Float(pi1.x), Float(pi1.y), fz0)
+                let bo0 = SIMD3<Float>(Float(po0.x), Float(po0.y), fz0)
+                let bo1 = SIMD3<Float>(Float(po1.x), Float(po1.y), fz0)
+                let ti0 = SIMD3<Float>(Float(pi0.x), Float(pi0.y), fz1)
+                let ti1 = SIMD3<Float>(Float(pi1.x), Float(pi1.y), fz1)
+                let to0 = SIMD3<Float>(Float(po0.x), Float(po0.y), fz1)
+                let to1 = SIMD3<Float>(Float(po1.x), Float(po1.y), fz1)
+                addQuad(bi0, bi1, bo1, bo0)
+                addQuad(ti0, to0, to1, ti1)
+                addQuad(bo0, bo1, to1, to0)
+                addQuad(bi1, bi0, ti0, ti1)
+            }
+        }
+    }
+
     func mirrorYInPlace(yMax: Double) {
         let fy = Float(yMax)
         tris = tris.map { t in
@@ -229,6 +293,49 @@ func addCylY(_ parent: SCNNode, _ name: String,
     return node
 }
 
+@discardableResult
+func addSTLMeshNode(_ parent: SCNNode, _ name: String, _ mesh: STLMesh,
+                    _ mat: SCNMaterial, renderOrder: Int = 0) -> SCNNode {
+    var vertices: [SCNVector3] = []
+    var normals: [SCNVector3] = []
+    var indices: [Int32] = []
+    vertices.reserveCapacity(mesh.tris.count * 3)
+    normals.reserveCapacity(mesh.tris.count * 3)
+    indices.reserveCapacity(mesh.tris.count * 3)
+    for t in mesh.tris {
+        let base = Int32(vertices.count)
+        let e1 = t.v2 - t.v1
+        let e2 = t.v3 - t.v1
+        let nrm = simd_normalize(simd_cross(e1, e2))
+        let sn = SCNVector3(CGFloat(nrm.x.isNaN ? 0 : nrm.x),
+                            CGFloat(nrm.z.isNaN ? 1 : nrm.z),
+                            CGFloat(nrm.y.isNaN ? 0 : -nrm.y))
+        for v in [t.v1, t.v2, t.v3] {
+            vertices.append(SCNVector3(CGFloat(v.x), CGFloat(v.z), CGFloat(-v.y)))
+            normals.append(sn)
+        }
+        indices.append(contentsOf: [base, base + 1, base + 2])
+    }
+    let vSrc = SCNGeometrySource(vertices: vertices)
+    let nSrc = SCNGeometrySource(normals: normals)
+    let elem = SCNGeometryElement(indices: indices, primitiveType: .triangles)
+    let geom = SCNGeometry(sources: [vSrc, nSrc], elements: [elem])
+    geom.materials = [mat]
+    let node = SCNNode(geometry: geom)
+    node.name = name
+    node.renderingOrder = renderOrder
+    parent.addChildNode(node)
+    return node
+}
+
+let p5CornerRadius = 5.4
+let p5CornerSpecs: [(q: Int, cx: Double, cy: Double, hx: Double, hy: Double)] = [
+    (0, 5.4,  5.4,  3.6,  3.6),   // Bottom-Left
+    (1, 66.6, 5.4,  68.4, 3.6),   // Bottom-Right
+    (2, 66.6, 92.6, 68.4, 94.4),  // Top-Right
+    (3, 5.4,  92.6, 3.6,  94.4)   // Top-Left
+]
+
 // MARK: - Materials
 func makeMat(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ a: CGFloat = 1.0, metal: CGFloat = 0.1, rough: CGFloat = 0.45) -> SCNMaterial {
     let m = SCNMaterial()
@@ -271,41 +378,41 @@ let matGridLine = makeMat(0.32, 0.36, 0.42, 1.0, metal: 0.05, rough: 0.60)
 func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot: Double, dzLid: Double, renderOrder: Int) -> (SCNNode, SCNNode) {
     let tray = SCNNode()
     tray.name = "p5_bottom_tray"
-    // Back plate (72.0 x 98.0 x 1.8 mm)
-    addBox(tray, "back_plate", 0, 72.0, 0, 98.0, 0 + dzShellBot, 1.8 + dzShellBot, shellMat, chamfer: 0.4, renderOrder: renderOrder)
+    // Back plate partitioned flush inside R=5.4 mm rounded corners (72.0 x 98.0 x 1.8 mm)
+    addBox(tray, "back_center", 5.4, 66.6, 0.0, 98.0, 0 + dzShellBot, 1.8 + dzShellBot, shellMat, renderOrder: renderOrder)
+    addBox(tray, "back_left", 0.0, 5.4, 5.4, 92.6, 0 + dzShellBot, 1.8 + dzShellBot, shellMat, renderOrder: renderOrder)
+    addBox(tray, "back_right", 66.6, 72.0, 5.4, 92.6, 0 + dzShellBot, 1.8 + dzShellBot, shellMat, renderOrder: renderOrder)
 
-    // Left Wall (X: 0..1.8) with AMOLED USB-C Cutout (Y: 54.0..64.4, Z: 11.6..15.6)
-    addBox(tray, "wall_left_bot", 0, 1.8, 0, 54.0, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
-    addBox(tray, "wall_left_top", 0, 1.8, 64.4, 98.0, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
+    // Left Wall (X: 0..1.8, Y: 5.4..92.6) with AMOLED USB-C Cutout (Y: 54.0..64.4, Z: 11.6..15.6)
+    addBox(tray, "wall_left_bot", 0, 1.8, 5.4, 54.0, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
+    addBox(tray, "wall_left_top", 0, 1.8, 64.4, 92.6, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
     addBox(tray, "wall_left_under_usbc", 0, 1.8, 54.0, 64.4, 1.8 + dzShellBot, 11.6 + dzShellBot, shellMat, renderOrder: renderOrder)
     addBox(tray, "wall_left_over_usbc", 0, 1.8, 54.0, 64.4, 15.6 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
 
-    // Right Wall (X: 70.2..72.0) with MicroSD Push-Push Slot Cutout (Y: 75.5..90.0, Z: 10.6..14.2)
-    addBox(tray, "wall_right_bot", 70.2, 72.0, 0, 75.5, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
-    addBox(tray, "wall_right_top", 70.2, 72.0, 90.0, 98.0, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
+    // Right Wall (X: 70.2..72.0, Y: 5.4..92.6) with MicroSD Push-Push Slot Cutout (Y: 75.5..90.0, Z: 10.6..14.2)
+    addBox(tray, "wall_right_bot", 70.2, 72.0, 5.4, 75.5, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
+    addBox(tray, "wall_right_top", 70.2, 72.0, 90.0, 92.6, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
     addBox(tray, "wall_right_under_sd", 70.2, 72.0, 75.5, 90.0, 1.8 + dzShellBot, 10.6 + dzShellBot, shellMat, renderOrder: renderOrder)
     addBox(tray, "wall_right_over_sd", 70.2, 72.0, 75.5, 90.0, 14.2 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
 
-    // Bottom Wall (Y: 0..1.8)
-    addBox(tray, "wall_bot", 1.8, 70.2, 0, 1.8, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
+    // Bottom Wall (X: 5.4..66.6, Y: 0..1.8)
+    addBox(tray, "wall_bot", 5.4, 66.6, 0, 1.8, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
 
-    // Top Wall (Y: 96.2..98.0) with:
-    //  - 3.5mm TRS Jack Opening (X: 11.0..17.5, Z: 10.0..16.2)
-    //  - Single external USB-C port only (Left Wall AMOLED); Boost USB-C stays 100% internal & Top Wall is sealed solid!
-    addBox(tray, "wall_top_left", 1.8, 11.0, 96.2, 98.0, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
+    // Top Wall (X: 5.4..66.6, Y: 96.2..98.0) with 3.5mm TRS Jack Opening (X: 11.0..17.5, Z: 10.0..16.2); Boost USB-C sealed solid!
+    addBox(tray, "wall_top_left", 5.4, 11.0, 96.2, 98.0, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
     addBox(tray, "wall_top_under_trs", 11.0, 17.5, 96.2, 98.0, 1.8 + dzShellBot, 10.0 + dzShellBot, shellMat, renderOrder: renderOrder)
-    addBox(tray, "wall_top_right", 17.5, 70.2, 96.2, 98.0, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
+    addBox(tray, "wall_top_right", 17.5, 66.6, 96.2, 98.0, 1.8 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
 
-    // 4x Hollow M2 Corner Screw Bosses (3.6 x 3.6 mm with 2.0 x 2.0 mm pilot bore above Z=4.2)
-    for (idx, (bx0, by0)) in [(1.8, 1.8), (66.6, 1.8), (1.8, 92.6), (66.6, 92.6)].enumerated() {
-        let bx1 = bx0 + 3.6, by1 = by0 + 3.6
-        addBox(tray, "boss_\(idx)_base", bx0, bx1, by0, by1, 1.8 + dzShellBot, 4.2 + dzShellBot, shellMat, renderOrder: renderOrder)
-        addBox(tray, "boss_\(idx)_wl", bx0, bx0 + 0.8, by0, by1, 4.2 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
-        addBox(tray, "boss_\(idx)_wr", bx1 - 0.8, bx1, by0, by1, 4.2 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
-        addBox(tray, "boss_\(idx)_wb", bx0 + 0.8, bx1 - 0.8, by0, by0 + 0.8, 4.2 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
-        addBox(tray, "boss_\(idx)_wt", bx0 + 0.8, bx1 - 0.8, by1 - 0.8, by1, 4.2 + dzShellBot, 16.2 + dzShellBot, shellMat, renderOrder: renderOrder)
-        addBox(tray, "boss_\(idx)_hole", bx0 + 0.85, bx1 - 0.85, by0 + 0.85, by1 - 0.85, 4.2 + dzShellBot, 16.22 + dzShellBot, matPortCavity, renderOrder: renderOrder)
+    // 4x Monolithic R=5.4mm Rounded Corner Pillars w/ Ø2.0mm M2 Pilot Bores above Z=4.2
+    let trayCornerMesh = STLMesh()
+    for c in p5CornerSpecs {
+        trayCornerMesh.addCornerSector(cx: c.cx, cy: c.cy, rCorner: p5CornerRadius, quadrant: c.q,
+                                       holeX: c.hx, holeY: c.hy, rHole: 0.0, z0: 0.0 + dzShellBot, z1: 4.2 + dzShellBot)
+        trayCornerMesh.addCornerSector(cx: c.cx, cy: c.cy, rCorner: p5CornerRadius, quadrant: c.q,
+                                       holeX: c.hx, holeY: c.hy, rHole: 1.0, z0: 4.2 + dzShellBot, z1: 16.2 + dzShellBot)
+        addCylZ(tray, "boss_hole_\(c.q)", c.hx, c.hy, 4.2 + dzShellBot, 16.21 + dzShellBot, 0.98, matPortCavity, radialSegs: 24)
     }
+    addSTLMeshNode(tray, "tray_rounded_corners", trayCornerMesh, shellMat, renderOrder: renderOrder)
 
     // Internal Molded PCB Cradles, Support Rails & LiPo Retention
     // a. LiPo lateral rails (Z: 1.8..7.0) flush under shield_rib (Z: 7.0..7.8)
@@ -339,12 +446,21 @@ func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot:
     // g. V713 5V 2A Boost Retention Stop-Lip (Z: 1.8..4.5 mm, Y: 75.3..75.7)
     addBox(tray, "cradle_boost_stop", 31.0, 54.0, 75.3, 75.7, 1.8 + dzShellBot, 4.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
 
-    // Complete Segmented Front Faceplate Lid (Z: 16.2..18.0 mm)
+    // Complete Segmented Front Faceplate Lid (Z: 16.2..18.0 mm) w/ R=5.4mm Rounded Corners
     let lid = SCNNode()
     lid.name = "p5_top_faceplate"
-    // 1. Upper section (Y: 71.0..98.0) with Ø9.6mm 21-dot + bisected circular mic grille at (45.0, 86.5) + INMP441 collar
-    addBox(lid, "lid_up_left", 0, 40.0, 71.0, 98.0, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
-    addBox(lid, "lid_up_right", 50.0, 72.0, 71.0, 98.0, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
+    let lidCornerMesh = STLMesh()
+    for c in p5CornerSpecs {
+        lidCornerMesh.addCornerSector(cx: c.cx, cy: c.cy, rCorner: p5CornerRadius, quadrant: c.q,
+                                      holeX: c.hx, holeY: c.hy, rHole: 1.1, z0: 16.2 + dzLid, z1: 18.0 + dzLid)
+    }
+    addSTLMeshNode(lid, "lid_rounded_corners", lidCornerMesh, shellMat, renderOrder: renderOrder)
+
+    // 1. Upper section (Y: 71.0..98.0) trimmed around TL & TR R=5.4mm corners + Ø9.6mm 21-dot mic grille at (45.0, 86.5)
+    addBox(lid, "lid_up_left_l", 0.0, 5.4, 71.0, 92.6, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
+    addBox(lid, "lid_up_left_main", 5.4, 40.0, 71.0, 98.0, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
+    addBox(lid, "lid_up_right_main", 50.0, 66.6, 71.0, 98.0, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
+    addBox(lid, "lid_up_right_r", 66.6, 72.0, 71.0, 92.6, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
     addBox(lid, "lid_up_mic_bot", 40.0, 50.0, 71.0, 81.5, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
     addBox(lid, "lid_up_mic_top", 40.0, 50.0, 91.5, 98.0, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
     addTubeZ(lid, "lid_mic_collar", 45.0, 86.5, 16.2 + dzLid, 18.0 + dzLid, 4.8, 6.2, shellMat)
@@ -373,11 +489,12 @@ func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot:
     // 3. Mid bridge bar (Y: 37.5..46.5)
     addBox(lid, "lid_mid_bar", 0, 72.0, 37.5, 46.5, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
 
-    // 4. Lower-left thumbstick deck (X: 0..31.5, Y: 0..37.5) with recessed Ø25.0mm well at (17.5, 21.8)
+    // 4. Lower-left thumbstick deck (X: 0..31.5, Y: 0..37.5) trimmed around BL R=5.4mm corner
     addTubeZ(lid, "lid_stick_collar", 17.5, 21.8, 14.8 + dzLid, 18.0 + dzLid, 12.5, 14.15, shellMat)
-    addBox(lid, "lid_stick_l", 0, 5.0, 0, 37.5, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
+    addBox(lid, "lid_stick_l", 0, 5.0, 5.4, 37.5, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
+    addBox(lid, "lid_stick_bl_fill", 5.0, 5.4, 5.4, 9.3, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
     addBox(lid, "lid_stick_r", 30.0, 31.5, 0, 37.5, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
-    addBox(lid, "lid_stick_b", 5.0, 30.0, 0, 9.3, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
+    addBox(lid, "lid_stick_b", 5.4, 30.0, 0, 9.3, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
     addBox(lid, "lid_stick_t", 5.0, 30.0, 34.3, 37.5, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
     for sx in [-1.0, 1.0] {
         for sy in [-1.0, 1.0] {
@@ -395,8 +512,9 @@ func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot:
     addCylZ(lid, "lid_stick_well", 17.5, 21.8, 14.6 + dzLid, 14.9 + dzLid, 12.6, matPortCavity)
     addTubeZ(lid, "lid_stick_wall", 17.5, 21.8, 14.8 + dzLid, 17.95 + dzLid, 12.35, 12.55, matOpaqueBezel)
 
-    // 5. Lower-right keypad grid (X: 31.5..72.0, Y: 0..37.5) with 8 individual square key cutouts
-    addBox(lid, "lid_pad_bot_strip", 31.5, 72.0, 0, 9.1, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
+    // 5. Lower-right keypad grid (X: 31.5..72.0, Y: 0..37.5) trimmed around BR R=5.4mm corner
+    addBox(lid, "lid_pad_bot_strip", 31.5, 66.6, 0, 9.1, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
+    addBox(lid, "lid_pad_bot_rcap", 66.6, 72.0, 5.4, 9.1, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
     addBox(lid, "lid_pad_mid_strip", 31.5, 72.0, 17.9, 25.6, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
     addBox(lid, "lid_pad_top_strip", 31.5, 72.0, 34.4, 37.5, 16.2 + dzLid, 18.0 + dzLid, shellMat, renderOrder: renderOrder)
     let capXs = [36.5, 45.7, 54.9, 64.1]
@@ -434,10 +552,10 @@ func buildP5Card(exploded: Bool = false, opaque: Bool = false) -> (SCNNode, Int)
     let (tray, lid) = buildShellAndLid(shellMat: shellMat, cradleMat: shellMat, dzShellBot: dzShellBot, dzLid: dzLid, renderOrder: ro)
     root.addChildNode(tray)
 
-    boxes.append(("boss_bl", makeAABB("boss_bl", 1.8, 5.4, 1.8, 5.4, 1.8, 16.2)))
-    boxes.append(("boss_br", makeAABB("boss_br", 66.6, 70.2, 1.8, 5.4, 1.8, 16.2)))
-    boxes.append(("boss_tl", makeAABB("boss_tl", 1.8, 5.4, 92.6, 96.2, 1.8, 16.2)))
-    boxes.append(("boss_tr", makeAABB("boss_tr", 66.6, 70.2, 92.6, 96.2, 1.8, 16.2)))
+    boxes.append(("boss_bl", makeAABB("boss_bl", 0.0, 5.4, 0.0, 5.4, 1.8, 16.2)))
+    boxes.append(("boss_br", makeAABB("boss_br", 66.6, 72.0, 0.0, 5.4, 1.8, 16.2)))
+    boxes.append(("boss_tl", makeAABB("boss_tl", 0.0, 5.4, 92.6, 98.0, 1.8, 16.2)))
+    boxes.append(("boss_tr", makeAABB("boss_tr", 66.6, 72.0, 92.6, 98.0, 1.8, 16.2)))
 
     // Register Internal Printed Support Cradles for Collision Verification
     boxes.append(("cradles", makeAABB("cradle_lipo_l", 5.5, 6.4, 38.0, 75.0, 1.8, 7.0)))
@@ -567,30 +685,32 @@ func buildPlayingCardDeck() -> SCNNode {
     return deck
 }
 
-// MARK: - Build Printable Binary STL Parts (1 mm units for Bambu P2S)
+// MARK: - Build Printable Binary STL Parts (1 mm units for Bambu P2S, R=5.4mm Rounded Corners)
 func exportPrintableSTLs() throws {
     let tray = STLMesh()
-    tray.addBox(0, 72.0, 0, 98.0, 0, 1.8)
-    tray.addBox(0, 1.8, 0, 54.0, 1.8, 16.2)
-    tray.addBox(0, 1.8, 64.4, 98.0, 1.8, 16.2)
+    // Back plate partitioned flush inside R=5.4mm corners
+    tray.addBox(5.4, 66.6, 0.0, 98.0, 0.0, 1.8)
+    tray.addBox(0.0, 5.4, 5.4, 92.6, 0.0, 1.8)
+    tray.addBox(66.6, 72.0, 5.4, 92.6, 0.0, 1.8)
+    // Side/End walls trimmed to R=5.4mm corner tangencies
+    tray.addBox(0, 1.8, 5.4, 54.0, 1.8, 16.2)
+    tray.addBox(0, 1.8, 64.4, 92.6, 1.8, 16.2)
     tray.addBox(0, 1.8, 54.0, 64.4, 1.8, 11.6)
     tray.addBox(0, 1.8, 54.0, 64.4, 15.6, 16.2)
-    tray.addBox(70.2, 72.0, 0, 75.5, 1.8, 16.2)
-    tray.addBox(70.2, 72.0, 90.0, 98.0, 1.8, 16.2)
+    tray.addBox(70.2, 72.0, 5.4, 75.5, 1.8, 16.2)
+    tray.addBox(70.2, 72.0, 90.0, 92.6, 1.8, 16.2)
     tray.addBox(70.2, 72.0, 75.5, 90.0, 1.8, 10.6)
     tray.addBox(70.2, 72.0, 75.5, 90.0, 14.2, 16.2)
-    tray.addBox(1.8, 70.2, 0, 1.8, 1.8, 16.2)
-    tray.addBox(1.8, 11.0, 96.2, 98.0, 1.8, 16.2)
+    tray.addBox(5.4, 66.6, 0, 1.8, 1.8, 16.2)
+    tray.addBox(5.4, 11.0, 96.2, 98.0, 1.8, 16.2)
     tray.addBox(11.0, 17.5, 96.2, 98.0, 1.8, 10.0)
-    tray.addBox(17.5, 70.2, 96.2, 98.0, 1.8, 16.2)
-    // 4x Hollow M2 Corner Screw Bosses (2.0 x 2.0 mm pilot bore above Z=4.2 mm)
-    for (bx0, by0) in [(1.8, 1.8), (66.6, 1.8), (1.8, 92.6), (66.6, 92.6)] {
-        let bx1 = bx0 + 3.6, by1 = by0 + 3.6
-        tray.addBox(bx0, bx1, by0, by1, 1.8, 4.2)
-        tray.addBox(bx0, bx0 + 0.8, by0, by1, 4.2, 16.2)
-        tray.addBox(bx1 - 0.8, bx1, by0, by1, 4.2, 16.2)
-        tray.addBox(bx0 + 0.8, bx1 - 0.8, by0, by0 + 0.8, 4.2, 16.2)
-        tray.addBox(bx0 + 0.8, bx1 - 0.8, by1 - 0.8, by1, 4.2, 16.2)
+    tray.addBox(17.5, 66.6, 96.2, 98.0, 1.8, 16.2)
+    // 4x Monolithic R=5.4mm Rounded Corner Pillars w/ Ø2.0mm M2 pilot bore above Z=4.2 mm
+    for c in p5CornerSpecs {
+        tray.addCornerSector(cx: c.cx, cy: c.cy, rCorner: p5CornerRadius, quadrant: c.q,
+                             holeX: c.hx, holeY: c.hy, rHole: 0.0, z0: 0.0, z1: 4.2)
+        tray.addCornerSector(cx: c.cx, cy: c.cy, rCorner: p5CornerRadius, quadrant: c.q,
+                             holeX: c.hx, holeY: c.hy, rHole: 1.0, z0: 4.2, z1: 16.2)
     }
     // Internal PCB Cradles & Support Rails
     tray.addBox(5.5, 6.4, 38.0, 75.0, 1.8, 7.0)
@@ -616,20 +736,19 @@ func exportPrintableSTLs() throws {
     tray.addBox(66.6, 70.2, 74.0, 78.8, 1.8, 9.8)
     tray.addBox(52.3, 56.8, 75.5, 91.9, 8.0, 9.8)
     tray.addBox(31.0, 54.0, 75.3, 75.7, 1.8, 4.5)
-    try tray.writeBinarySTL(to: "\(stlDir)/p5_card_bottom_tray.stl", header: "P5-Card Bottom Tray 72x98x16.2mm")
+    try tray.writeBinarySTL(to: "\(stlDir)/p5_card_bottom_tray.stl", header: "P5-Card Bottom Tray 72x98x16.2mm R5.4mm")
 
-    // Top Faceplate printed exterior-down (Z: 0..1.8 faceplate, Z: 1.8..3.4 INMP441 collar & stick well skirt)
+    // Top Faceplate printed exterior-down (Z: 0..1.8 faceplate w/ R=5.4mm corners & Ø2.2mm M2 holes, Z: 1.8..3.4 collars)
     let lid = STLMesh()
-    // Upper-left (X: 0..40.0, Y: 71.0..98.0) with 2.2x2.2 M2 hole (X: 2.5..4.7, Y: 93.3..95.5)
-    lid.addBox(0, 2.5, 71.0, 98.0, 0, 1.8)
-    lid.addBox(4.7, 40.0, 71.0, 98.0, 0, 1.8)
-    lid.addBox(2.5, 4.7, 71.0, 93.3, 0, 1.8)
-    lid.addBox(2.5, 4.7, 95.5, 98.0, 0, 1.8)
-    // Upper-right (X: 50.0..72.0, Y: 71.0..98.0) with 2.2x2.2 M2 hole (X: 67.3..69.5, Y: 93.3..95.5)
-    lid.addBox(50.0, 67.3, 71.0, 98.0, 0, 1.8)
-    lid.addBox(69.5, 72.0, 71.0, 98.0, 0, 1.8)
-    lid.addBox(67.3, 69.5, 71.0, 93.3, 0, 1.8)
-    lid.addBox(67.3, 69.5, 95.5, 98.0, 0, 1.8)
+    for c in p5CornerSpecs {
+        lid.addCornerSector(cx: c.cx, cy: c.cy, rCorner: p5CornerRadius, quadrant: c.q,
+                            holeX: c.hx, holeY: c.hy, rHole: 1.1, z0: 0.0, z1: 1.8)
+    }
+    // Upper-left & Upper-right (Y: 71.0..98.0) trimmed around TL & TR R=5.4mm corners
+    lid.addBox(0.0, 5.4, 71.0, 92.6, 0, 1.8)
+    lid.addBox(5.4, 40.0, 71.0, 98.0, 0, 1.8)
+    lid.addBox(50.0, 66.6, 71.0, 98.0, 0, 1.8)
+    lid.addBox(66.6, 72.0, 71.0, 92.6, 0, 1.8)
     // Circular 21-hole recessed mic grille window (X: 40.0..50.0, Y: 81.5..91.5)
     lid.addBox(40.0, 50.0, 71.0, 81.5, 0, 1.8)
     lid.addBox(40.0, 50.0, 91.5, 98.0, 0, 1.8)
@@ -663,14 +782,12 @@ func exportPrintableSTLs() throws {
     lid.addBox(8.5, 58.5, 69.5, 71.0, 0, 1.8)
     lid.addBox(8.5, 58.5, 46.5, 48.0, 0, 1.8)
     lid.addBox(0, 72.0, 37.5, 46.5, 0, 1.8)
-    // Recessed Ø25.0mm thumbstick well skirt (Z: 0..3.2mm) with 2.2x2.2 M2 hole (X: 2.5..4.7, Y: 2.5..4.7) + corner spandrels
+    // Recessed Ø25.0mm thumbstick well skirt (Z: 0..3.2mm) trimmed around BL R=5.4mm corner
     lid.addAnnulusZ(cx: 17.5, cy: 21.8, rIn: 12.5, rOut: 14.15, z0: 0, z1: 3.2)
-    lid.addBox(0, 2.5, 0, 37.5, 0, 1.8)
-    lid.addBox(4.7, 5.0, 0, 37.5, 0, 1.8)
-    lid.addBox(2.5, 4.7, 0, 2.5, 0, 1.8)
-    lid.addBox(2.5, 4.7, 4.7, 37.5, 0, 1.8)
+    lid.addBox(0, 5.0, 5.4, 37.5, 0, 1.8)
+    lid.addBox(5.0, 5.4, 5.4, 9.3, 0, 1.8)
     lid.addBox(30.0, 31.5, 0, 37.5, 0, 1.8)
-    lid.addBox(5.0, 30.0, 0, 9.3, 0, 1.8)
+    lid.addBox(5.4, 30.0, 0, 9.3, 0, 1.8)
     lid.addBox(5.0, 30.0, 34.3, 37.5, 0, 1.8)
     for sx in [-1.0, 1.0] {
         for sy in [-1.0, 1.0] {
@@ -682,11 +799,9 @@ func exportPrintableSTLs() throws {
                        min(21.8 + sy * 6.4, 21.8 + sy * 9.0), max(21.8 + sy * 6.4, 21.8 + sy * 9.0), 0, 1.8)
         }
     }
-    // Keypad grid bottom strip (X: 31.5..72.0, Y: 0..9.1) with 2.2x2.2 M2 hole (X: 67.3..69.5, Y: 2.5..4.7)
-    lid.addBox(31.5, 67.3, 0, 9.1, 0, 1.8)
-    lid.addBox(69.5, 72.0, 0, 9.1, 0, 1.8)
-    lid.addBox(67.3, 69.5, 0, 2.5, 0, 1.8)
-    lid.addBox(67.3, 69.5, 4.7, 9.1, 0, 1.8)
+    // Keypad grid bottom strip (X: 31.5..72.0, Y: 0..9.1) trimmed around BR R=5.4mm corner
+    lid.addBox(31.5, 66.6, 0, 9.1, 0, 1.8)
+    lid.addBox(66.6, 72.0, 5.4, 9.1, 0, 1.8)
     lid.addBox(31.5, 72.0, 17.9, 25.6, 0, 1.8)
     lid.addBox(31.5, 72.0, 34.4, 37.5, 0, 1.8)
     let capXs = [36.5, 45.7, 54.9, 64.1]

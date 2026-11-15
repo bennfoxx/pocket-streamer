@@ -6,9 +6,9 @@
 
 | File | Tris | Size (`mm`) | Slicer Notes |
 |---|---|---|---|
-| [`p5_card_single_plate_all_parts.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_single_plate_all_parts.stl) | `4048` | `210.80 × 183.00 × 16.20` | **All `11` parts pre-laid out on 1 plate** (`~38 cm³`, `~47 g`) in 4 separated AMS color zones (`Matte Black`, `Coral`, `Amber`, `Teal`) |
-| [`p5_card_bottom_tray.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_bottom_tray.stl) | `648` | `72.00 × 98.00 × 16.20` | Back-plate down; **1 external USB-C port only** (Left Wall); Top Wall sealed over `V713` Boost (`3.5 mm` jack only); includes `4×` hollow `M2` corner bosses & all internal PCB cradles |
-| [`p5_card_top_faceplate.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_top_faceplate.stl) | `2280` | `72.00 × 98.00 × 3.40` | Exterior faceplate down (rigid `180°` X-flip aligned to tray); `4× 2.2 × 2.2 mm` M2 holes, `Ø25.0 mm` recessed stick well, `21`-hole `Ø9.6 mm` mic grille, `INMP441` ring (`Z: 1.8..3.4 mm`) |
+| [`p5_card_single_plate_all_parts.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_single_plate_all_parts.stl) | `6936` | `210.80 × 183.00 × 16.20` | **All `11` parts pre-laid out on 1 plate** (`~38 cm³`, `~47 g`) in 4 separated AMS color zones (`Matte Black`, `Coral`, `Amber`, `Teal`) with `R = 5.4 mm` rounded corners |
+| [`p5_card_bottom_tray.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_bottom_tray.stl) | `2352` | `72.00 × 98.00 × 16.20` | Back-plate down; **`R = 5.4 mm` full-height rounded corners**; **1 external USB-C port only** (Left Wall); Top Wall sealed over `V713` Boost (`3.5 mm` jack only); `4× Ø2.0 mm` circular M2 pilot bores + internal PCB cradles |
+| [`p5_card_top_faceplate.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_top_faceplate.stl) | `3464` | `72.00 × 98.00 × 3.40` | Exterior faceplate down (rigid `180°` X-flip aligned to tray); **`R = 5.4 mm` rounded corners**; `4× Ø2.2 mm` circular M2 through-holes, `Ø25.0 mm` recessed stick well, `21`-hole `Ø9.6 mm` mic grille, `INMP441` ring (`Z: 1.8..3.4 mm`) |
 | [`p5_card_concave_thumb_disc.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_concave_thumb_disc.stl) | `928` | `16.00 × 16.00 × 3.80` | Pre-oriented **stem-down** (`Z: 0..1.6 mm` collar, `1.6..2.6` floor, `2.6..3.8` rim; leaves `4.5 mm` open moat inside `Ø25 mm` well) |
 | [`p5_card_keycaps_8x.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_keycaps_8x.stl) | `192` | `45.40 × 21.40 × 3.60` | Flat on `0.8 mm` captive base flanges (`2×4` grid); optional brim if bed adhesion is low |
 
@@ -18,7 +18,7 @@
 - **Material:** Matte Black / Dark Charcoal `PETG` (recommended for drop resistance) or `PLA+`
 - **Layer Height:** `0.20 mm` Standard (`0.4 mm` nozzle) | **Wall Loops:** `3` | **Infill:** `20%` Gyroid
 - **Supports:** **Normal (auto) -> Snug -> On build plate only** (supports the `3` remaining side port roof bridges on `p5_card_bottom_tray.stl` — Left `AMOLED` USB-C, Top `3.5 mm` jack, Right `MicroSD` — and the short elevated shelves for `GY-PCM5102`, `AMOLED` right split shelves, and `MicroSD` left step; zero supports needed inside the hollow `M2` bores).
-- **Hardware:** `4× M2 × 12 mm` socket-head screws (self-tap directly into the `2.0 × 2.0 mm` boss pilot bores or heat-set `M2` brass inserts).
+- **Hardware:** `4× M2 × 12 mm` socket-head screws (self-tap directly into the `Ø2.0 mm` circular corner pilot bores or heat-set `M2` brass inserts).
 
 **Internal Cradle Drop-In Assembly Order:**
 1. Seat `503759` LiPo (`1300 mAh`, `59.0 × 37.0 × 5.0 mm`) between lateral rails (`Y: 38.0..75.0 mm`, `Z: 1.8..7.0 mm`) and cap with `0.8 mm` Kapton/printed `shield_rib` (`Y: 37.7..75.2 mm`, `Z: 7.0..7.8 mm`).
