@@ -51,3 +51,32 @@
 - **Side-by-Side Photorealistic Renders:**
   - [exp_18c_photoreal_opaque.png](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/experimental/renders/exp_18c_photoreal_opaque.png) — Matte Charcoal PLA-CF
   - [exp_18d_photoreal_smoke.png](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/experimental/renders/exp_18d_photoreal_smoke.png) — Atomic Smoked-Charcoal Translucent
+
+
+---
+
+## 4. `Exp-Compact` Condensed Footprint Exploration (`72×84` Portrait & `86×70` Horizontal)
+
+By tightening the lower deck, tucking the `MicroSD` module (`Z: 9.0–13.0 mm`) underneath the `1.91"` AMOLED PCB overhang (`Z: 13.5–15.1 mm`), stacking `V713` + elevated `KCX_BT_EMITTER` (`Z: 9.0–11.5 mm`) on Portrait, and rotating `GY-PCM5102` so its `3.5 mm` TRS jack points **upward at Top-Right (`Y = 70.0 mm`)** on Horizontal, both centered-screen units shrink substantially with `Collisions=0`:
+
+| Metric | `Exp-Portrait` (v1) | **`Exp-Compact-Portrait`** | `Exp-Horizontal` (v1) | **`Exp-Compact-Horizontal`** |
+|---|---|---|---|---|
+| **Dimensions** | `72.0 × 98.0 × 19.5 mm` | **`72.0 × 84.0 × 19.5 mm`** (`-14 mm` H, shorter than a Bicycle card deck) | `98.0 × 72.0 × 19.5 mm` | **`86.0 × 70.0 × 19.5 mm`** (`-12 mm` W, `-2 mm` H) |
+| **Footprint Area** | `7,056 mm²` | **`6,048 mm²` (`-14.3%`)** | `7,056 mm²` | **`6,020 mm²` (`-14.7%`)** |
+| **1.91" AMOLED Center** | `X = 36.0 mm` | **`X = 36.0 mm`** | `X = 49.0 mm` | **`X = 43.0 mm`** |
+| **3.5 mm TRS Jack** | Top-Left (`Y = 98.0`) | **Top-Left (`Y = 84.0`)** | Right-Lower (`X = 98.0`) | **Top-Right upward (`Y = 70.0`, `X = 71.5`)** |
+| **Collision Check** | `45` boxes, `0` collisions | **`46` boxes, `0` collisions** | `69` boxes, `0` collisions | **`66` boxes, `0` collisions** |
+
+### Verified `Exp-Compact` Deliverables
+- **CAD Generators:**
+  - [generate_exp_compact_portrait.swift](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/experimental/generate_exp_compact_portrait.swift)
+  - [generate_exp_compact_horizontal.swift](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/experimental/generate_exp_compact_horizontal.swift)
+- **Interactive 3D Explorers (`node --check` passed, cross-linked):**
+  - [p5_exp_compact_portrait_preview.html](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/experimental/p5_exp_compact_portrait_preview.html)
+  - [p5_exp_compact_horizontal_preview.html](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/experimental/p5_exp_compact_horizontal_preview.html)
+- **Bambu P2S STLs (`minZ = 0.00`, binary `struct` verified):**
+  - `experimental/stl_p5_exp_compact_portrait/` (`6` STLs, `7020` plate tris)
+  - `experimental/stl_p5_exp_compact_horizontal/` (`6` STLs, `7044` plate tris)
+- **Side-by-Side Photorealistic Renders:**
+  - [exp_19c_compact_photoreal_opaque.png](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/experimental/renders/exp_19c_compact_photoreal_opaque.png) — Matte Charcoal PLA-CF
+  - [exp_19d_compact_photoreal_smoke.png](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/experimental/renders/exp_19d_compact_photoreal_smoke.png) — Atomic Smoked-Charcoal Translucent
