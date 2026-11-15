@@ -917,26 +917,41 @@
         }
         if (!wiresDone) drawWires();
 
-        if (Math.cos(uiState.yaw) > -0.25) {
-          const tl = projectPoint([13.9 - HALF_W, HALF_H - 59.6, 8.0 + zAmoled], uiState.yaw, uiState.pitch, cx, cy, scale);
-          const br = projectPoint([58.1 - HALF_W, HALF_H - 39.8, 8.0 + zAmoled], uiState.yaw, uiState.pitch, cx, cy, scale);
-          const ox = Math.min(tl.x, br.x), oy = Math.min(tl.y, br.y);
-          const ow = Math.abs(br.x - tl.x), oh = Math.abs(br.y - tl.y);
-          if (ow > 18 && oh > 10) {
-            if (uiState.screenOn) {
-              const ipsCvs = document.getElementById('ips-canvas');
-              if (ipsCvs) {
-                ctx.drawImage(ipsCvs, ox + 1, oy + 1, ow - 2, oh - 2);
-              } else {
-                ctx.fillStyle = '#0f172a'; ctx.fillRect(ox + 1, oy + 1, ow - 2, oh - 2);
-              }
+        if (Math.cos(uiState.yaw) > -0.15) {
+          const zScr = 7.96 + zAmoled;
+          const pTL = projectPoint([13.9 - HALF_W, HALF_H - 59.6, zScr], uiState.yaw, uiState.pitch, cx, cy, scale);
+          const pTR = projectPoint([58.1 - HALF_W, HALF_H - 59.6, zScr], uiState.yaw, uiState.pitch, cx, cy, scale);
+          const pBR = projectPoint([58.1 - HALF_W, HALF_H - 39.8, zScr], uiState.yaw, uiState.pitch, cx, cy, scale);
+          const pBL = projectPoint([13.9 - HALF_W, HALF_H - 39.8, zScr], uiState.yaw, uiState.pitch, cx, cy, scale);
+          const winding = (pTR.x - pTL.x) * (pBL.y - pTL.y) - (pTR.y - pTL.y) * (pBL.x - pTL.x);
+          if (winding > 8) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(pTL.x, pTL.y);
+            ctx.lineTo(pTR.x, pTR.y);
+            ctx.lineTo(pBR.x, pBR.y);
+            ctx.lineTo(pBL.x, pBL.y);
+            ctx.closePath();
+            ctx.clip();
+            const ipsCvs = document.getElementById('ips-canvas');
+            if (uiState.screenOn && ipsCvs) {
+              const sw = ipsCvs.width, sh = ipsCvs.height;
+              ctx.transform(
+                (pTR.x - pTL.x) / sw, (pTR.y - pTL.y) / sw,
+                (pBL.x - pTL.x) / sh, (pBL.y - pTL.y) / sh,
+                pTL.x, pTL.y
+              );
+              ctx.drawImage(ipsCvs, 0, 0);
             } else {
-              ctx.fillStyle = '#05070b'; ctx.fillRect(ox + 1, oy + 1, ow - 2, oh - 2);
-              const sheen = ctx.createLinearGradient(ox, oy, ox + ow, oy + oh);
-              sheen.addColorStop(0, 'rgba(255,255,255,0.09)');
+              ctx.fillStyle = '#05070b';
+              ctx.fill();
+              const sheen = ctx.createLinearGradient(pTL.x, pTL.y, pBR.x, pBR.y);
+              sheen.addColorStop(0, 'rgba(255,255,255,0.11)');
               sheen.addColorStop(0.5, 'rgba(255,255,255,0)');
-              ctx.fillStyle = sheen; ctx.fillRect(ox + 1, oy + 1, ow - 2, oh - 2);
+              ctx.fillStyle = sheen;
+              ctx.fill();
             }
+            ctx.restore();
           }
 
           if (shellMode !== 'open') {
