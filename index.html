@@ -164,31 +164,38 @@
         <span class="px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] font-mono">
           72.0 × 84.0 × 19.5 mm · R5.4 mm
         </span>
-        <nav aria-label="Experimental Layout Orientation" class="inline-flex rounded-lg border border-[var(--border)] bg-[var(--card)] p-0.5 gap-1">
-          <span class="px-2.5 py-1 rounded-md font-medium bg-[var(--primary)] text-[var(--primary-foreground)]">Exp Compact Portrait (Current)</span>
-          <a href="p5_exp_compact_horizontal_preview.html" class="px-2.5 py-1 rounded-md font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--background)] transition-colors no-underline">Exp Compact Horizontal →</a>
+        <nav aria-label="Unified Hardware and UI Suite" class="inline-flex rounded-lg border border-[var(--border)] bg-[var(--card)] p-0.5 gap-1">
+          <button type="button" data-suite-tab="hardware" class="suite-tab-btn px-2.5 py-1 rounded-md font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">3D Hardware &amp; Photoreal</button>
+          <button type="button" data-suite-tab="uistudio" class="suite-tab-btn px-2.5 py-1 rounded-md font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--background)] transition-colors">On-Device UI Studio</button>
+          <button type="button" data-suite-tab="audit" class="suite-tab-btn px-2.5 py-1 rounded-md font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--background)] transition-colors">Wiring &amp; Print Audit</button>
         </nav>
       </div>
     </header>
 
-    <!-- Main Split Workbench -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+    <!-- Suite Panel 1: Main Split Workbench -->
+    <div id="suite-panel-hardware" class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
       <!-- Left 8 cols: 3D Interactive Viewport -->
       <section class="lg:col-span-8 bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 sm:p-4 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div role="group" aria-label="Shell Visibility Mode" class="inline-flex flex-wrap rounded-lg border border-[var(--border)] bg-[var(--background)] p-0.5 text-xs gap-1">
+            <button type="button" data-shell="photoreal" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Photoreal PLA-CF</button>
             <button type="button" data-shell="transparent" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Transparent</button>
             <button type="button" data-shell="smoke" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Smoked</button>
             <button type="button" data-shell="solid" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Matte Black</button>
             <button type="button" data-shell="open" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">PCBs + Cradles</button>
           </div>
 
-          <div role="group" aria-label="Camera View Presets" class="inline-flex flex-wrap rounded-lg border border-[var(--border)] bg-[var(--background)] p-0.5 text-xs gap-1">
-            <button type="button" data-cam="hero" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">3/4 Hero</button>
-            <button type="button" data-cam="front" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Front</button>
-            <button type="button" data-cam="right" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Right Side 4×</button>
-            <button type="button" data-cam="side" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Left 19.5mm</button>
-            <button type="button" data-cam="top" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Top Ports</button>
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button type="button" id="btn-screen-toggle" aria-pressed="true" class="min-h-[28px] px-2.5 py-1 rounded-lg border border-[var(--border)] bg-[var(--background)] text-xs font-semibold text-[var(--success)] hover:border-[var(--primary)] transition-colors">
+              Screen: ON
+            </button>
+            <div role="group" aria-label="Camera View Presets" class="inline-flex flex-wrap rounded-lg border border-[var(--border)] bg-[var(--background)] p-0.5 text-xs gap-1">
+              <button type="button" data-cam="hero" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">3/4 Hero</button>
+              <button type="button" data-cam="front" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Front</button>
+              <button type="button" data-cam="right" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Right Side 4×</button>
+              <button type="button" data-cam="side" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Left 19.5mm</button>
+              <button type="button" data-cam="top" class="cam-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Top Ports</button>
+            </div>
           </div>
         </div>
 
@@ -308,6 +315,39 @@
       </aside>
     </div>
 
+    <!-- Suite Panel 2: Embedded On-Device UI Studio (72x84x19.5 mm Locked) -->
+    <section id="suite-panel-uistudio" class="hidden bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden">
+      <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 border-b border-[var(--border)] bg-[var(--background)] text-xs">
+        <span class="font-semibold">On-Device AMOLED UI Studio · Locked 72.0 × 84.0 × 19.5 mm Compact Portrait (1×4 Front + 1×4 Right Edge)</span>
+        <a href="ui.html" target="_blank" class="text-[var(--primary)] font-medium hover:underline">Open Standalone Fullscreen ↗</a>
+      </div>
+      <iframe src="ui.html?embed=1" title="fbox On-Device AMOLED UI Studio" class="w-full border-0 block" style="height: 820px;"></iframe>
+    </section>
+
+    <!-- Suite Panel 3: Wiring, Soldering & Print Layout Audit -->
+    <section id="suite-panel-audit" class="hidden space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-2.5">
+          <h2 class="text-sm font-semibold text-[var(--primary)]">Electrical, Wiring &amp; Soldering Audit (15.9 mm Z-Cavity)</h2>
+          <ul class="text-xs text-[var(--muted-foreground)] space-y-1.5 list-disc pl-4">
+            <li><strong class="text-[var(--foreground)]">Desolder All Pin Headers:</strong> Remove factory yellow/black 2.54 mm headers from <code>Front 1×4</code>, <code>Right-Side 1×4</code>, <code>KY-023</code>, <code>MicroSD</code>, and <code>GY-PCM5102</code>; direct-solder <code>30 AWG</code> silicone wire flush to pads so harnesses stay within <code>15.9 mm</code> Z.</li>
+            <li><strong class="text-[var(--foreground)]">V713 5V Rail Isolation:</strong> <code>Side K1 (B1)</code> at topmost right edge (<code>Y = 54.3 mm</code>) wires <strong>ONLY</strong> to <code>V713 K</code> pad (1-click ON / 2-click OFF, &lt;30µA standby), isolating <code>GY-PCM5102</code> + <code>KCX_BT_EMITTER</code> from ESP32 sleep current.</li>
+            <li><strong class="text-[var(--foreground)]">3.3V-Only MicroSD &amp; I2S Pull-Down:</strong> <code>WWZMDiB Mini 3.3V MicroSD</code> has no LDO — connect strictly to regulated <code>3.3V</code> (never 5V!). Add <code>100kΩ</code> pull-down on <code>INMP441 SD</code> (GPIO 15).</li>
+            <li><strong class="text-[var(--foreground)]">LiPo &amp; RF Protection:</strong> <code>503759</code> LiPo (<code>Z: 1.8..6.8</code>) sits under a <code>0.8 mm</code> printed PLA-CF shield (<code>Z: 7.0..7.8</code>) with Kapton tape over solder joints; keep ESP32 ceramic antenna wing (<code>X: 54..64</code>) clear of copper pours.</li>
+          </ul>
+        </div>
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-2.5">
+          <h2 class="text-sm font-semibold text-[var(--success)]">Bambu Lab P2S Print Layout &amp; STL Audit</h2>
+          <ul class="text-xs text-[var(--muted-foreground)] space-y-1.5 list-disc pl-4">
+            <li><strong class="text-[var(--foreground)]">100% Watertight Manifold STLs:</strong> All 6 STLs in <code>stl_p5_compact_portrait/</code> verified via Python binary <code>struct</code> check: <code>unpaired_halfedges = 0</code>, <code>minZ = 0.00 mm</code>.</li>
+            <li><strong class="text-[var(--foreground)]">P2S Single-Plate Fit:</strong> Combined plate <code>210.80 × 169.00 × 17.70 mm</code> (<code>7,020</code> tris) fits inside Bambu P2S <code>256 × 256 mm</code> bed with <code>45.2 mm</code> X and <code>87.0 mm</code> Y margin.</li>
+            <li><strong class="text-[var(--foreground)]">Wall &amp; Boss Tolerances:</strong> <code>1.8 mm</code> perimeter/base/lid walls (<code>4×</code> 0.4 mm perimeters), <code>4× Ø2.0 mm</code> M2 self-tap pilot bores + <code>Ø2.2 mm</code> lid holes, <code>0.3 mm</code> radial clearance on <code>Ø25.0 mm</code> thumb-well and <code>1×4</code> keycap wells.</li>
+            <li><strong class="text-[var(--foreground)]">Recommended Print Settings:</strong> Bambu PLA-CF Matte Charcoal (<code>0.16 mm</code> layer height, <code>4</code> walls, <code>25%</code> gyroid infill, <code>0.4 mm</code> hardened steel nozzle, face-down lid on textured PEI).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
     <!-- Complete Option A Direct Button & Single-USB-C Solder Reference Table -->
     <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-2">
@@ -412,7 +452,8 @@
         progress: 0.34,
         joyTiltX: 0,
         joyTiltY: 0,
-        shellMode: 'transparent',
+        shellMode: 'photoreal',
+        screenOn: true,
         explode: 0,
         dualView: false,
         showCradles: true,
@@ -504,6 +545,15 @@
         const ctx = cvs.getContext('2d');
         const W = cvs.width, H = cvs.height;
         ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, W, H);
+        if (!uiState.screenOn) {
+          ctx.fillStyle = '#05070b'; ctx.fillRect(0, 0, W, H);
+          const sheen = ctx.createLinearGradient(0, 0, W, H);
+          sheen.addColorStop(0, 'rgba(255,255,255,0.06)');
+          sheen.addColorStop(0.45, 'rgba(255,255,255,0.0)');
+          ctx.fillStyle = sheen; ctx.fillRect(0, 0, W, H);
+          document.getElementById('hud-mode-badge').textContent = 'SCREEN OFF';
+          return;
+        }
         const mode = MODES[uiState.modeIdx];
         document.getElementById('hud-mode-badge').textContent = mode;
         const isAbs = mode === 'AUDIOBOOKSHELF';
@@ -681,6 +731,7 @@
 
         const boxes = [];
         const shellCfg = {
+          photoreal:   { fill: '#2e3136', edge: 'rgba(15,18,22,0.28)', alpha: 1.0 },
           transparent: { fill: '#dbeafe', edge: '#60a5fa', alpha: 0.17 },
           smoke:       { fill: '#1e293b', edge: '#94a3b8', alpha: 0.34 },
           solid:       { fill: '#262930', edge: '#52525b', alpha: 0.96 },
@@ -818,6 +869,19 @@
         ctx.beginPath(); ctx.rect(rx, ry, rw, rh); ctx.clip();
         const cx = rx + rw / 2, cy = ry + rh / 2 + 8;
         const scale = Math.min(rw, rh) / (116 + explodeVal * 26);
+
+        if (shellMode === 'photoreal') {
+          ctx.save();
+          const sg = ctx.createRadialGradient(cx, cy + 165, 10, cx, cy + 165, 175);
+          sg.addColorStop(0, 'rgba(0,0,0,0.34)');
+          sg.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = sg;
+          ctx.beginPath();
+          ctx.ellipse(cx, cy + 165, 165, 36, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
         const { boxes, wires, zAmoled, zLid, zCaps } = buildP5ExpCompactScene(explodeVal, shellMode);
 
         const quads = [];
@@ -854,15 +918,25 @@
         if (!wiresDone) drawWires();
 
         if (Math.cos(uiState.yaw) > -0.25) {
-          const tl = projectPoint([11.0 - HALF_W, HALF_H - 60.5, 8.0 + zAmoled], uiState.yaw, uiState.pitch, cx, cy, scale);
-          const br = projectPoint([61.0 - HALF_W, HALF_H - 39.0, 8.0 + zAmoled], uiState.yaw, uiState.pitch, cx, cy, scale);
+          const tl = projectPoint([13.9 - HALF_W, HALF_H - 59.6, 8.0 + zAmoled], uiState.yaw, uiState.pitch, cx, cy, scale);
+          const br = projectPoint([58.1 - HALF_W, HALF_H - 39.8, 8.0 + zAmoled], uiState.yaw, uiState.pitch, cx, cy, scale);
           const ox = Math.min(tl.x, br.x), oy = Math.min(tl.y, br.y);
           const ow = Math.abs(br.x - tl.x), oh = Math.abs(br.y - tl.y);
           if (ow > 18 && oh > 10) {
-            const artSize = Math.min(oh - 5, ow * 0.36);
-            ctx.fillStyle = '#0f172a'; ctx.fillRect(ox + 3, oy + 2.5, artSize, artSize);
-            ctx.fillStyle = '#ffffff'; ctx.fillRect(ox + artSize + 6, oy + 4, (ow - artSize - 10) * 0.8, 2.5);
-            ctx.fillStyle = '#38bdf8'; ctx.fillRect(ox + artSize + 6, oy + 9, (ow - artSize - 10) * 0.55, 2);
+            if (uiState.screenOn) {
+              const ipsCvs = document.getElementById('ips-canvas');
+              if (ipsCvs) {
+                ctx.drawImage(ipsCvs, ox + 1, oy + 1, ow - 2, oh - 2);
+              } else {
+                ctx.fillStyle = '#0f172a'; ctx.fillRect(ox + 1, oy + 1, ow - 2, oh - 2);
+              }
+            } else {
+              ctx.fillStyle = '#05070b'; ctx.fillRect(ox + 1, oy + 1, ow - 2, oh - 2);
+              const sheen = ctx.createLinearGradient(ox, oy, ox + ow, oy + oh);
+              sheen.addColorStop(0, 'rgba(255,255,255,0.09)');
+              sheen.addColorStop(0.5, 'rgba(255,255,255,0)');
+              ctx.fillStyle = sheen; ctx.fillRect(ox + 1, oy + 1, ow - 2, oh - 2);
+            }
           }
 
           if (shellMode !== 'open') {
@@ -982,6 +1056,30 @@
       document.getElementById('toggle-dual-view').addEventListener('change', e => { uiState.dualView = e.target.checked; refreshButtons(); drawScene(); });
       document.getElementById('toggle-cradles').addEventListener('change', e => { uiState.showCradles = e.target.checked; drawScene(); });
       document.getElementById('toggle-wires').addEventListener('change', e => { uiState.showWires = e.target.checked; drawScene(); });
+
+      const screenBtn = document.getElementById('btn-screen-toggle');
+      screenBtn.addEventListener('click', () => {
+        uiState.screenOn = !uiState.screenOn;
+        screenBtn.setAttribute('aria-pressed', String(uiState.screenOn));
+        screenBtn.textContent = uiState.screenOn ? 'Screen: ON' : 'Screen: OFF';
+        screenBtn.style.color = uiState.screenOn ? 'var(--success)' : 'var(--muted-foreground)';
+        drawScreen(); drawScene();
+      });
+
+      document.querySelectorAll('.suite-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tab = btn.dataset.suiteTab;
+          document.getElementById('suite-panel-hardware').classList.toggle('hidden', tab !== 'hardware');
+          document.getElementById('suite-panel-uistudio').classList.toggle('hidden', tab !== 'uistudio');
+          document.getElementById('suite-panel-audit').classList.toggle('hidden', tab !== 'audit');
+          document.querySelectorAll('.suite-tab-btn').forEach(b => {
+            const on = b.dataset.suiteTab === tab;
+            b.style.background = on ? 'var(--primary)' : 'transparent';
+            b.style.color = on ? '#ffffff' : 'var(--muted-foreground)';
+          });
+          if (tab === 'hardware') drawScene();
+        });
+      });
 
       document.getElementById('btn-play').addEventListener('click', () => { uiState.playing = !uiState.playing; drawScreen(); });
       document.getElementById('btn-mode').addEventListener('click', () => { uiState.modeIdx = (uiState.modeIdx + 1) % MODES.length; uiState.pttActive = uiState.modeIdx === 3; drawScreen(); });
