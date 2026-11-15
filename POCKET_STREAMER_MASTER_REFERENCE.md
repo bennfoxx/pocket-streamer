@@ -606,3 +606,25 @@ Evaluated in parallel with the portrait `Option P5-Card` rounding update via [`g
 - **Side-by-Side `1:1` CAD Photorealistic Studio Renders:**
   - **Matte Charcoal PLA-CF (`ref_17c`):** [`pocket_streamer_p5_side_by_side_opaque_render.png`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/pocket_streamer_p5_side_by_side_opaque_render.png) ([`ref_17c_photoreal_side_by_side_opaque_matte.png`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/parts_1to1_3d/renders/ref_17c_photoreal_side_by_side_opaque_matte.png); built from `1:1` CAD reference sheet [`ref_17a`](file:///Users/benfox/.gemini/antigravity/brain/d773b1b3-4405-4408-8ad7-b59f103e4218/ref_17a_cad_side_by_side_opaque_ref.png))
   - **Atomic Smoked-Charcoal Translucent (`ref_17d`):** [`pocket_streamer_p5_side_by_side_smoke_render.png`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/pocket_streamer_p5_side_by_side_smoke_render.png) ([`ref_17d_photoreal_side_by_side_atomic_smoke.png`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/parts_1to1_3d/renders/ref_17d_photoreal_side_by_side_atomic_smoke.png); built from `1:1` CAD reference sheet [`ref_17b`](file:///Users/benfox/.gemini/antigravity/brain/d773b1b3-4405-4408-8ad7-b59f103e4218/ref_17b_cad_side_by_side_smoke_ref.png))
+
+
+---
+
+## 18. Primary Build Promotion: `Option P5-Compact-Portrait` (`72.0 × 84.0 × 19.5 mm`, `R = 5.4 mm`)
+
+**Status:** **PRIMARY BUILD** (supersedes `72.0 × 98.0 × 18.0 mm` `Option P5-Card` as the default `index.html` and primary STL set).
+
+### Why `Option P5-Compact-Portrait` (`72.0 × 84.0 × 19.5 mm`) Is Now Primary
+1. **Shorter Than a Deck of Cards:** `84.0 mm` tall vs. `88.9 mm` for a standard Bicycle playing card deck (`-14.0 mm` shorter than `Exp-Portrait` v1, `-14.3%` footprint area).
+2. **Dead-Centered `1.91"` AMOLED:** Active `44.2 × 19.8 mm` display dead-centered horizontally at `X = 36.0 mm`, fed via a `4.5 mm` recessed chamfered USB-C funnel on the Left wall (`0` extra parts, single USB-C port).
+3. **Dual-Grip Ergonomics (`1×4` Front + `1×4` Right Edge):** Color-coded front `1×4` (`Warm Amber, Retro Teal, Warm Amber, Coral`) beside the `Ø25.0 mm` recessed well + `Ø16.0 mm` Coral concave thumb-disc for two-handed Game Boy grip, plus `4× Matte Black` low-profile (`0.8 mm` proud) right-edge buttons for one-handed cassette field-recorder thumb control (`B1` `V713` 5V Audio Power topmost to prevent pocket bumps).
+4. **Zero-Cut Z-Stack Packing (`19.5 mm` / `15.9 mm` internal Z, `Collisions=0`):**
+   - `MicroSD` (`Z: 9.0..13.0`) tucks cleanly under the right wing of `amoled_pcb` (`Z: 13.5..15.1`), flush at `X = 72.0`.
+   - `V713` 5V Boost (`Z: 2.0..6.8`) & elevated `KCX_BT_EMITTER` (`Z: 9.0..11.5`) stack cleanly in the mid-right bay.
+   - `GY-PCM5102` (`X: 6.0..38.0, Y: 65.0..82.0`) places the `3.5 mm` TRS jack at Top-Left (`Y = 84.0`), and `INMP441` sits at `(45.2, 73.5)` behind the `21`-dot crosshair grille.
+
+### Primary Root Deliverables (`P5-Compact-Portrait`)
+- **Primary Interactive 3D Explorer (`index.html`):** [index.html](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/index.html) / [p5_compact_portrait_preview.html](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/p5_compact_portrait_preview.html)
+- **Primary CAD Generator:** [generate_exp_compact_portrait.swift](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/experimental/generate_exp_compact_portrait.swift) (`46` boxes, `Collisions=0`)
+- **Primary Bambu P2S STLs (`minZ = 0.00`):** `stl_p5_compact_portrait/` (`p5_exp_compact_portrait_single_plate_all_parts.stl`, `7020` tris, plus 5 individual part STLs)
+- **Photorealistic Renders:** `pocket_streamer_compact_portrait_opaque_render.png`, `pocket_streamer_compact_portrait_smoke_render.png`, and `pocket_streamer_compact_portrait_size_comparison_render.png`.
