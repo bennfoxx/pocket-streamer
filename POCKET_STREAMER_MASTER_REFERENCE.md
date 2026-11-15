@@ -508,49 +508,53 @@ Configure `ESP32` as **`I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_RX`** (`32-bit`
 
 ## 17. Option P5-Card (`72.0 × 98.0 × 18.0 mm`, Print-Ready Final Build)
 
-**`Option P5-Card`** (`72.0 × 98.0 × 18.0 mm`, `127.0 cm³`) is the finalized, Bambu Lab P2S print-ready design built around the `1.91"` QSPI AMOLED controller and all `9` components arriving on Nov 16. All `37` bounding boxes across both translucent smoke and opaque matte charcoal assemblies pass with **`Collisions=0`**, every internal PCB sits on molded floor-connected cradles, all `4` corners have real `M2` fasteners (`2.0 × 2.0 mm` pilot bores in tray bosses + `2.2 × 2.2 mm` through-holes in faceplate), and every exported binary `.STL` rests flat at `minZ = 0.00 mm`.
+**`Option P5-Card`** (`72.0 × 98.0 × 18.0 mm`, `127.0 cm³`) is the finalized, Bambu Lab P2S print-ready design built around the `1.91"` QSPI AMOLED controller and all components audited against the `53` user-uploaded screenshots & datasheets (see [`COMPONENT_DIMENSIONS_AND_SCREENSHOT_AUDIT.md`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/COMPONENT_DIMENSIONS_AND_SCREENSHOT_AUDIT.md)). Key architectural safety & ergonomic locks in this revision:
+- **Single External USB-C Port Only:** Top-wall `AOICRIE V713` (`FM5324GA`) USB-C cutout is **sealed solid** (`Only 1 external USB-C port on Left Wall` via `LILYGO T-Display-S3 AMOLED`, charging the `1300 mAh` LiPo safely at `~500 mA` via `SY6970` rather than exposing `V713`'s fixed `2.4 A` charger to a `0.5C` / `650 mA` cell).
+- **Option A Direct Button Wiring:** Both `GODIYMODULES 1×4` boards (`四位独立按键`, `K1..K4` to shared `GND`) use common `GND`; **`B1` (`K1` top strip)** wires directly to `V713 K` (`1-click 5V Audio/BT ON`, `2-click OFF`, `< 30 µA` standby), and **`B2..B8`** wire directly to `GPIO 42, 43, 44, 45, 2, 3, 46` (`KY-023 SW` on `GPIO 11` adds `2000 ms` hold `ext0` Deep Sleep/Wake).
+- **Full Collision & Clearance Verification:** All `39` bounding boxes (including explicit `LILYGO` rear `JST-GH` + `Qwiic` + `RES` + `3D` metal antenna blocks and `100%`-internal `V713` Boost `25.0 × 20.0 × 4.8 mm`) pass with **`Collisions=0`**, every PCB rests on molded floor-connected cradles, all `4` corners have real `M2` fasteners, and every exported `.STL` rests flat at `minZ = 0.00 mm`.
 
 ![Option P5-Card Internal PCB Cradles & Bambu P2S Single-Plate Layout](/Users/benfox/.gemini/antigravity/brain/d773b1b3-4405-4408-8ad7-b59f103e4218/ref_15g_p5_card_internal_cradles_and_print_plate.png)
 
-### 17.1 Finalized 9-Item Hardware BOM
+### 17.1 Finalized 9-Item Screenshot-Verified Hardware BOM
 
-| # | Component | Exact Dimensions / Spec | Key Placement (`CAD X, Y, Z mm`) |
+| # | Component | Screenshot-Verified Dimensions / Spec | Key Placement (`CAD X, Y, Z mm`) |
 |---|---|---|---|
-| 1 | **`LILYGO T-Display-S3 AMOLED`** (`Unwelded`) | `58.8 × 25.5 × 4.2 mm`, `1.91"` `536×240` `RM67162`, `ESP32-S3R8` (`16 MB` Flash + `8 MB` OPI PSRAM) | `X: 3.2..62.0`, `Y: 46.5..72.0`, `Z: 12.0..16.2` (USB-C flush at Left Wall `X=0`) |
-| 2 | **`WWZMDiB Mini 3.3V MicroSD`** (`Unwelded`) | `18.0 × 18.5 × 4.0 mm`, `6`-pin `HSPI` | `X: 52.2..70.2`, `Y: 73.5..92.0`, `Z: 9.8..13.8` (Card slot flush at Right Wall `X=72.0`) |
-| 3 | **`GY-PCM5102`** Stereo `I2S` DAC (`Unwelded`) | `32.0 × 17.0 × 5.5 mm`, `3.5 mm` TRS jack | `X: 6.0..38.0`, `Y: 79.0..96.0`, `Z: 9.5..15.0` (TRS flush at Top Wall `Y=98.0`) |
-| 4 | **`Acxico` (`KCX_BT_EMITTER`)** Bluetooth Audio `TX` | `23.5 × 15.5 × 2.5 mm`, `5V` stereo analog in (`IN_L/IN_R/AGND`) | `X: 5.5..29.0`, `Y: 79.0..94.5`, `Z: 2.0..4.5` (tucked directly under `GY-PCM5102`) |
-| 5 | **`EGSCST INMP441`** MEMS Mic (`Unwelded`) | `Ø14.0 mm` PCB (`Z: 13.0..14.6`) + `Ø9.0 mm` gasket (`Z: 14.6..16.0`) | Centered `(45.0, 86.5)` under `Ø9.6 mm` recessed `21`-dot + crosshair grille |
-| 6 | **`Liter energy 503759`** `3.7V 1300 mAh` LiPo | `59.0 × 37.0 × 5.0 mm` + `0.8 mm` top protective `shield_rib` (`Z: 7.0..7.8`) | `X: 6.5..65.5`, `Y: 41.0..78.0`, `Z: 1.8..6.8` |
-| 7 | **`5V 2A Type-C Boost`** (`USB Not Welded`) | `21.0 × 17.2 × 4.2 mm` | `X: 29.8..50.8`, `Y: 79.0..96.2`, `Z: 2.0..6.8` (USB-C flush at Top Wall `Y=98.0`) |
-| 8 | **`KY-023`** Dual-Axis Thumbstick | `26.0 × 34.0 mm` PCB (`Z: 2.4..14.4`) + `Ø16.0 × 3.8 mm` concave cap in `Ø25.0 mm` well | `X: 4.5..30.5`, `Y: 5.8..39.8` (disc center `(17.5, 21.8)`, `4.5 mm` radial moat) |
-| 9 | **`2× GODIYMODULES 1×4`** Tactile Keypads | `2× 37.0 × 15.0 mm` PCBs + `8×` captive chamfered keycaps | `X: 32.0..69.0`, `Y: 6.0..21.0` & `22.5..37.5`, PCB `Z: 6.4..8.0` |
+| 1 | **`LILYGO T-Display-S3 AMOLED`** (`Unwelded`) | **`60.0 × 25.5 × 4.2 mm`** (`~8.0 mm` incl. rear `JST-GH 1.25mm`, `Qwiic`, `RES`, `3D` antenna `Z: 8.2..12.0`), `1.91"` `536×240` `RM67162`, `SY6970` `~500 mA` charger | `X: 2.0..62.0`, `Y: 46.5..72.0`, `Z: 12.0..16.2` (**sole external USB-C flush at Left Wall `X=0`**) |
+| 2 | **`WWZMDiB Mini 3.3V MicroSD`** (`Unwelded`) | **`17.9 × 17.9 × 3.8 mm`** (`4.0 mm` CAD Z envelope), `6`-pin `HSPI` (`4× 10 kΩ` pull-ups) | `X: 52.3..70.2`, `Y: 74.0..91.9`, `Z: 9.8..13.8` (Card slot flush at Right Wall `X=72.0`) |
+| 3 | **`GY-PCM5102`** Stereo `I2S` DAC (`Unwelded`) | **`31.9 × 16.9 × 1.6 mm`** PCB (`32.0 × 17.0 × 5.5 mm` w/ `3.5 mm` TRS jack) | `X: 6.0..38.0`, `Y: 79.0..96.0`, `Z: 9.5..15.0` (TRS flush at Top Wall `Y=98.0`) |
+| 4 | **`Acxico` (`KCX_BT_EMITTER`)** Bluetooth Audio `TX` | `23.5 × 15.5 × 2.5 mm` (`3.0 mm` w/ IC), `5V` stereo analog in (`IN_L/IN_R/AGND`) | `X: 5.5..29.0`, `Y: 79.0..94.5`, `Z: 2.0..4.5` (tucked directly under `GY-PCM5102`) |
+| 5 | **`EGSCST INMP441`** MEMS Mic (`Unwelded`) | **`Ø14.0 × 2.6 mm`** PCB (`Z: 13.0..14.6`) + `Ø9.0 mm` gasket (`Z: 14.6..16.0`) | Centered `(45.0, 86.5)` under `Ø9.6 mm` recessed `21`-dot + crosshair grille |
+| 6 | **`Liter energy 503759`** `3.7V 1300 mAh` LiPo | **`59.0 × 37.0 × 5.0 mm`** (`0.5C` = `650 mA` max charge/discharge) + `0.8 mm` `shield_rib` (`Z: 7.0..7.8`) | `X: 6.5..65.5`, `Y: 38.0..75.0`, `Z: 1.8..6.8` |
+| 7 | **`AOICRIE V713` (`FM5324GA`)** `5V 2A` Boost (`USB-A Unwelded`) | **`25.0 × 20.0 × 4.8 mm`** (`26.5 mm` X w/ internal USB-C lip), `< 30 µA` standby | `X: 29.8..56.3`, `Y: 75.8..95.8`, `Z: 2.0..6.8` (**100% internal**, USB-C facing `+X`, Top Wall **sealed**) |
+| 8 | **`KY-023`** Dual-Axis Thumbstick | **`25.0 × 33.0 mm`** PCB (`Z: 2.4..14.4` w/ mushroom cap removed) + `Ø16.0 × 3.8 mm` concave cap in `Ø25.0 mm` well | `X: 5.5..30.5`, `Y: 4.5..37.5` (disc center `(17.5, 21.8)`, `4.5 mm` radial moat) |
+| 9 | **`2× GODIYMODULES 1×4`** Tactile Keypads (`四位独立按键`) | **`2× 37.0 × 15.0 mm`** PCBs (`4` independent switches to shared `GND` bus) + `8×` captive chamfered keycaps | `X: 32.0..69.0`, `Y: 6.0..21.0` & `22.5..37.5`, PCB `Z: 6.4..8.0` |
 
-### 17.2 Exact `17`-Pin `ESP32-S3` GPIO Map & Internal `5`-Wire BT Audio TX Bus
+### 17.2 Exact `ESP32-S3` GPIO Map, Option A Direct Buttons & Isolated `5V` Audio Bus
 
 | Function / Module | `T-Display-S3 AMOLED` Pin / Tie-Off | Notes |
 |---|---|---|
-| **`KY-023 VRx / VRy / SW`** | **`GPIO 1`** / **`GPIO 10`** / **`GPIO 11`** | `VCC = 3.3V` strictly; `SW` uses `INPUT_PULLUP` |
+| **`KY-023 VRx / VRy / SW`** | **`GPIO 1`** / **`GPIO 10`** / **`GPIO 11`** | `VCC = 3.3V` strictly; `SW` `INPUT_PULLUP` + **`2000 ms` hold `ext0` Deep Sleep / Wake** |
 | **Shared `I2S0 BCK / WS`** | **`GPIO 12`** / **`GPIO 13`** | Drives both `GY-PCM5102` (`BCK/LCK`) & `INMP441` (`SCK/WS`) |
-| **`GY-PCM5102 DIN`** | **`GPIO 14`** | Solder jumpers on back: `SCK→GND`, `H1L/H2L/H4L→GND`, `H3L (XSMT)→3.3V`, `VIN→5V` |
+| **`GY-PCM5102 DIN`** | **`GPIO 14`** | Solder jumpers on back: `SCK→GND`, `H1L/H2L/H4L→GND`, `H3L (XSMT)→3.3V`, `VIN→V713 5V OUT+` |
 | **`INMP441 SD`** | **`GPIO 15`** | Add `100 kΩ` pull-down to `GND`; `L/R→GND`, `VDD→3.3V` |
-| **`Mini 3.3V MicroSD` (`HSPI`)** | **`CS 16` / `MOSI 39` / `SCK 40` / `MISO 41`** | `VCC = 3.3V` strictly |
-| **`2×4` Keypad Rows (`COM`)** | **`GPIO 42` / `GPIO 43`** | `1×4` common pins (remove tall headers; wire flat underneath) |
-| **`2×4` Keypad Cols (`K1..K4`)** | **`GPIO 44, 45, 2, 3`** | Captive flange caps capture inside faceplate slots |
-| **`5V 2A Boost` → `VSYS`** | **`OUT+ 5V` → Slide Switch → `VSYS`** | Switch **OFF** when flashing via AMOLED USB-C |
-| **`Acxico KCX_BT_EMITTER`** | **`+5V / PGND`** → Switched Boost `5V / GND`; **`IN_L / IN_R / AGND`** → `GY-PCM5102` **`L / R / G`** | `5` short internal jumpers straight up (`~15 mm` audio leads) |
+| **`Mini 3.3V MicroSD` (`HSPI`)** | **`CS 16` / `MOSI 39` / `CLK 40` / `MISO 41`** | `3V3 → 3.3V` strictly |
+| **`1×4` Keypad Common `GND`** | **`GND` (both strips)** | Common ground bus for all `8` switches (`C1..C4` open) |
+| **`B1` (`K1` Top Strip — `5V` Power)** | **`V713` Boost `K` pad** | **Hardware `5V` Power (`1-click ON / 2-click OFF`, `< 30 µA` standby)** — *never wired to ESP32* |
+| **`B2..B8` (`7` Direct UI Buttons)** | **`GPIO 42, 43, 44, 45, 2, 3, 46`** | Direct `INPUT_PULLUP` *(no matrix scanning, no slide switch; initialized post-boot in `setup()`)* |
+| **`Liter 503759` LiPo Power** | **`T-Display-S3 BAT` (`JST-GH`)** + **`V713 B+ / B-`** | **Charge ONLY via Left-Wall `T-Display-S3` USB-C (`~500 mA` `SY6970`)** — Top Wall sealed over `V713` (`2.4 A` unsafe) |
+| **`Acxico KCX_BT_EMITTER`** | **`+5V / PGND`** → `V713` `5V / GND`; **`IN_L / IN_R / AGND`** → `GY-PCM5102` **`L / R / G`** | `5` short internal jumpers straight up (`~15 mm` audio leads) |
 
 ### 17.3 Internal Molded PCB Cradles & Corner Bosses (Tray `Z: 0.0..16.2 mm`)
 
 All supports are floor-standing monoliths (`X/Y/Z` in `mm`):
 - **Hollow `M2` Corner Screw Bosses (`4×`):** Outer `3.6 × 3.6 mm` at corners `(1.8, 1.8)`, `(66.6, 1.8)`, `(1.8, 92.6)`, `(66.6, 92.6)`; solid base `Z: 1.8..4.2`, `0.8 mm` walls `Z: 4.2..16.2` leaving `2.0 × 2.0 mm` center pilot bores.
-- **`LiPo` Lateral Rails (`2×`):** `cradle_lipo_l` (`5.5..6.4, 41.0..78.0, 1.8..7.0`) and `cradle_lipo_r` (`65.6..66.5, 41.0..78.0, 1.8..7.0`), seated flush below `shield_rib` (`Z: 7.0..7.8`).
-- **`KY-023` Corner Standoffs (`4×`):** `0.6 mm` pads (`Z: 1.8..2.4`) at `(4.5..7.5, 5.8..8.8)`, `(27.5..30.5, 5.8..8.8)`, `(4.5..7.5, 36.8..39.8)`, `(27.5..30.5, 36.8..39.8)`.
+- **`LiPo` Lateral Rails (`2×`):** `cradle_lipo_l` (`5.5..6.4, 38.0..75.0, 1.8..7.0`) and `cradle_lipo_r` (`65.6..66.5, 38.0..75.0, 1.8..7.0`), seated flush below `shield_rib` (`6.0..66.0, 37.7..75.2, 7.0..7.8`).
+- **`KY-023` Corner Standoffs (`4×`):** `0.6 mm` pads (`Z: 1.8..2.4`) at `(5.5..8.5, 4.5..7.5)`, `(27.5..30.5, 4.5..7.5)`, `(5.5..8.5, 34.5..37.5)`, `(27.5..30.5, 34.5..37.5)`.
 - **Keypad Support Rails (`3×`):** `cradle_pad_l` (`32.0..34.5`), `cradle_pad_c` (`49.0..51.5`), `cradle_pad_r` (`66.5..69.0`), all `Y: 6.0..37.5, Z: 1.8..6.4` with wide wire channels between.
-- **`T-Display-S3 AMOLED` Cradles (`4` pieces):** Left twin ledges `cradle_amoled_l1` (`3.2..5.8, 46.5..53.5, 1.8..12.0`) & `cradle_amoled_l2` (`3.2..5.8, 64.5..72.0, 1.8..12.0`) straddling the USB-C port; right floor L-bracket `cradle_amoled_r_stem` (`66.5..70.2, 46.5..72.0, 1.8..12.0`) + `cradle_amoled_r_shelf` (`59.5..66.5, 46.5..72.0, 8.0..12.0`) clearing `shield_rib` (`Z <= 7.8`).
-- **`GY-PCM5102` Supports (`3` pieces):** Left L-bracket stem (`3.5..5.3, 79.0..92.4, 1.8..9.5`) + shelf (`5.3..7.8, 79.0..92.4, 7.5..9.5`) clearing `boss_tl`; right divider pillar `cradle_pcm_r` (`29.1..29.7, 79.0..95.5, 1.8..9.5`) separating `KCX_BT_EMITTER` and `5V Boost`.
-- **`Mini 3.3V MicroSD` U-Pedestal (`4` pieces):** `cradle_sd_rear_l` (`52.2..55.0, 78.8..92.0, 1.8..9.8`), `cradle_sd_rear_top` (`55.0..69.5, 89.8..92.0, 1.8..9.8`), `cradle_sd_front_r` (`66.2..70.2, 73.5..78.8, 1.8..9.8`), and contiguous upper step `cradle_sd_front_l` (`52.2..55.0, 76.5..78.8, 8.0..9.8`).
-- **`5V Boost` Stop Lip:** `cradle_boost_stop` (`31.0..49.0, 78.2..78.9, 1.8..4.5`).
+- **`T-Display-S3 AMOLED` Cradles (`5` pieces):** Left twin ledges `cradle_amoled_l1` (`2.0..5.4, 46.5..47.4, 1.8..12.0`) & `cradle_amoled_l2` (`2.0..5.4, 71.3..72.0, 1.8..12.0`) straddling Left USB-C & `amoled_rear_jst`; right split L-bracket `cradle_amoled_r_stem` (`66.6..70.2, 46.5..72.0, 1.8..12.0`) + `cradle_amoled_r_shelf_bot` (`59.5..66.6, 46.5..50.5, 8.0..12.0`) & `cradle_amoled_r_shelf_top` (`59.5..66.6, 68.0..72.0, 8.0..12.0`) clearing `shield_rib` (`Z <= 7.8`) and rear `3D` metal antenna (`52.0..61.8, 51.0..67.5, 8.5..12.0`).
+- **`GY-PCM5102` Supports (`3` pieces):** Left L-bracket stem (`3.5..5.3, 79.0..92.4, 1.8..9.5`) + shelf (`5.3..7.8, 79.0..92.4, 7.5..9.5`) clearing `boss_tl`; right divider pillar `cradle_pcm_r` (`29.1..29.7, 79.0..95.5, 1.8..9.5`) separating `KCX_BT_EMITTER` and `V713` Boost.
+- **`Mini 3.3V MicroSD` U-Pedestal (`3` pieces):** `cradle_sd_rear_top` (`56.8..69.5, 89.8..91.9, 1.8..9.8`), `cradle_sd_front_r` (`66.6..70.2, 74.0..78.8, 1.8..9.8`), and elevated shelf `cradle_sd_shelf_l` (`52.3..56.8, 75.5..91.9, 8.0..9.8`) overhanging internal `V713` Boost USB-C (`Z <= 6.8`) with `1.2 mm` margin.
+- **Internal `V713` Boost Stop Lip & Sealed Top Wall:** `cradle_boost_stop` (`31.0..54.0, 75.3..75.7, 1.8..4.5`); Top Wall (`Y: 96.2..98.0`) solid continuous across `X: 17.5..70.2` (Boost USB-C sealed inside).
 - **Faceplate Acoustic & Stick Features:** `lid_inmp441_ring` centered `(45.0, 86.5)` (`rIn=4.6 mm, rOut=6.2 mm`, `Z: 14.6..16.2`) under a `Ø9.6 mm` recessed (`0.45 mm` step) `21`-hole (`0.9 × 0.9 mm` grid at `1.6 mm` pitch) + bisected crosshair mic grille; `lid_stick_collar` (`rIn=12.5 mm, rOut=14.15 mm`, `Z: 14.8..18.0`) creating a `Ø25.0 mm × 3.2 mm` deep recessed basin around the `Ø16.0 × 3.8 mm` concave cap (`Z: 14.8..18.6`, `4.5 mm` open radial moat, `0.4 mm` lower than keycaps).
 
 ![Option P5-Card Top-Down & Side Elevation Profile](/Users/benfox/.gemini/antigravity/brain/d773b1b3-4405-4408-8ad7-b59f103e4218/ref_15h_topdown_and_side_profile_closeup.png)
@@ -559,8 +563,8 @@ All supports are floor-standing monoliths (`X/Y/Z` in `mm`):
 
 | Binary `.STL` File | Triangles | Bed Footprint (`mm`) | `minZ` | Purpose |
 |---|---|---|---|---|
-| [`p5_card_single_plate_all_parts.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_single_plate_all_parts.stl) | `4084` | `210.80 × 183.00 × 16.20` | `0.00` | Combined single-plate `.STL` of all `11` parts (`37.89 cm³`) grouped into `4` spaced AMS color zones (`Matte Black`, `Coral`, `Amber`, `Teal`) |
-| [`p5_card_bottom_tray.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_bottom_tray.stl) | `684` | `72.00 × 98.00 × 16.20` | `0.00` | Main enclosure + port cutouts + hollow M2 bosses + all internal PCB cradles |
+| [`p5_card_single_plate_all_parts.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_single_plate_all_parts.stl) | `4048` | `210.80 × 183.00 × 16.20` | `0.00` | Combined single-plate `.STL` of all `11` parts (`~38 cm³`) grouped into `4` spaced AMS color zones (`Matte Black`, `Coral`, `Amber`, `Teal`) |
+| [`p5_card_bottom_tray.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_bottom_tray.stl) | `648` | `72.00 × 98.00 × 16.20` | `0.00` | Main enclosure + `3` external cutouts (`Left` USB-C, `Top` `3.5 mm`, `Right` MicroSD; Top Boost USB-C **sealed**) + hollow M2 bosses + rear-clearance PCB cradles |
 | [`p5_card_top_faceplate.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_top_faceplate.stl) | `2280` | `72.00 × 98.00 × 3.40` | `0.00` | Exterior-down bezel (rigid `180°` X-flip aligned to tray) w/ `4× 2.2 × 2.2 mm` M2 holes, `21`-hole mic grille, `Ø25.0 mm` stick skirt & `INMP441` collar |
 | [`p5_card_concave_thumb_disc.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_concave_thumb_disc.stl) | `928` | `16.00 × 16.00 × 3.80` | `0.00` | Compact recessed thumb-disc printed stem-down (`Z: 0..1.6` stem, `1.6..2.6` floor, `2.6..3.8` rim) |
 | [`p5_card_keycaps_8x.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_keycaps_8x.stl) | `192` | `45.40 × 21.40 × 3.60` | `0.00` | `8×` chamfered keycaps w/ `0.8 mm` captive base flanges |
@@ -568,7 +572,8 @@ All supports are floor-standing monoliths (`X/Y/Z` in `mm`):
 **Single-Plate Bambu Studio Tips (`256 × 256 mm` P2S):** Drag [`p5_card_single_plate_all_parts.stl`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/stl_p5_card/p5_card_single_plate_all_parts.stl) onto the plate; for `4`-color accents, click **`Split → To Objects`**, assign filament slots per zone (`Matte Black`: tray + lid + `B1–B4`; `Coral`: thumb-disc + `B8`; `Amber`: `B5, B7`; `Teal`: `B6`), and select **`Print sequence: By object`** (`3` total filament swaps, zero purge tower waste; zones are spaced `>= 52 mm` apart vertically/laterally around the low-profile caps) or **`By layer`** (swaps finish at `Z = 3.8 mm`).
 
 ### 17.5 `Option P5-Card` Deliverables Index
-- **Interactive 3D HTML Explorer:** [`p5_card_assembled_preview.html`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/p5_card_assembled_preview.html) *(Transparent / Smoked / Matte Black / PCBs + Cradles modes, Z-Stack explode slider, synchronized Side-by-Side Transparent | Exploded split view, live `1.91"` AMOLED UI & `22`-wire pinout map)*
+- **Screenshot-Verified Dimensions Repository (`53` Files):** [`COMPONENT_DIMENSIONS_AND_SCREENSHOT_AUDIT.md`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/COMPONENT_DIMENSIONS_AND_SCREENSHOT_AUDIT.md)
+- **Interactive 3D HTML Explorer:** [`p5_card_assembled_preview.html`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/p5_card_assembled_preview.html) *(Synced [`index.html`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/index.html) — Transparent / Smoked / Matte Black / PCBs + Cradles modes, Z-Stack explode slider, synchronized Side-by-Side Transparent | Exploded split view, live `1.91"` AMOLED UI & Option A Direct Button pinout map)*
 - **CAD Script:** [`generate_1to1_p5_card_amoled.swift`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/generate_1to1_p5_card_amoled.swift)
 - **Firmware & Print Checklist:** [`main.cpp`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/firmware_p5_card/src/main.cpp), [`platformio.ini`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/firmware_p5_card/platformio.ini), [`WIRING_AND_PRINT_CHECKLIST.md`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/firmware_p5_card/WIRING_AND_PRINT_CHECKLIST.md)
 - **Photorealistic Renders:** [`render_15j_p5_card_transparent_and_exploded.jpg`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/parts_1to1_3d/renders/render_15j_p5_card_transparent_and_exploded.jpg), [`render_15h_p5_card_topdown_mic_and_joystick.jpg`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/parts_1to1_3d/renders/render_15h_p5_card_topdown_mic_and_joystick.jpg), [`render_15i_p5_card_side_profile_recessed_stick.jpg`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/parts_1to1_3d/renders/render_15i_p5_card_side_profile_recessed_stick.jpg), [`render_15e_p5_card_opaque_exact_topdown.jpg`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/parts_1to1_3d/renders/render_15e_p5_card_opaque_exact_topdown.jpg), [`render_15f_p5_card_opaque_ports_4view.jpg`](file:///Users/benfox/Development/3D%20Design/Pocket%20Streamer%20Hardware%20CAD/parts_1to1_3d/renders/render_15f_p5_card_opaque_ports_4view.jpg)

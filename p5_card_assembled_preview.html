@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light dark" />
-  <title>Option P5-Card — Assembled 3D Explorer (1.91&quot; AMOLED · 72 × 98 × 18 mm)</title>
+  <title>fbox (Option P5-Card) — Assembled 3D Explorer (1.91&quot; AMOLED · 72 × 98 × 18 mm)</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
     html {
@@ -279,7 +279,7 @@
       <div>
         <div class="flex flex-wrap items-center gap-2.5">
           <h1 class="text-lg md:text-xl font-semibold tracking-tight">
-            Option P5-Card — Assembled Handheld 3D Explorer (1.91&quot; RM67162 AMOLED · 72 × 98 × 18 mm)
+            fbox (Option P5-Card) — Assembled Handheld 3D Explorer (1.91&quot; RM67162 AMOLED · 72 × 98 × 18 mm)
           </h1>
           <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[var(--card)] border border-[var(--border)] text-[var(--success)]">
             0 Collisions · 1300mAh LiPo · 5V BT TX + 3.5mm DAC · INMP441 Mic · 1-Plate P2S Ready
@@ -321,7 +321,7 @@
         <div class="relative rounded-xl border border-[var(--border)] bg-[var(--background)] overflow-hidden">
           <canvas id="cad-canvas" class="block w-full cursor-grab active:cursor-grabbing touch-none" style="height: 450px;" aria-label="Interactive 3D Option P5-Card hardware assembly canvas; drag to orbit view"></canvas>
           <div id="canvas-hint" class="pointer-events-none absolute left-3 bottom-2.5 px-2.5 py-1 rounded-md text-xs font-mono bg-[var(--card)]/90 border border-[var(--border)] text-[var(--muted-foreground)]">
-            Drag to orbit 360° · Top = 3.5mm + Boost USB-C · Left = AMOLED USB-C · Right = MicroSD
+            Drag to orbit 360° · Top = 3.5mm TRS (Boost USB-C Sealed!) · Left = Single AMOLED USB-C · Right = MicroSD
           </div>
         </div>
 
@@ -358,7 +358,7 @@
         <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between">
             <h2 class="text-xs font-semibold uppercase tracking-wide text-[var(--primary)]">
-              Live 1.91&quot; AMOLED (536×240)
+              fbox OS 1.91&quot; AMOLED (536×240)
             </h2>
             <span id="hud-mode-badge" class="text-xs font-mono text-[var(--success)]">AUDIOBOOKSHELF</span>
           </div>
@@ -423,29 +423,29 @@
         <!-- Compact P5-Card Internal Architecture Card -->
         <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-2 text-xs">
           <h2 class="font-semibold uppercase tracking-wide text-[var(--primary)]">
-            Inside Option P5-Card (72.0 × 98.0 × 18.0 mm)
+            Inside fbox (Option P5-Card · 72.0 × 98.0 × 18.0 mm)
           </h2>
           <ul class="space-y-1.5 text-[var(--muted-foreground)]">
-            <li><strong class="text-[var(--foreground)]">Faceplate (<code>Z: 14.8..18.0</code>):</strong> <code>Ø9.6 mm</code> 21-dot + crosshair mic grille above AMOLED, <code>Ø25.0 mm</code> recessed basin w/ <code>4.5 mm</code> moat around the <code>Ø16.0 mm</code> coral disc, and <code>2×4</code> captive caps.</li>
-            <li><strong class="text-[var(--foreground)]">Upper Bay (<code>Z: 2.0..16.0</code>):</strong> <code>GY-PCM5102</code> (<code>3.5 mm</code> jack top-left) directly above <code>Acxico KCX_BT_EMITTER</code>, center <code>5V 2A Boost</code> USB-C, <code>INMP441</code> gasket collar, and right-wall <code>MicroSD</code>.</li>
-            <li><strong class="text-[var(--foreground)]">Mid + Lower Bays:</strong> <code>503759</code> 1300mAh LiPo behind AMOLED (<code>Z: 1.8..6.8</code> under <code>0.8 mm</code> shield), <code>KY-023</code> lower-left (<code>Z: 2.4</code>), <code>2× 1×4</code> keypads lower-right (<code>Z: 6.4</code>).</li>
+            <li><strong class="text-[var(--foreground)]">Single USB-C Safety Rule:</strong> Top-wall Boost USB-C cutout is <strong>sealed solid</strong> (<code>V713</code> <code>2.4A</code> fixed charger stays 100% internal &gt; <code>650 mA</code> LiPo max); charge &amp; flash only via the single Left-Wall <code>T-Display-S3 AMOLED</code> USB-C port (<code>SY6970 ~500 mA</code>).</li>
+            <li><strong class="text-[var(--foreground)]">Upper Bay (<code>Z: 2.0..16.0</code>):</strong> <code>GY-PCM5102</code> (<code>31.9×16.9 mm</code>, <code>3.5 mm</code> jack top-left) above <code>Acxico KCX_BT_EMITTER</code>, internal <code>V713</code> Boost (<code>25.0×20.0×4.8 mm</code>), <code>Ø14 mm</code> <code>INMP441</code> gasket collar, and right-wall <code>17.9×17.9 mm</code> <code>MicroSD</code>.</li>
+            <li><strong class="text-[var(--foreground)]">Mid + Lower Bays:</strong> <code>503759</code> 1300mAh LiPo (<code>59×37×5 mm</code>, <code>Y: 38..75</code> under <code>0.8 mm</code> shield) clear of rear AMOLED <code>JST-GH</code> &amp; <code>3D</code> antenna, <code>KY-023</code> (<code>25×33 mm</code>, <code>Z: 2.4</code>), and <code>2× 1×4</code> direct keypads (<code>B1→K</code> + 7 GPIOs).</li>
             <li><strong class="text-[var(--foreground)]">Single-Plate P2S Print:</strong> <code>p5_card_single_plate_all_parts.stl</code> packs all 11 pieces flat (<code>minZ = 0.00 mm</code>) into 4 spaced AMS color zones.</li>
           </ul>
         </section>
       </aside>
     </div>
 
-    <!-- Complete 22-Wire Pinout Reference Table -->
+    <!-- Complete Option A Direct Button & Single-USB-C Solder Reference Table -->
     <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <h2 class="text-sm font-semibold">Complete 22-Wire Option P5-Card Solder Map (17-Pin ESP32-S3 Bus + 5-Wire Acxico BT TX)</h2>
-        <span class="text-xs text-[var(--muted-foreground)]">GY-PCM5102 jumpers: SCK→GND, H1L/H2L/H4L→GND, H3L (XSMT)→3.3V · Slide switch OFF before USB-C flash!</span>
+        <h2 class="text-sm font-semibold">Option A Direct Button &amp; Single-USB-C Solder Map (19-Wire ESP32-S3 + V713 K Bus + 5-Wire Acxico BT TX)</h2>
+        <span class="text-xs text-[var(--muted-foreground)]">GY-PCM5102 jumpers: SCK→GND, H1L/H2L/H4L→L, H3L (XSMT)→H · B1 (K1)→V713 K toggles 5V Audio/BT rail</span>
       </div>
 
       <div tabindex="0" role="region" aria-labelledby="pinout-table-caption" class="table-wrapper">
         <table class="pinout-table text-xs">
           <caption id="pinout-table-caption" class="sr-only">
-            Complete 22-wire connection map for Option P5-Card connecting LILYGO T-Display-S3 AMOLED, GY-PCM5102, Acxico KCX_BT_EMITTER, INMP441, Mini 3.3V MicroSD, KY-023, 2x 1x4 keypads, and 5V 2A Boost
+            Complete Option A direct-button and single-USB-C connection map for Option P5-Card connecting LILYGO T-Display-S3 AMOLED, GY-PCM5102, Acxico KCX_BT_EMITTER, INMP441, Mini 3.3V MicroSD, KY-023, 2x 1x4 keypads, and internal AOICRIE V713 5V Boost
           </caption>
           <thead>
             <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
@@ -550,26 +550,27 @@
         phase: 0
       };
 
-      // ---- Complete 22-Wire Option P5-Card Solder Map ----
+      // ---- Option A Direct Button & Single-USB-C Solder Map ----
       const PINOUT_ROWS = [
-        { mod: 'LILYGO T-Display-S3 AMOLED', sig: 'On-Board QSPI RM67162 + ESP32-S3R8', from: '536×240 AMOLED + 8MB PSRAM', to: 'Internal Flex (0 Wires)', wire: 'Zero display wires' },
-        { mod: 'KY-023 Thumbstick', sig: '3.3V Analog Reference', from: 'VCC / +5V Pad', to: 'T-Display-S3 3.3V', wire: 'Remove 90° header' },
+        { mod: 'LILYGO T-Display-S3 AMOLED', sig: 'On-Board QSPI RM67162 + SY6970 USB-C Charger', from: 'Single Left-Wall USB-C (~500mA)', to: 'BAT VOLT IO4 · 536×240 AMOLED', wire: 'ONLY external USB-C port' },
+        { mod: 'KY-023 Thumbstick', sig: '3.3V Analog Reference', from: 'VCC / +5V Pad', to: 'T-Display-S3 3.3V', wire: 'Remove dome cap & 90° header' },
         { mod: 'KY-023 Thumbstick', sig: 'Common Ground', from: 'GND Pad', to: 'T-Display-S3 GND', wire: '30 AWG Black' },
         { mod: 'KY-023 Thumbstick', sig: 'X-Axis Seek / Skip (ADC1)', from: 'VRx Pad', to: 'GPIO 1', wire: '30 AWG Yellow' },
         { mod: 'KY-023 Thumbstick', sig: 'Y-Axis Volume / Scroll (ADC1)', from: 'VRy Pad', to: 'GPIO 10', wire: '30 AWG Green' },
-        { mod: 'KY-023 Thumbstick', sig: 'Center Push Select', from: 'SW Pad', to: 'GPIO 11 (INPUT_PULLUP)', wire: '30 AWG Blue' },
-        { mod: 'GY-PCM5102 Stereo DAC', sig: 'Clean 5V Analog LDO Supply', from: 'VIN + Bridges (SCK/FLT/DEMP/FMT→GND)', to: '5V Boost OUT+ · H3L (XSMT)→3.3V', wire: 'Mandatory H3L un-mute!' },
+        { mod: 'KY-023 Thumbstick', sig: 'Push Confirm + 2s Deep Sleep / ext0 Wake', from: 'SW Pad', to: 'GPIO 11 (INPUT_PULLUP)', wire: 'Tap=Select · 2s=ext0 Sleep' },
+        { mod: 'GY-PCM5102 Stereo DAC', sig: 'Clean 5V Audio LDO Supply', from: 'VIN + Bridges (SCK→GND, H1L/H2L/H4L→L)', to: 'V713 5V OUT+ · H3L (XSMT)→H', wire: 'Mandatory H3L un-mute!' },
         { mod: 'GY-PCM5102 + INMP441', sig: 'Shared I2S0 Bit Clock', from: 'BCK / SCK', to: 'GPIO 12', wire: 'Shared Y-tap (30 AWG)' },
         { mod: 'GY-PCM5102 + INMP441', sig: 'Shared I2S0 Word Select', from: 'LCK / WS', to: 'GPIO 13', wire: 'Shared Y-tap (30 AWG)' },
         { mod: 'GY-PCM5102 Stereo DAC', sig: 'I2S DAC Audio Out', from: 'DIN', to: 'GPIO 14', wire: '30 AWG White' },
         { mod: 'EGSCST INMP441 Mic', sig: '3.3V Logic + Left Channel Select', from: 'VDD / L/R / GND', to: '3.3V / GND', wire: 'Sealed under Ø9.6 grille' },
         { mod: 'EGSCST INMP441 Mic', sig: 'I2S Mic Serial Data', from: 'SD (+ 100 kΩ → GND)', to: 'GPIO 15', wire: '100k pull-down on SD' },
-        { mod: 'WWZMDiB Mini 3.3V MicroSD', sig: '3.3V Supply + Ground', from: 'VCC / GND', to: 'T-Display-S3 3.3V / GND', wire: 'Strictly 3.3V!' },
-        { mod: 'WWZMDiB Mini 3.3V MicroSD', sig: 'Dedicated HSPI Bus', from: 'CS / MOSI / SCK / MISO', to: 'GPIO 16 / 39 / 40 / 41', wire: 'Short rear jumpers' },
-        { mod: '2×4 Tactile Keypads', sig: 'Row 1 (B1–B4) / Row 2 (B5–B8)', from: 'Top COM / Bot COM', to: 'GPIO 42 / GPIO 43', wire: 'Pads on PCB underside' },
-        { mod: '2×4 Tactile Keypads', sig: 'Shared Matrix Columns 1..4', from: 'K1 / K2 / K3 / K4', to: 'GPIO 44 / 45 / 2 / 3', wire: 'GPIO 46 stays free' },
-        { mod: '5V 2A Type-C Boost + LiPo', sig: '503759 1300mAh + Switched 5V Rail', from: 'B+/B- → OUT+ (5V)', to: 'Slide Switch → VSYS + PCM5102 VIN', wire: 'Switch OFF to flash USB-C!' },
-        { mod: 'Acxico KCX_BT_EMITTER', sig: 'Switched 5V Power Bus (Under DAC)', from: '+5V / PGND', to: 'Switched Boost 5V / GND', wire: 'Paired to BT headphones' },
+        { mod: 'WWZMDiB Mini 3.3V MicroSD', sig: '3.3V Supply + Ground', from: '3V3 / GND', to: 'T-Display-S3 3.3V / GND', wire: 'Strictly 3.3V (no reg)!' },
+        { mod: 'WWZMDiB Mini 3.3V MicroSD', sig: 'Dedicated HSPI Bus', from: 'CS / MOSI / CLK / MISO', to: 'GPIO 16 / 39 / 40 / 41', wire: 'Short rear jumpers' },
+        { mod: '1×4 Keypads (Both Strips)', sig: 'Shared Ground Bus (Option A)', from: 'GND (Top & Bot strips)', to: 'T-Display-S3 GND', wire: 'Zero matrix scan needed' },
+        { mod: '1×4 Top Strip K1 (B1)', sig: 'Dedicated 5V Audio Rail Power Button', from: 'K1 Pad (Top Strip)', to: 'AOICRIE V713 K Pad (ONLY)', wire: '1-click ON / 2-click OFF (<30µA)' },
+        { mod: '1×4 Keypads (7× UI Keys)', sig: 'Direct Action Buttons B2..B8', from: 'Top K2..K4 + Bot K1..K4', to: 'GPIO 42, 43, 44, 45, 2, 3, 46', wire: 'INPUT_PULLUP (init post-boot)' },
+        { mod: 'Liter 503759 + Internal V713', sig: '1300mAh LiPo + Audio-Only 5V Boost', from: 'BAT+/BAT- → T-Display-S3 BAT + V713 B+/B-', to: 'V713 5V+ → PCM5102 + Acxico', wire: 'Top wall sealed (no VSYS feed!)' },
+        { mod: 'Acxico KCX_BT_EMITTER', sig: 'K-Switched 5V Power Bus (Under DAC)', from: '+5V / PGND', to: 'V713 5V OUT+ / OUT-', wire: 'Paired to BT headphones' },
         { mod: 'Acxico KCX_BT_EMITTER', sig: 'Stereo Line-In From DAC (3 short leads)', from: 'IN_L / IN_R / AGND', to: 'GY-PCM5102 L / R / G Pads', wire: '~15 mm vertical leads' }
       ];
 
@@ -967,8 +968,7 @@
           boxes.push(cadBox(70.2, 72.0, 90.0, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
           boxes.push(cadBox(1.8, 70.2, 0, 1.8, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
           boxes.push(cadBox(1.8, 11.0, 96.2, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(17.5, 35.1, 96.2, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(45.5, 70.2, 96.2, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(17.5, 70.2, 96.2, 98.0, 1.8, 16.2, zTray, s.fill, s.edge, s.alpha, 'shell'));
         }
 
         if (uiState.showCradles) {
@@ -977,25 +977,32 @@
           for (const [bx, by] of [[1.8, 1.8], [66.6, 1.8], [1.8, 92.6], [66.6, 92.6]]) {
             boxes.push(cadBox(bx, bx + 3.6, by, by + 3.6, 1.8, 16.2, zTray, cCol, cEdg, cAlp, 'cradle'));
           }
-          // LiPo rails, Keypad 3-rails, AMOLED shelves, Top bay cradles
-          boxes.push(cadBox(5.5, 6.4, 41.0, 78.0, 1.8, 7.0, zTray, cCol, cEdg, cAlp, 'cradle'));
-          boxes.push(cadBox(65.6, 66.5, 41.0, 78.0, 1.8, 7.0, zTray, cCol, cEdg, cAlp, 'cradle'));
+          // LiPo rails, Keypad 3-rails, split AMOLED shelves, Top bay cradles
+          boxes.push(cadBox(5.5, 6.4, 38.0, 75.0, 1.8, 7.0, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(65.6, 66.5, 38.0, 75.0, 1.8, 7.0, zTray, cCol, cEdg, cAlp, 'cradle'));
           boxes.push(cadBox(32.0, 34.5, 6.0, 37.5, 1.8, 6.4, zTray, cCol, cEdg, cAlp, 'cradle'));
           boxes.push(cadBox(49.0, 51.5, 6.0, 37.5, 1.8, 6.4, zTray, cCol, cEdg, cAlp, 'cradle'));
           boxes.push(cadBox(66.5, 69.0, 6.0, 37.5, 1.8, 6.4, zTray, cCol, cEdg, cAlp, 'cradle'));
-          boxes.push(cadBox(59.5, 70.2, 46.5, 72.0, 8.0, 12.0, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(2.0, 5.4, 46.5, 47.4, 1.8, 12.0, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(2.0, 5.4, 71.3, 72.0, 1.8, 12.0, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(66.6, 70.2, 46.5, 72.0, 1.8, 12.0, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(59.5, 66.6, 46.5, 50.5, 8.0, 12.0, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(59.5, 66.6, 68.0, 72.0, 8.0, 12.0, zTray, cCol, cEdg, cAlp, 'cradle'));
           boxes.push(cadBox(3.5, 7.8, 79.0, 92.4, 7.5, 9.5, zTray, cCol, cEdg, cAlp, 'cradle'));
           boxes.push(cadBox(29.1, 29.7, 79.0, 95.5, 1.8, 9.5, zTray, cCol, cEdg, cAlp, 'cradle'));
-          boxes.push(cadBox(52.2, 70.2, 73.5, 92.0, 1.8, 9.8, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(56.8, 69.5, 89.8, 91.9, 1.8, 9.8, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(66.6, 70.2, 74.0, 78.8, 1.8, 9.8, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(52.3, 56.8, 75.5, 91.9, 8.0, 9.8, zTray, cCol, cEdg, cAlp, 'cradle'));
+          boxes.push(cadBox(31.0, 54.0, 75.3, 75.7, 1.8, 4.5, zTray, cCol, cEdg, cAlp, 'cradle'));
         }
 
         // 2. 503759 1300 mAh LiPo + Kapton Tape + 0.8mm EMI Shield Rib
-        boxes.push(cadBox(6.5, 65.5, 41.0, 78.0, 1.8, 6.8, zLipo, '#cbd5e1', '#94a3b8', 1, 'lipo'));
-        boxes.push(cadBox(6.5, 11.2, 41.0, 78.0, 1.9, 6.9, zLipo, '#eab308', '#fef08a', 1, 'lipo_tape'));
-        boxes.push(cadBox(6.0, 66.0, 40.5, 78.5, 7.0, 7.8, zLipo + ex * 4, '#334155', '#64748b', 0.88, 'shield'));
+        boxes.push(cadBox(6.5, 65.5, 38.0, 75.0, 1.8, 6.8, zLipo, '#cbd5e1', '#94a3b8', 1, 'lipo'));
+        boxes.push(cadBox(6.5, 11.2, 38.0, 75.0, 1.9, 6.9, zLipo, '#eab308', '#fef08a', 1, 'lipo_tape'));
+        boxes.push(cadBox(6.0, 66.0, 37.7, 75.2, 7.0, 7.8, zLipo + ex * 4, '#334155', '#64748b', 0.88, 'shield'));
 
-        // 3. Lower Bay Controls (KY-023 + 2x 1x4 Keypads) & Upper Bay Electronics
-        boxes.push(cadBox(4.5, 30.5, 5.8, 39.8, 2.4, 4.0, zMid, '#1e293b', '#64748b', 1, 'ky_pcb'));
+        // 3. Lower Bay Controls (KY-023 25x33mm + 2x 1x4 Keypads) & Upper Bay Electronics
+        boxes.push(cadBox(5.5, 30.5, 4.5, 37.5, 2.4, 4.0, zMid, '#1e293b', '#64748b', 1, 'ky_pcb'));
         boxes.push(cadBox(9.5, 25.5, 13.8, 29.8, 4.0, 14.4, zMid, '#94a3b8', '#cbd5e1', 1, 'ky_gimbal'));
 
         boxes.push(cadBox(32.0, 69.0, 6.0, 21.0, 6.4, 8.0, zMid, '#15803d', '#4ade80', 1, 'pad_bot'));
@@ -1006,20 +1013,23 @@
           boxes.push(cadBox(cx - 3, cx + 3, 27.0, 33.0, 8.0, 15.2, zMid, '#0f172a', '#475569', 1, 'sw_top'));
         }
 
-        // Top Bay: Acxico KCX_BT_EMITTER (under GY-PCM5102), 5V 2A Boost, GY-PCM5102 + 3.5mm, MicroSD
+        // Top Bay: Acxico KCX_BT_EMITTER, internal AOICRIE V713 25x20mm Boost, GY-PCM5102 + 3.5mm, 17.9x17.9 MicroSD
         boxes.push(cadBox(5.5, 29.0, 79.0, 94.5, 2.0, 4.5, zMid - ex * 3, '#1d4ed8', '#60a5fa', 1, 'bt_tx'));
-        boxes.push(cadBox(29.8, 50.8, 79.0, 96.2, 2.0, 3.8, zMid, '#1e293b', '#64748b', 1, 'boost_pcb'));
-        boxes.push(cadBox(35.8, 44.8, 91.5, 98.0, 3.6, 6.8, zMid, '#cbd5e1', '#94a3b8', 1, 'boost_usbc'));
+        boxes.push(cadBox(29.8, 54.8, 75.8, 95.8, 2.0, 3.6, zMid, '#1e293b', '#64748b', 1, 'boost_pcb'));
+        boxes.push(cadBox(33.5, 40.5, 82.0, 89.0, 3.6, 6.8, zMid, '#334155', '#94a3b8', 1, 'boost_inductor'));
+        boxes.push(cadBox(49.5, 56.3, 81.3, 90.3, 3.6, 6.8, zMid, '#cbd5e1', '#94a3b8', 1, 'boost_usbc'));
 
         boxes.push(cadBox(6.0, 38.0, 79.0, 96.0, 9.5, 11.2, zMid + ex * 6, '#7e22ce', '#c084fc', 1, 'pcm_pcb'));
         boxes.push(cadBox(10.0, 18.5, 84.0, 98.2, 11.1, 15.0, zMid + ex * 6, '#0f172a', '#475569', 1, 'pcm_trs'));
         boxes.push(cadBox(11.6, 16.9, 96.0, 98.5, 11.6, 14.5, zMid + ex * 6, '#eab308', '#fef08a', 1, 'pcm_ring'));
 
-        boxes.push(cadBox(52.2, 70.2, 73.5, 92.0, 9.8, 11.4, zMid + ex * 6, '#0284c7', '#7dd3fc', 1, 'sd_pcb'));
-        boxes.push(cadBox(55.7, 70.2, 75.8, 89.8, 11.4, 13.8, zMid + ex * 6, '#cbd5e1', '#94a3b8', 1, 'sd_cage'));
+        boxes.push(cadBox(52.3, 70.2, 74.0, 91.9, 9.8, 11.4, zMid + ex * 6, '#0284c7', '#7dd3fc', 1, 'sd_pcb'));
+        boxes.push(cadBox(55.7, 70.2, 76.0, 89.8, 11.4, 13.8, zMid + ex * 6, '#cbd5e1', '#94a3b8', 1, 'sd_cage'));
 
-        // 4. LILYGO T-Display-S3 AMOLED + INMP441 MEMS Mic
-        boxes.push(cadBox(3.2, 62.0, 46.5, 72.0, 12.0, 13.6, zAmoled, '#0f172a', '#475569', 1, 'amoled_pcb'));
+        // 4. LILYGO T-Display-S3 AMOLED (60x25.5mm w/ rear JST-GH & 3D antenna) + INMP441 MEMS Mic
+        boxes.push(cadBox(2.0, 62.0, 46.5, 72.0, 12.0, 13.6, zAmoled, '#0f172a', '#475569', 1, 'amoled_pcb'));
+        boxes.push(cadBox(2.2, 11.5, 47.5, 71.2, 8.2, 12.0, zAmoled, '#94a3b8', '#cbd5e1', 1, 'amoled_rear_jst'));
+        boxes.push(cadBox(52.0, 61.8, 51.0, 67.5, 8.5, 12.0, zAmoled, '#94a3b8', '#cbd5e1', 1, 'amoled_rear_ant'));
         boxes.push(cadBox(8.5, 58.5, 48.0, 69.5, 13.6, 16.2, zAmoled, '#05080f', '#38bdf8', 1, 'amoled_glass'));
         boxes.push(cadBox(0.0, 6.8, 54.7, 63.7, 12.0, 15.2, zAmoled, '#cbd5e1', '#94a3b8', 1, 'amoled_usbc'));
         boxes.push(cadCyl(45.0, 86.5, 13.0, 14.6, 7.0, 12, zAmoled - ex * 4, '#1e293b', '#64748b', 1, 'inmp_pcb'));
