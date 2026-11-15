@@ -884,8 +884,11 @@
 
         const { boxes, wires, zAmoled, zLid, zCaps } = buildP5ExpCompactScene(explodeVal, shellMode);
 
+        const isOpaqueAssembled = (explodeVal < 0.02 && (shellMode === 'photoreal' || shellMode === 'solid'));
+        const EXTERIOR_TAGS = new Set(['shell', 'shell_lid', 'stick_well', 'mic_collar', 'amoled_glass', 'amoled_usbc', 'pcm_trs', 'pcm_ring', 'sd_cage', 'stick_shaft', 'stick_disc', 'cap_side']);
         const quads = [];
         for (const box of boxes) {
+          if (isOpaqueAssembled && !EXTERIOR_TAGS.has(box.tag) && !box.tag.startsWith('cap_front_')) continue;
           const pv = box.verts.map(v => projectPoint(v, uiState.yaw, uiState.pitch, cx, cy, scale));
           for (const f of box.faces) {
             const pts = []; let sumZ = 0;
@@ -896,6 +899,7 @@
         quads.sort((a, b) => a.avgZ - b.avgZ);
 
         function drawWires() {
+          if (isOpaqueAssembled) return;
           for (const wr of wires) {
             const a = projectPoint(wr.a, uiState.yaw, uiState.pitch, cx, cy, scale);
             const b = projectPoint(wr.b, uiState.yaw, uiState.pitch, cx, cy, scale);
