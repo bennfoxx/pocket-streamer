@@ -699,6 +699,18 @@
         return { verts, faces, color, edgeColor, alpha: alpha ?? 1, tag };
       }
 
+      function cadDiscFace(x, y, z, r, segs, zOff, color, edgeColor, alpha, tag) {
+        const cx = x - HALF_W, cy = HALF_H - y, cz = z - HALF_D + zOff;
+        const verts = [], face = [];
+        for (let i = 0; i < segs; i++) {
+          const a = (i / segs) * Math.PI * 2;
+          verts.push([cx + r * Math.cos(a), cy - r * Math.sin(a), cz]);
+          face.push(i);
+        }
+        face.push(0.06);
+        return { verts, faces: [face], color, edgeColor, alpha: alpha ?? 1, tag };
+      }
+
       function shadeHex(hex, delta) {
         if (!hex || hex[0] !== '#' || hex.length !== 7) return hex;
         const clamp = v => Math.max(0, Math.min(255, Math.round(v)));
@@ -753,12 +765,13 @@
           boxes.push(cadBox(66.6, 72.0, 5.4, 78.6, 0, 1.8, zTray, s.fill, s.edge, s.alpha, 'shell'));
           boxes.push(cadBox(0, 1.8, 5.4, 45.0, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
           boxes.push(cadBox(0, 1.8, 55.4, 78.6, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(70.2, 72.0, 5.4, 22.3, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(70.2, 72.0, 58.7, 60.5, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(70.2, 72.0, 78.4, 78.6, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(0.0, 0.35, 45.7, 54.7, 13.5, 16.7, zTray, '#0b0f17', '#64748b', 1.0, 'usbc_port_recess'));
+          boxes.push(cadBox(70.2, 72.0, 5.4, 6.0, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(70.2, 72.0, 23.9, 40.8, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(70.2, 72.0, 77.2, 78.6, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
           boxes.push(cadBox(5.4, 66.6, 0, 1.8, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(5.4, 11.0, 82.2, 84.0, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(17.5, 66.6, 82.2, 84.0, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(5.4, 10.5, 82.2, 84.0, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
+          boxes.push(cadBox(17.0, 66.6, 82.2, 84.0, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
           for (const [cx, cy, q] of p5Corners) {
             boxes.push(cadCornerSector(cx, cy, 5.4, q, 0.0, 17.7, 10, zTray, s.fill, s.edge, s.alpha, 'shell'));
           }
@@ -831,6 +844,7 @@
         // Coral Thumb-Disc + Front 1x4 Keycaps
         const jX = 17.5 + uiState.joyTiltX * 2.2, jY = 20.8 - uiState.joyTiltY * 2.2;
         boxes.push(cadCyl(jX, jY, 16.3, 20.1, 8.0, 14, zCaps, '#e0634e', '#fca5a5', 1, 'thumb_disc'));
+        boxes.push(cadDiscFace(jX, jY, 20.15, 5.6, 16, zCaps, '#c9503d', 'rgba(120,40,20,0.65)', 1, 'thumb_dish'));
 
         const frontCols = ['#e3a84b', '#45b09c', '#ebd15e', '#eb876b'];
         const frontEdges = ['#fef08a', '#99f6e4', '#fef08a', '#fecaca'];
@@ -849,12 +863,30 @@
           boxes.push(cadBox(0, 5.0, 5.4, 37.5, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           boxes.push(cadBox(30.0, 66.6, 0, 16.4, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           boxes.push(cadBox(66.6, 72.0, 5.4, 16.4, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          frontCapXs.forEach((cx, i) => {
+            const prevX = i === 0 ? 31.5 : frontCapXs[i - 1] + 4.4;
+            boxes.push(cadBox(prevX, cx - 4.4, 16.4, 25.2, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          });
+          boxes.push(cadBox(68.0, 72.0, 16.4, 25.2, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           for (const [cx, cy, q] of p5Corners) {
             boxes.push(cadCornerSector(cx, cy, 5.4, q, 17.7, 19.5, 10, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           }
           boxes.push(cadCyl(17.5, 20.8, 16.3, 19.5, 13.8, 16, zLid, s.fill, s.edge, Math.min(0.45, s.alpha + 0.08), 'stick_well'));
           boxes.push(cadCyl(26.8, 73.5, 16.1, 19.5, 5.4, 14, zLid, s.fill, s.edge, Math.min(0.45, s.alpha + 0.08), 'spk_collar'));
           boxes.push(cadCyl(45.2, 73.5, 16.1, 19.5, 5.8, 14, zLid, s.fill, s.edge, Math.min(0.45, s.alpha + 0.08), 'mic_collar'));
+          for (const gx of [26.8, 45.2]) {
+            boxes.push(cadDiscFace(gx, 73.5, 19.52, 4.6, 16, zLid, '#161920', '#94a3b8', 1, 'grille_detail'));
+            for (const dx of [-3.0, -1.5, 0, 1.5, 3.0]) {
+              for (const dy of [-3.0, -1.5, 0, 1.5, 3.0]) {
+                if (Math.abs(dx) + Math.abs(dy) < 5.5) {
+                  boxes.push(cadDiscFace(gx + dx, 73.5 + dy, 19.55, 0.42, 8, zLid, '#06080d', '#06080d', 1, 'grille_detail'));
+                }
+              }
+            }
+          }
+          for (const [sx, sy] of [[3.6, 3.6], [68.4, 3.6], [3.6, 80.4], [68.4, 80.4]]) {
+            boxes.push(cadDiscFace(sx, sy, 19.54, 1.5, 12, zLid, '#0f172a', '#94a3b8', 1, 'm2_screw'));
+          }
         }
 
         const wires = [];
@@ -892,7 +924,7 @@
         const { boxes, wires, zAmoled, zLid, zCaps } = buildP5ExpCompactScene(explodeVal, shellMode);
 
         const isOpaqueAssembled = (explodeVal < 0.02 && (shellMode === 'photoreal' || shellMode === 'solid'));
-        const EXTERIOR_TAGS = new Set(['shell', 'shell_lid', 'spk_collar', 'mic_collar', 'amoled_glass', 'amoled_usbc', 'pcm_trs', 'pcm_ring', 'sd_slot_trim', 'thumb_disc', 'cap_side']);
+        const EXTERIOR_TAGS = new Set(['shell', 'shell_lid', 'spk_collar', 'mic_collar', 'grille_detail', 'm2_screw', 'amoled_glass', 'usbc_port_recess', 'pcm_ring', 'sd_slot_trim', 'thumb_disc', 'thumb_dish', 'cap_side']);
         const quads = [];
         for (const box of boxes) {
           if (isOpaqueAssembled && !EXTERIOR_TAGS.has(box.tag) && !box.tag.startsWith('cap_front_')) continue;
@@ -964,35 +996,6 @@
             }
             ctx.restore();
           }
-
-          if (shellMode !== 'open') {
-            for (const gx of [26.8, 45.2]) {
-              const mc = projectPoint([gx - HALF_W, HALF_H - 73.5, 9.8 + zLid], uiState.yaw, uiState.pitch, cx, cy, scale);
-              const rMic = 4.6 * scale;
-              if (rMic > 3) {
-                ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.0;
-                ctx.beginPath(); ctx.arc(mc.x, mc.y, rMic, 0, Math.PI * 2); ctx.stroke();
-                ctx.fillStyle = '#090d16';
-                for (const dx of [-3.0, -1.5, 0, 1.5, 3.0]) {
-                  for (const dy of [-3.0, -1.5, 0, 1.5, 3.0]) {
-                    if (Math.abs(dx) + Math.abs(dy) < 5.5) {
-                      const dp = projectPoint([gx + dx - HALF_W, HALF_H - (73.5 + dy), 9.82 + zLid], uiState.yaw, uiState.pitch, cx, cy, scale);
-                      ctx.beginPath(); ctx.arc(dp.x, dp.y, Math.max(1.0, 0.42 * scale), 0, Math.PI * 2); ctx.fill();
-                    }
-                  }
-                }
-              }
-            }
-            ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#94a3b8';
-            for (const [sx, sy] of [[3.6, 3.6], [68.4, 3.6], [3.6, 80.4], [68.4, 80.4]]) {
-              const sp = projectPoint([sx - HALF_W, HALF_H - sy, 9.8 + zLid], uiState.yaw, uiState.pitch, cx, cy, scale);
-              ctx.beginPath(); ctx.arc(sp.x, sp.y, Math.max(2.0, 1.5 * scale), 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-            }
-          }
-
-          const dc = projectPoint([17.5 + uiState.joyTiltX * 2.2 - HALF_W, HALF_H - (20.8 - uiState.joyTiltY * 2.2), 10.4 + zCaps], uiState.yaw, uiState.pitch, cx, cy, scale);
-          ctx.strokeStyle = 'rgba(120, 40, 20, 0.55)'; ctx.lineWidth = 1.4;
-          ctx.beginPath(); ctx.arc(dc.x, dc.y, Math.max(3, 5.6 * scale), 0, Math.PI * 2); ctx.stroke();
         }
 
         if (subLabel) {
