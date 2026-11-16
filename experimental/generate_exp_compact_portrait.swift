@@ -339,6 +339,8 @@ let p5CornerSpecs: [(q: Int, cx: Double, cy: Double, hx: Double, hy: Double)] = 
 
 let frontCapXs = [36.0, 45.2, 54.4, 63.6]
 let sideCapYs  = [54.3, 45.1, 35.9, 26.7] // B1 (V713 5V Audio Power) at topmost Y=54.3!
+let spkCX = 26.8
+let spkCY = 73.5
 let micCX = 45.2
 let micCY = 73.5
 
@@ -482,29 +484,32 @@ func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot:
     }
     addSTLMeshNode(lid, "lid_rounded_corners", lidCornerMesh, shellMat, renderOrder: renderOrder)
 
-    // 1. Upper section (Y: 62.0..84.0) + Ø9.6mm 21-dot mic grille at (45.2, 73.5)
+    // 1. Upper section (Y: 62.0..84.0) + Dual Symmetrical Ø9.6mm 21-dot grilles at (26.8, 73.5) [Speaker] & (45.2, 73.5) [Mic]
     addBox(lid, "lid_up_left_l", 0.0, 5.4, 62.0, 78.6, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
-    addBox(lid, "lid_up_left_main", 5.4, micCX - 5.0, 62.0, 84.0, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
+    addBox(lid, "lid_up_left_main", 5.4, spkCX - 5.0, 62.0, 84.0, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
+    addBox(lid, "lid_up_center_bridge", spkCX + 5.0, micCX - 5.0, 62.0, 84.0, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
     addBox(lid, "lid_up_right_main", micCX + 5.0, 66.6, 62.0, 84.0, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
     addBox(lid, "lid_up_right_r", 66.6, 72.0, 62.0, 78.6, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
-    addBox(lid, "lid_up_mic_bot", micCX - 5.0, micCX + 5.0, 62.0, micCY - 5.0, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
-    addBox(lid, "lid_up_mic_top", micCX - 5.0, micCX + 5.0, micCY + 5.0, 84.0, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
-    addTubeZ(lid, "lid_mic_collar", micCX, micCY, 17.7 + dzLid, 19.5 + dzLid, 4.8, 6.2, shellMat)
-    for (mx, my) in [(micCX - 4.3, micCY - 4.3), (micCX + 4.3, micCY - 4.3), (micCX - 4.3, micCY + 4.3), (micCX + 4.3, micCY + 4.3)] {
-        addBox(lid, "lid_mic_corner_\(mx)_\(my)", mx - 0.75, mx + 0.75, my - 0.75, my + 0.75, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
-    }
-    addTubeZ(lid, "lid_mic_trim", micCX, micCY, 17.7 + dzLid, 19.45 + dzLid, 4.55, 4.8, matPortCavity)
-    addCylZ(lid, "lid_mic_disc_floor", micCX, micCY, 17.7 + dzLid, 19.05 + dzLid, 4.55, shellMat)
-    addBox(lid, "lid_mic_cross_x", micCX - 3.9, micCX + 3.9, micCY - 0.12, micCY + 0.12, 19.02 + dzLid, 19.09 + dzLid, matPortCavity)
-    addBox(lid, "lid_mic_cross_y", micCX - 0.12, micCX + 0.12, micCY - 3.9, micCY + 3.9, 19.02 + dzLid, 19.09 + dzLid, matPortCavity)
-    for dx in [-3.2, -1.6, 0.0, 1.6, 3.2] {
-        for dy in [-3.2, -1.6, 0.0, 1.6, 3.2] {
-            if abs(dx) + abs(dy) < 6.0 {
-                addCylZ(lid, "mic_dot_\(dx)_\(dy)", micCX + dx, micCY + dy, 19.00 + dzLid, 19.12 + dzLid, 0.475, matPortCavity, radialSegs: 20)
+    for (gTag, gx, gy) in [("spk", spkCX, spkCY), ("mic", micCX, micCY)] {
+        addBox(lid, "lid_up_\(gTag)_bot", gx - 5.0, gx + 5.0, 62.0, gy - 5.0, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
+        addBox(lid, "lid_up_\(gTag)_top", gx - 5.0, gx + 5.0, gy + 5.0, 84.0, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
+        addTubeZ(lid, "lid_\(gTag)_collar", gx, gy, 17.7 + dzLid, 19.5 + dzLid, 4.8, 6.2, shellMat)
+        for (mx, my) in [(gx - 4.3, gy - 4.3), (gx + 4.3, gy - 4.3), (gx - 4.3, gy + 4.3), (gx + 4.3, gy + 4.3)] {
+            addBox(lid, "lid_\(gTag)_corner_\(mx)_\(my)", mx - 0.75, mx + 0.75, my - 0.75, my + 0.75, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
+        }
+        addTubeZ(lid, "lid_\(gTag)_trim", gx, gy, 17.7 + dzLid, 19.45 + dzLid, 4.55, 4.8, matPortCavity)
+        addCylZ(lid, "lid_\(gTag)_disc_floor", gx, gy, 17.7 + dzLid, 19.05 + dzLid, 4.55, shellMat)
+        addBox(lid, "lid_\(gTag)_cross_x", gx - 3.9, gx + 3.9, gy - 0.12, gy + 0.12, 19.02 + dzLid, 19.09 + dzLid, matPortCavity)
+        addBox(lid, "lid_\(gTag)_cross_y", gx - 0.12, gx + 0.12, gy - 3.9, gy + 3.9, 19.02 + dzLid, 19.09 + dzLid, matPortCavity)
+        for dx in [-3.2, -1.6, 0.0, 1.6, 3.2] {
+            for dy in [-3.2, -1.6, 0.0, 1.6, 3.2] {
+                if abs(dx) + abs(dy) < 6.0 {
+                    addCylZ(lid, "\(gTag)_dot_\(dx)_\(dy)", gx + dx, gy + dy, 19.00 + dzLid, 19.12 + dzLid, 0.475, matPortCavity, radialSegs: 20)
+                }
             }
         }
+        addTubeZ(lid, "lid_\(gTag)_ring", gx, gy, 16.1 + dzLid, 17.7 + dzLid, gTag == "spk" ? 4.4 : 4.6, gTag == "spk" ? 5.4 : 6.2, cradleMat)
     }
-    addTubeZ(lid, "lid_inmp441_ring", micCX, micCY, 16.1 + dzLid, 17.7 + dzLid, 4.6, 6.2, cradleMat)
 
     // 2. Dead-Centered AMOLED window bezel (Y: 37.5..62.0, active glass cutout X: 11.0..61.0, Y: 39.0..60.5)
     addBox(lid, "lid_amoled_l", 0, 11.0, 37.5, 62.0, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
@@ -684,12 +689,24 @@ func buildP5ExpCompactPortrait(exploded: Bool = false, opaque: Bool = false) -> 
     addBox(topBay, "bt_emitter_ic", 38.5, 47.5, 25.0, 32.0, 10.4 + dzTopBay, 11.5 + dzTopBay, matBlackCap)
     boxes.append(("bt_emitter", makeAABB("kcx_bt_emitter", 32.0, 55.5, 21.5, 37.0, 9.0, 11.5)))
 
+    // 5a3. PAM8302A 2.5W Mono Class-D Amp (24.0 x 15.0 x 2.8 mm) above KCX_BT_EMITTER (X: 32.0..56.0, Y: 21.5..36.5, Z: 12.2..15.0)
+    addBox(topBay, "pam8302a_pcb", 32.0, 56.0, 21.5, 36.5, 12.2 + dzTopBay, 13.6 + dzTopBay, matDarkPCB)
+    addBox(topBay, "pam8302a_ic", 40.0, 46.0, 26.0, 32.0, 13.6 + dzTopBay, 14.8 + dzTopBay, matBlackCap)
+    addBox(topBay, "pam8302a_trim", 34.0, 38.0, 26.5, 30.5, 13.6 + dzTopBay, 15.0 + dzTopBay, matSilver)
+    boxes.append(("pam8302a", makeAABB("pam8302a_amp", 32.0, 56.0, 21.5, 36.5, 12.2, 15.0)))
+
     // 5b. GY-PCM5102 (32.0 x 17.0 x 5.5 mm) Top-Left (Z: 11.0..16.5), 3.5mm TRS Jack flush at Top Wall Y=84.0!
     addBox(topBay, "pcm5102_pcb", 6.0, 38.0, 65.0, 82.0, 11.0 + dzTopBay, 12.6 + dzTopBay, matPurplePCB)
     addBox(topBay, "pcm5102_trs", 10.0, 18.5, 70.0, 82.2, 12.6 + dzTopBay, 16.5 + dzTopBay, matBlackCap)
     addCylY(topBay, "pcm5102_trs_ring", 14.25, 14.55 + dzTopBay, 81.8, 84.35, 3.0, matGold)
     addCylY(topBay, "pcm5102_trs_bore", 14.25, 14.55 + dzTopBay, 82.0, 84.42, 1.75, matPortCavity)
-    boxes.append(("pcm5102", makeAABB("gy_pcm5102", 6.0, 38.0, 65.0, 82.0, 11.0, 16.5)))
+    boxes.append(("pcm5102", makeAABB("gy_pcm5102_pcb", 6.0, 38.0, 65.0, 82.0, 11.0, 12.6)))
+    boxes.append(("pcm5102", makeAABB("gy_pcm5102_trs", 10.0, 18.5, 70.0, 82.2, 12.6, 16.5)))
+
+    // 5b2. 1511 8-ohm 1W Micro-Speaker (15.0 x 11.0 x 3.0 mm) Top-Middle-Left at (26.8, 73.5), Z: 14.5..17.5
+    addBox(topBay, "speaker_1511_body", spkCX - 7.5, spkCX + 7.5, spkCY - 5.5, spkCY + 5.5, 14.5 + dzTopBay, 16.5 + dzTopBay, matBlackCap, chamfer: 0.4)
+    addCylZ(topBay, "speaker_1511_gasket", spkCX, spkCY, 16.5 + dzTopBay, 17.5 + dzTopBay, 4.8, matDarkPCB)
+    boxes.append(("speaker_1511", makeAABB("speaker_1511", spkCX - 7.5, spkCX + 7.5, spkCY - 5.5, spkCY + 5.5, 14.5, 17.5)))
 
     // 5c. INMP441 MEMS Mic (Ø14.0 mm) Top-Middle-Right at (45.2, 73.5), Z: 14.5..17.5
     addCylZ(topBay, "inmp441_pcb", micCX, micCY, 14.5 + dzTopBay, 16.1 + dzTopBay, 7.0, matDarkPCB)
@@ -797,34 +814,37 @@ func exportPrintableSTLs() throws {
                             holeX: c.hx, holeY: c.hy, rHole: 1.1, z0: 0.0, z1: 1.8)
     }
     lid.addBox(0.0, 5.4, 62.0, 78.6, 0, 1.8)
-    lid.addBox(5.4, micCX - 5.0, 62.0, 84.0, 0, 1.8)
+    lid.addBox(5.4, spkCX - 5.0, 62.0, 84.0, 0, 1.8)
+    lid.addBox(spkCX + 5.0, micCX - 5.0, 62.0, 84.0, 0, 1.8)
     lid.addBox(micCX + 5.0, 66.6, 62.0, 84.0, 0, 1.8)
     lid.addBox(66.6, 72.0, 62.0, 78.6, 0, 1.8)
-    lid.addBox(micCX - 5.0, micCX + 5.0, 62.0, micCY - 5.0, 0, 1.8)
-    lid.addBox(micCX - 5.0, micCX + 5.0, micCY + 5.0, 84.0, 0, 1.8)
-    lid.addAnnulusZ(cx: micCX, cy: micCY, rIn: 4.8, rOut: 6.2, z0: 0, z1: 1.8)
-    for (mx, my) in [(micCX - 4.3, micCY - 4.3), (micCX + 4.3, micCY - 4.3), (micCX - 4.3, micCY + 4.3), (micCX + 4.3, micCY + 4.3)] {
-        lid.addBox(mx - 0.75, mx + 0.75, my - 0.75, my + 0.75, 0, 1.8)
-    }
     let ribSpans: [(Double, Double)] = [
         (-5.00, -3.65), (-2.75, -2.05), (-1.15, -0.45),
         (0.45, 1.15), (2.05, 2.75), (3.65, 5.00)
     ]
-    for (ry0, ry1) in ribSpans {
-        lid.addBox(micCX - 5.0, micCX + 5.0, micCY + ry0, micCY + ry1, 0.45, 1.8)
-    }
     let holeCenters = [-3.2, -1.6, 0.0, 1.6, 3.2]
-    for hc in holeCenters {
-        for (rx0, rx1) in ribSpans {
-            lid.addBox(micCX + rx0, micCX + rx1, micCY + hc - 0.45, micCY + hc + 0.45, 0.45, 1.8)
+    for (gTag, gx, gy) in [("spk", spkCX, spkCY), ("mic", micCX, micCY)] {
+        lid.addBox(gx - 5.0, gx + 5.0, 62.0, gy - 5.0, 0, 1.8)
+        lid.addBox(gx - 5.0, gx + 5.0, gy + 5.0, 84.0, 0, 1.8)
+        lid.addAnnulusZ(cx: gx, cy: gy, rIn: 4.8, rOut: 6.2, z0: 0, z1: 1.8)
+        for (mx, my) in [(gx - 4.3, gy - 4.3), (gx + 4.3, gy - 4.3), (gx - 4.3, gy + 4.3), (gx + 4.3, gy + 4.3)] {
+            lid.addBox(mx - 0.75, mx + 0.75, my - 0.75, my + 0.75, 0, 1.8)
         }
-        if abs(hc) == 3.2 {
-            for vc in [-3.2, 3.2] {
-                lid.addBox(micCX + vc - 0.45, micCX + vc + 0.45, micCY + hc - 0.45, micCY + hc + 0.45, 0.45, 1.8)
+        for (ry0, ry1) in ribSpans {
+            lid.addBox(gx - 5.0, gx + 5.0, gy + ry0, gy + ry1, 0.45, 1.8)
+        }
+        for hc in holeCenters {
+            for (rx0, rx1) in ribSpans {
+                lid.addBox(gx + rx0, gx + rx1, gy + hc - 0.45, gy + hc + 0.45, 0.45, 1.8)
+            }
+            if abs(hc) == 3.2 {
+                for vc in [-3.2, 3.2] {
+                    lid.addBox(gx + vc - 0.45, gx + vc + 0.45, gy + hc - 0.45, gy + hc + 0.45, 0.45, 1.8)
+                }
             }
         }
+        lid.addAnnulusZ(cx: gx, cy: gy, rIn: gTag == "spk" ? 4.4 : 4.6, rOut: gTag == "spk" ? 5.4 : 6.2, z0: 1.8, z1: 3.4)
     }
-    lid.addAnnulusZ(cx: micCX, cy: micCY, rIn: 4.6, rOut: 6.2, z0: 1.8, z1: 3.4)
     // Dead-centered AMOLED bezel + solid right deck
     lid.addBox(0, 11.0, 37.5, 62.0, 0, 1.8)
     lid.addBox(61.0, 72.0, 37.5, 62.0, 0, 1.8)

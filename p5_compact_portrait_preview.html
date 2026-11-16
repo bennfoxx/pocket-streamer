@@ -157,7 +157,7 @@
           </span>
         </div>
         <p class="text-xs text-[var(--muted-foreground)] mt-1">
-          Compact 1:1 CAD (<code>R = 5.4 mm</code> corners, <code>15.9 mm</code> internal cavity): <strong>Dead-Centered 1.91&quot; AMOLED</strong> (<code>X = 36.0 mm</code>) behind a <code>4.5 mm</code> recessed left-wall USB-C funnel, <strong>INMP441</strong> at <code>(45.2, 73.5)</code>, <strong>KY-023</strong> coral concave thumb-disc, <strong>1×4 Front Color Keypad</strong> (Amber/Teal/Amber/Coral), and <strong>1×4 Right-Side Matte Black Keypad</strong> (<code>B1</code> 5V Power at topmost <code>K1</code>).
+          Compact 1:1 CAD (<code>R = 5.4 mm</code> corners, <code>15.9 mm</code> internal cavity): <strong>Dead-Centered 1.91&quot; AMOLED</strong> (<code>X = 36.0 mm</code>) behind a <code>4.5 mm</code> recessed left-wall USB-C funnel, <strong>Dual Symmetrical Top Grilles</strong> (<code>1511</code> Micro-Speaker at <code>(26.8, 73.5)</code> + <code>INMP441</code> at <code>(45.2, 73.5)</code>), <strong>KY-023</strong> coral concave thumb-disc, <strong>1×4 Front Color Keypad</strong>, and <strong>1×4 Right-Side Matte Black Keypad</strong> (<code>B1</code> 5V Power at topmost <code>K1</code>).
         </p>
       </div>
       <div class="flex flex-wrap items-center gap-2 text-xs">
@@ -308,8 +308,8 @@
           <ul class="space-y-1.5 text-[var(--muted-foreground)]">
             <li><strong class="text-[var(--foreground)]">Centered AMOLED + 4.5 mm Funnel:</strong> Active window (<code>44.2×19.8 mm</code>) centered at <code>X = 36.0 mm</code> (<code>amoled_pcb X: 4.5..64.5, Y: 37.5..63.0, Z: 13.5..17.7</code>); left wall has a <code>4.5 mm</code> recessed USB-C plug funnel (<code>Y: 45.0..55.4, Z: 13.5..16.7</code>).</li>
             <li><strong class="text-[var(--foreground)]">Right-Side 1×4 Keypad:</strong> Vertical <code>37×15 mm</code> board inside right-wall rails (<code>X: 64.6..70.2, Y: 22.0..59.0, Z: 2.2..17.2</code>) with <code>4×</code> matte black caps <code>0.8 mm</code> proud (<code>B1</code> at topmost <code>Y = 54.3</code>).</li>
-            <li><strong class="text-[var(--foreground)]">Front &amp; Mid-Right Bay:</strong> <code>KY-023</code> (<code>X: 5.5..30.5, Y: 3.5..36.5</code>) + <code>1×4</code> color keypad (<code>X: 31.5..68.5, Y: 5.5..20.5</code>), with internal <code>V713</code> Boost (<code>Z: 2.0..6.8</code>) &amp; elevated <code>KCX_BT_EMITTER</code> (<code>Z: 9.0..11.5</code>) stacked cleanly in <code>X: 32.0..58.5, Y: 16.5..37.0</code>.</li>
-            <li><strong class="text-[var(--foreground)]">Upper Deck:</strong> <code>GY-PCM5102</code> (<code>Y: 65.0..82.0, Z: 11.0..16.5</code>), <code>INMP441</code> at <code>(45.2, 73.5, Z: 14.5..17.5)</code>, and <code>MicroSD</code> (<code>Y: 60.5..78.4, Z: 9.0..13.0</code>) tucked cleanly under the right wing of <code>amoled_pcb</code>.</li>
+            <li><strong class="text-[var(--foreground)]">Front &amp; Mid-Right Bay:</strong> <code>KY-023</code> (<code>X: 5.5..30.5, Y: 3.5..36.5</code>) + <code>1×4</code> color keypad (<code>X: 31.5..68.5, Y: 5.5..20.5</code>), with internal <code>V713</code> Boost (<code>Z: 2.0..6.8</code>), <code>KCX_BT_EMITTER</code> (<code>Z: 9.0..11.5</code>) &amp; <code>PAM8302A</code> 2.5W Mono Amp (<code>Z: 12.2..15.0</code>) stacked cleanly in <code>X: 32.0..58.5, Y: 16.5..37.0</code>.</li>
+            <li><strong class="text-[var(--foreground)]">Upper Deck:</strong> <code>GY-PCM5102</code> (<code>Y: 65.0..82.0, Z: 11.0..16.5</code>), dual symmetrical <code>21</code>-dot grilles for <code>1511</code> 8Ω 1W Micro-Speaker at <code>(26.8, 73.5, Z: 14.5..17.5)</code> + <code>INMP441</code> at <code>(45.2, 73.5, Z: 14.5..17.5)</code>, and <code>MicroSD</code> (<code>Y: 60.5..78.4, Z: 9.0..13.0</code>) tucked under the right wing.</li>
           </ul>
         </section>
       </aside>
@@ -331,8 +331,8 @@
           <h2 class="text-sm font-semibold text-[var(--primary)]">Electrical, Wiring &amp; Soldering Audit (15.9 mm Z-Cavity)</h2>
           <ul class="text-xs text-[var(--muted-foreground)] space-y-1.5 list-disc pl-4">
             <li><strong class="text-[var(--foreground)]">Desolder All Pin Headers:</strong> Remove factory yellow/black 2.54 mm headers from <code>Front 1×4</code>, <code>Right-Side 1×4</code>, <code>KY-023</code>, <code>MicroSD</code>, and <code>GY-PCM5102</code>; direct-solder <code>30 AWG</code> silicone wire flush to pads so harnesses stay within <code>15.9 mm</code> Z.</li>
-            <li><strong class="text-[var(--foreground)]">V713 5V Rail Isolation:</strong> <code>Side K1 (B1)</code> at topmost right edge (<code>Y = 54.3 mm</code>) wires <strong>ONLY</strong> to <code>V713 K</code> pad (1-click ON / 2-click OFF, &lt;30µA standby), isolating <code>GY-PCM5102</code> + <code>KCX_BT_EMITTER</code> from ESP32 sleep current.</li>
-            <li><strong class="text-[var(--foreground)]">3.3V-Only MicroSD &amp; I2S Pull-Down:</strong> <code>WWZMDiB Mini 3.3V MicroSD</code> has no LDO — connect strictly to regulated <code>3.3V</code> (never 5V!). Add <code>100kΩ</code> pull-down on <code>INMP441 SD</code> (GPIO 15).</li>
+            <li><strong class="text-[var(--foreground)]">V713 5V Rail Isolation:</strong> <code>Side K1 (B1)</code> at topmost right edge (<code>Y = 54.3 mm</code>) wires <strong>ONLY</strong> to <code>V713 K</code> pad (1-click ON / 2-click OFF, &lt;30µA standby), isolating <code>GY-PCM5102</code>, <code>KCX_BT_EMITTER</code> &amp; <code>PAM8302A</code> from ESP32 sleep current.</li>
+            <li><strong class="text-[var(--foreground)]">3.3V-Only MicroSD &amp; Speaker/Mic Mute:</strong> <code>WWZMDiB Mini 3.3V MicroSD</code> has no LDO — connect strictly to regulated <code>3.3V</code> (never 5V!). Add <code>100kΩ</code> pull-down on <code>INMP441 SD</code> (GPIO 15); drive <code>PAM8302A SD</code> LOW during <code>B8</code> PTT so mic &amp; speaker never feedback.</li>
             <li><strong class="text-[var(--foreground)]">LiPo &amp; RF Protection:</strong> <code>503759</code> LiPo (<code>Z: 1.8..6.8</code>) sits under a <code>0.8 mm</code> printed PLA-CF shield (<code>Z: 7.0..7.8</code>) with Kapton tape over solder joints; keep ESP32 ceramic antenna wing (<code>X: 54..64</code>) clear of copper pours.</li>
           </ul>
         </div>
@@ -340,7 +340,7 @@
           <h2 class="text-sm font-semibold text-[var(--success)]">Bambu Lab P2S Print Layout &amp; STL Audit</h2>
           <ul class="text-xs text-[var(--muted-foreground)] space-y-1.5 list-disc pl-4">
             <li><strong class="text-[var(--foreground)]">100% Watertight Manifold STLs:</strong> All 6 STLs in <code>stl_p5_compact_portrait/</code> verified via Python binary <code>struct</code> check: <code>unpaired_halfedges = 0</code>, <code>minZ = 0.00 mm</code>.</li>
-            <li><strong class="text-[var(--foreground)]">P2S Single-Plate Fit:</strong> Combined plate <code>210.80 × 169.00 × 17.70 mm</code> (<code>7,020</code> tris) fits inside Bambu P2S <code>256 × 256 mm</code> bed with <code>45.2 mm</code> X and <code>87.0 mm</code> Y margin.</li>
+            <li><strong class="text-[var(--foreground)]">P2S Single-Plate Fit:</strong> Combined plate <code>210.80 × 169.00 × 17.70 mm</code> (<code>8,352</code> tris) fits inside Bambu P2S <code>256 × 256 mm</code> bed with <code>45.2 mm</code> X and <code>87.0 mm</code> Y margin.</li>
             <li><strong class="text-[var(--foreground)]">Wall &amp; Boss Tolerances:</strong> <code>1.8 mm</code> perimeter/base/lid walls (<code>4×</code> 0.4 mm perimeters), <code>4× Ø2.0 mm</code> M2 self-tap pilot bores + <code>Ø2.2 mm</code> lid holes, <code>0.3 mm</code> radial clearance on <code>Ø25.0 mm</code> thumb-well and <code>1×4</code> keycap wells.</li>
             <li><strong class="text-[var(--foreground)]">Recommended Print Settings:</strong> Bambu PLA-CF Matte Charcoal (<code>0.16 mm</code> layer height, <code>4</code> walls, <code>25%</code> gyroid infill, <code>0.4 mm</code> hardened steel nozzle, face-down lid on textured PEI).</li>
           </ul>
@@ -472,8 +472,10 @@
         { mod: 'WWZMDiB Mini 3.3V MicroSD', sig: '3.3V Supply + Dedicated HSPI Bus', from: '3V3 / CS / MOSI / CLK / MISO', to: '3.3V / GPIO 16 / 39 / 40 / 41', wire: 'Strictly 3.3V (no reg)!' },
         { mod: 'Right-Side 1×4 K1 (B1)', sig: 'Dedicated 5V Audio Rail Power Button', from: 'Side K1 Pad (Topmost Y=54.3)', to: 'AOICRIE V713 K Pad (ONLY)', wire: '1-click ON / 2-click OFF (<30µA)' },
         { mod: 'Right-Side 1×4 K2..K4 + Front 1×4', sig: '7× Direct UI Buttons B2..B8', from: 'Side K2..K4 + Front K1..K4', to: 'GPIO 42, 43, 44, 45, 2, 3, 46', wire: 'INPUT_PULLUP (init post-boot)' },
-        { mod: 'Liter 503759 + Internal V713', sig: '1300mAh LiPo + Audio-Only 5V Boost', from: 'BAT+/BAT- → T-Display-S3 + V713', to: 'V713 5V+ → PCM5102 + Acxico', wire: 'Sealed internal mid-right bay' },
-        { mod: 'Acxico KCX_BT_EMITTER', sig: 'K-Switched 5V + Stereo Line-In', from: '+5V / PGND / IN_L / IN_R / AGND', to: 'V713 5V + PCM5102 L/R/G', wire: 'Elevated shelf above V713' }
+        { mod: 'Liter 503759 + Internal V713', sig: '1300mAh LiPo + Audio-Only 5V Boost', from: 'BAT+/BAT- → T-Display-S3 + V713', to: 'V713 5V+ → PCM5102 + Acxico + PAM8302A', wire: 'Sealed internal mid-right bay' },
+        { mod: 'Acxico KCX_BT_EMITTER', sig: 'K-Switched 5V + Stereo Line-In', from: '+5V / PGND / IN_L / IN_R / AGND', to: 'V713 5V + PCM5102 L/R/G', wire: 'Elevated shelf above V713' },
+        { mod: 'PAM8302A 2.5W Mono Amp', sig: '5V Audio Amp + DAC Line-In + PTT Mute', from: 'VIN / GND / A+ / A- / SD', to: 'V713 5V / PCM5102 L+G / GPIO 21', wire: 'Z:12.2..15.0 above BT; SD=LOW on PTT' },
+        { mod: '1511 8Ω 1W Micro-Speaker', sig: '15×11×3.0 mm Top-Left Acoustic Chamber', from: 'SPK+ / SPK- (30 AWG Twisted)', to: 'PAM8302A VO+ / VO-', wire: 'Left 21-dot grille at (26.8, 73.5)' }
       ];
 
       function renderPinoutTable() {
@@ -807,6 +809,7 @@
         boxes.push(cadBox(35.5, 42.5, 23.0, 30.0, 3.6, 6.8, zMid, '#334155', '#94a3b8', 1, 'boost_ind'));
         boxes.push(cadBox(51.7, 58.5, 22.0, 31.0, 3.6, 6.8, zMid, '#cbd5e1', '#94a3b8', 1, 'boost_usbc'));
         boxes.push(cadBox(32.0, 55.5, 21.5, 37.0, 9.0, 11.5, zMid + ex * 4, '#1d4ed8', '#60a5fa', 1, 'bt_tx'));
+        boxes.push(cadBox(32.0, 56.0, 21.5, 36.5, 12.2, 15.0, zMid + ex * 5, '#0f172a', '#94a3b8', 1, 'pam8302a'));
         boxes.push(cadBox(6.0, 38.0, 65.0, 82.0, 11.0, 12.6, zMid + ex * 6, '#7e22ce', '#c084fc', 1, 'pcm_pcb'));
         boxes.push(cadBox(10.0, 18.5, 70.0, 84.2, 12.6, 16.5, zMid + ex * 6, '#0f172a', '#475569', 1, 'pcm_trs'));
         boxes.push(cadBox(11.6, 16.9, 82.0, 84.5, 13.1, 16.0, zMid + ex * 6, '#eab308', '#fef08a', 1, 'pcm_ring'));
@@ -820,6 +823,8 @@
         boxes.push(cadBox(54.5, 64.3, 42.0, 58.5, 10.0, 13.5, zAmoled, '#94a3b8', '#cbd5e1', 1, 'amoled_ant'));
         boxes.push(cadBox(11.0, 61.0, 39.0, 60.5, 15.1, 17.7, zAmoled, '#05080f', '#38bdf8', 1, 'amoled_glass'));
         boxes.push(cadBox(2.5, 9.3, 45.7, 54.7, 13.5, 16.7, zAmoled, '#cbd5e1', '#94a3b8', 1, 'amoled_usbc'));
+        boxes.push(cadBox(19.3, 34.3, 68.0, 79.0, 14.5, 16.5, zAmoled - ex * 4, '#0f172a', '#94a3b8', 1, 'spk_body'));
+        boxes.push(cadCyl(26.8, 73.5, 16.5, 17.5, 4.8, 12, zAmoled - ex * 4, '#1e293b', '#64748b', 1, 'spk_gasket'));
         boxes.push(cadCyl(45.2, 73.5, 14.5, 16.1, 7.0, 12, zAmoled - ex * 4, '#1e293b', '#64748b', 1, 'inmp_pcb'));
         boxes.push(cadCyl(45.2, 73.5, 16.1, 17.5, 4.5, 12, zAmoled - ex * 4, '#0f172a', '#475569', 1, 'inmp_gasket'));
 
@@ -849,6 +854,7 @@
             boxes.push(cadCornerSector(cx, cy, 5.4, q, 17.7, 19.5, 10, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           }
           boxes.push(cadCyl(17.5, 20.8, 16.3, 19.5, 13.8, 16, zLid, s.fill, s.edge, Math.min(0.45, s.alpha + 0.08), 'stick_well'));
+          boxes.push(cadCyl(26.8, 73.5, 16.1, 19.5, 5.4, 14, zLid, s.fill, s.edge, Math.min(0.45, s.alpha + 0.08), 'spk_collar'));
           boxes.push(cadCyl(45.2, 73.5, 16.1, 19.5, 5.8, 14, zLid, s.fill, s.edge, Math.min(0.45, s.alpha + 0.08), 'mic_collar'));
         }
 
@@ -860,6 +866,7 @@
           wires.push({ a: [22 - HALF_W, HALF_H - 38, 14.0 - HALF_D + zAmoled], b: [18 - HALF_W, HALF_H - 34, 3.2 - HALF_D + zMid], color: '#34d399' });
           wires.push({ a: [44 - HALF_W, HALF_H - 38, 14.0 - HALF_D + zAmoled], b: [48 - HALF_W, HALF_H - 13, 8.7 - HALF_D + zMid], color: '#f97316' });
           wires.push({ a: [64.6 - HALF_W + xSide, HALF_H - 54.3, 9.7 - HALF_D + zMid], b: [44 - HALF_W, HALF_H - 26, 3.2 - HALF_D + zMid], color: '#ef4444' });
+          wires.push({ a: [44 - HALF_W, HALF_H - 29, 13.6 - HALF_D + zMid], b: [26.8 - HALF_W, HALF_H - 73.5, 15.5 - HALF_D + zAmoled], color: '#ec4899' });
         }
 
         return { boxes, wires, zAmoled, zLid, zCaps };
@@ -886,7 +893,7 @@
         const { boxes, wires, zAmoled, zLid, zCaps } = buildP5ExpCompactScene(explodeVal, shellMode);
 
         const isOpaqueAssembled = (explodeVal < 0.02 && (shellMode === 'photoreal' || shellMode === 'solid'));
-        const EXTERIOR_TAGS = new Set(['shell', 'shell_lid', 'mic_collar', 'amoled_glass', 'amoled_usbc', 'pcm_trs', 'pcm_ring', 'sd_slot_trim', 'thumb_disc', 'cap_side']);
+        const EXTERIOR_TAGS = new Set(['shell', 'shell_lid', 'spk_collar', 'mic_collar', 'amoled_glass', 'amoled_usbc', 'pcm_trs', 'pcm_ring', 'sd_slot_trim', 'thumb_disc', 'cap_side']);
         const quads = [];
         for (const box of boxes) {
           if (isOpaqueAssembled && !EXTERIOR_TAGS.has(box.tag) && !box.tag.startsWith('cap_front_')) continue;
@@ -960,17 +967,19 @@
           }
 
           if (shellMode !== 'open') {
-            const mc = projectPoint([45.2 - HALF_W, HALF_H - 73.5, 9.8 + zLid], uiState.yaw, uiState.pitch, cx, cy, scale);
-            const rMic = 4.6 * scale;
-            if (rMic > 3) {
-              ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.0;
-              ctx.beginPath(); ctx.arc(mc.x, mc.y, rMic, 0, Math.PI * 2); ctx.stroke();
-              ctx.fillStyle = '#090d16';
-              for (const dx of [-3.0, -1.5, 0, 1.5, 3.0]) {
-                for (const dy of [-3.0, -1.5, 0, 1.5, 3.0]) {
-                  if (Math.abs(dx) + Math.abs(dy) < 5.5) {
-                    const dp = projectPoint([45.2 + dx - HALF_W, HALF_H - (73.5 + dy), 9.82 + zLid], uiState.yaw, uiState.pitch, cx, cy, scale);
-                    ctx.beginPath(); ctx.arc(dp.x, dp.y, Math.max(1.0, 0.42 * scale), 0, Math.PI * 2); ctx.fill();
+            for (const gx of [26.8, 45.2]) {
+              const mc = projectPoint([gx - HALF_W, HALF_H - 73.5, 9.8 + zLid], uiState.yaw, uiState.pitch, cx, cy, scale);
+              const rMic = 4.6 * scale;
+              if (rMic > 3) {
+                ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.0;
+                ctx.beginPath(); ctx.arc(mc.x, mc.y, rMic, 0, Math.PI * 2); ctx.stroke();
+                ctx.fillStyle = '#090d16';
+                for (const dx of [-3.0, -1.5, 0, 1.5, 3.0]) {
+                  for (const dy of [-3.0, -1.5, 0, 1.5, 3.0]) {
+                    if (Math.abs(dx) + Math.abs(dy) < 5.5) {
+                      const dp = projectPoint([gx + dx - HALF_W, HALF_H - (73.5 + dy), 9.82 + zLid], uiState.yaw, uiState.pitch, cx, cy, scale);
+                      ctx.beginPath(); ctx.arc(dp.x, dp.y, Math.max(1.0, 0.42 * scale), 0, Math.PI * 2); ctx.fill();
+                    }
                   }
                 }
               }
