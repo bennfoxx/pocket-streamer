@@ -6,6 +6,7 @@
   <meta name="color-scheme" content="light dark" />
   <title>fbox (Option P5-Exp-Compact-Portrait) — Centered AMOLED + Right-Side 1×4 Explorer (72 × 84 × 19.5 mm)</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
   <style>
     html {
       color-scheme: light dark;
@@ -618,122 +619,94 @@
         ctx.fillStyle = '#94a3b8';
         ctx.fillText(fmtSec(tr.durSec * uiState.progress), 126, 140);
         ctx.fillText(fmtSec(tr.durSec), 290, 140);
+        if (window._amoledTex) window._amoledTex.needsUpdate = true;
       }
 
-      // ---- Pure-JS 3D Geometry Primitives (Exact CAD X/Y/Z in mm, 72x84x19.5) ----
+      // ---- Three.js WebGL 3D Engine (Exact CAD X/Y/Z in mm, 72x84x19.5, Hardware Z-Buffer) ----
       const HALF_W = 36.0;
       const HALF_H = 42.0;
       const HALF_D = 9.75;
 
-      function makeBox(cx, cy, cz, w, h, d, color, edgeColor, alpha, tag) {
-        const hw = w / 2, hh = h / 2, hd = d / 2;
-        const verts = [
-          [cx - hw, cy - hh, cz - hd], [cx + hw, cy - hh, cz - hd],
-          [cx + hw, cy + hh, cz - hd], [cx - hw, cy + hh, cz - hd],
-          [cx - hw, cy - hh, cz + hd], [cx + hw, cy - hh, cz + hd],
-          [cx + hw, cy + hh, cz + hd], [cx - hw, cy + hh, cz + hd]
-        ];
-        const faces = [
-          [0, 1, 2, 3, -0.18], [4, 5, 6, 7, 0.08],
-          [0, 1, 5, 4, 0.16], [3, 2, 6, 7, -0.24],
-          [0, 3, 7, 4, -0.08], [1, 2, 6, 5, 0.04]
-        ];
-        return { verts, faces, color, edgeColor, alpha: alpha ?? 1, tag };
+      function roundedRectShape(x0, y0, w, h, r) {
+        const s = new THREE.Shape();
+        const x1 = x0 + w, y1 = y0 + h;
+        s.moveTo(x0 + r, y0);
+        s.lineTo(x1 - r, y0);
+        s.quadraticCurveTo(x1, y0, x1, y0 + r);
+        s.lineTo(x1, y1 - r);
+        s.quadraticCurveTo(x1, y1, x1 - r, y1);
+        s.lineTo(x0 + r, y1);
+        s.quadraticCurveTo(x0, y1, x0, y1 - r);
+        s.lineTo(x0, y0 + r);
+        s.quadraticCurveTo(x0, y0, x0 + r, y0);
+        return s;
       }
 
-      function cadBox(x0, x1, y0, y1, z0, z1, zOff, color, edgeColor, alpha, tag, xOff = 0) {
-        const cx = (x0 + x1) * 0.5 - HALF_W + xOff;
-        const cy = HALF_H - (y0 + y1) * 0.5;
-        const cz = (z0 + z1) * 0.5 - HALF_D + zOff;
-        return makeBox(cx, cy, cz, Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0), color, edgeColor, alpha, tag);
+      function rectPath(x0, x1, y0, y1) {
+        const p = new THREE.Path();
+        p.moveTo(x0 - HALF_W, y0 - HALF_H);
+        p.lineTo(x1 - HALF_W, y0 - HALF_H);
+        p.lineTo(x1 - HALF_W, y1 - HALF_H);
+        p.lineTo(x0 - HALF_W, y1 - HALF_H);
+        p.closePath();
+        return p;
       }
 
-      function cadCyl(cadX, cadY, z0, z1, r, segs, zOff, color, edgeColor, alpha, tag) {
-        const cx = cadX - HALF_W, cy = HALF_H - cadY;
-        const cz0 = z0 - HALF_D + zOff, cz1 = z1 - HALF_D + zOff;
-        const verts = [];
-        for (let i = 0; i < segs; i++) {
-          const a = (i / segs) * Math.PI * 2;
-          verts.push([cx + r * Math.cos(a), cy + r * Math.sin(a), cz0]);
-        }
-        for (let i = 0; i < segs; i++) {
-          const a = (i / segs) * Math.PI * 2;
-          verts.push([cx + r * Math.cos(a), cy + r * Math.sin(a), cz1]);
-        }
-        const faces = [];
-        const bot = [], top = [];
-        for (let i = 0; i < segs; i++) { bot.push(segs - 1 - i); top.push(segs + i); }
-        bot.push(-0.18); top.push(0.10);
-        faces.push(bot, top);
-        for (let i = 0; i < segs; i++) {
-          const n = (i + 1) % segs;
-          faces.push([i, n, segs + n, segs + i, Math.sin((i / segs) * Math.PI * 2) * 0.14]);
-        }
-        return { verts, faces, color, edgeColor, alpha: alpha ?? 1, tag };
+      function circlePath(cx, cy, r) {
+        const p = new THREE.Path();
+        p.absarc(cx - HALF_W, cy - HALF_H, r, 0, Math.PI * 2, true);
+        return p;
       }
 
-      function cadCornerSector(cadCx, cadCy, r, q, z0, z1, segs, zOff, color, edgeColor, alpha, tag) {
-        const qAngles = { tr: [0, Math.PI * 0.5], tl: [Math.PI * 0.5, Math.PI], bl: [Math.PI, Math.PI * 1.5], br: [Math.PI * 1.5, Math.PI * 2] };
-        const [a0, a1] = qAngles[q];
-        const cx = cadCx - HALF_W, cy = HALF_H - cadCy;
-        const cz0 = z0 - HALF_D + zOff, cz1 = z1 - HALF_D + zOff;
-        const n = segs + 2;
-        const verts = [[cx, cy, cz0]];
-        for (let i = 0; i <= segs; i++) {
-          const a = a0 + (i / segs) * (a1 - a0);
-          verts.push([cx + r * Math.cos(a), cy - r * Math.sin(a), cz0]);
-        }
-        verts.push([cx, cy, cz1]);
-        for (let i = 0; i <= segs; i++) {
-          const a = a0 + (i / segs) * (a1 - a0);
-          verts.push([cx + r * Math.cos(a), cy - r * Math.sin(a), cz1]);
-        }
-        const faces = [];
-        const bot = [0]; for (let i = 1; i <= segs + 1; i++) bot.push(i); bot.push(-0.18);
-        const top = [n]; for (let i = segs + 1; i >= 1; i--) top.push(n + i); top.push(0.10);
-        faces.push(bot, top);
-        for (let i = 1; i <= segs; i++) {
-          const aMid = a0 + ((i - 0.5) / segs) * (a1 - a0);
-          faces.push([i + 1, i, n + i, n + i + 1, Math.sin(aMid) * 0.14]);
-        }
-        return { verts, faces, color, edgeColor, alpha: alpha ?? 1, tag };
+      let _threeRenderer = null, _threeCam = null, _matCache = {};
+      function getStdMat(hex, opts = {}) {
+        const key = `${hex}_${opts.opacity ?? 1}_${opts.rough ?? 0.55}_${opts.metal ?? 0.08}`;
+        if (_matCache[key]) return _matCache[key];
+        const transparent = (opts.opacity ?? 1) < 0.99;
+        const m = new THREE.MeshStandardMaterial({
+          color: new THREE.Color(hex),
+          roughness: opts.rough ?? 0.55,
+          metalness: opts.metal ?? 0.08,
+          transparent,
+          opacity: opts.opacity ?? 1,
+          depthWrite: opts.depthWrite ?? !transparent
+        });
+        _matCache[key] = m;
+        return m;
       }
 
-      function cadDiscFace(x, y, z, r, segs, zOff, color, edgeColor, alpha, tag) {
-        const cx = x - HALF_W, cy = HALF_H - y, cz = z - HALF_D + zOff;
-        const verts = [], face = [];
-        for (let i = 0; i < segs; i++) {
-          const a = (i / segs) * Math.PI * 2;
-          verts.push([cx + r * Math.cos(a), cy - r * Math.sin(a), cz]);
-          face.push(i);
-        }
-        face.push(0.06);
-        return { verts, faces: [face], color, edgeColor, alpha: alpha ?? 1, tag };
+      function addBoxMesh(parent, x0, x1, y0, y1, z0, z1, zOff, mat, xOff = 0) {
+        const w = Math.abs(x1 - x0), h = Math.abs(y1 - y0), d = Math.abs(z1 - z0);
+        if (w < 0.01 || h < 0.01 || d < 0.01) return null;
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+        mesh.position.set((x0 + x1) * 0.5 - HALF_W + xOff, (y0 + y1) * 0.5 - HALF_H, (z0 + z1) * 0.5 - HALF_D + zOff);
+        parent.add(mesh);
+        return mesh;
       }
 
-      function shadeHex(hex, delta) {
-        if (!hex || hex[0] !== '#' || hex.length !== 7) return hex;
-        const clamp = v => Math.max(0, Math.min(255, Math.round(v)));
-        const r = clamp(parseInt(hex.slice(1, 3), 16) + delta * 255);
-        const g = clamp(parseInt(hex.slice(3, 5), 16) + delta * 255);
-        const b = clamp(parseInt(hex.slice(5, 7), 16) + delta * 255);
-        return `rgb(${r},${g},${b})`;
+      function addCylZMesh(parent, cx, cy, z0, z1, r, segs, zOff, mat) {
+        const d = Math.abs(z1 - z0);
+        const mesh = new THREE.Mesh(new THREE.CylinderGeometry(r, r, d, segs), mat);
+        mesh.rotation.x = Math.PI / 2;
+        mesh.position.set(cx - HALF_W, cy - HALF_H, (z0 + z1) * 0.5 - HALF_D + zOff);
+        parent.add(mesh);
+        return mesh;
       }
 
-      function projectPoint(p, yaw, pitch, cx, cy, scale) {
-        const cyw = Math.cos(yaw), syw = Math.sin(yaw);
-        const cpi = Math.cos(pitch), spi = Math.sin(pitch);
-        const x1 = p[0] * cyw + p[2] * syw;
-        const z1 = -p[0] * syw + p[2] * cyw;
-        const y1 = p[1];
-        const y2 = y1 * cpi - z1 * spi;
-        const z2 = y1 * spi + z1 * cpi;
-        const camDist = 250;
-        const persp = camDist / (camDist - z2);
-        return { x: cx + x1 * scale * persp, y: cy + y2 * scale * persp, z: z2 };
+      function addTubeZMesh(parent, cx, cy, z0, z1, rIn, rOut, segs, zOff, mat) {
+        const s = new THREE.Shape();
+        s.absarc(0, 0, rOut, 0, Math.PI * 2, false);
+        const h = new THREE.Path();
+        h.absarc(0, 0, rIn, 0, Math.PI * 2, true);
+        s.holes.push(h);
+        const geo = new THREE.ExtrudeGeometry(s, { depth: Math.abs(z1 - z0), bevelEnabled: false, curveSegments: segs });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(cx - HALF_W, cy - HALF_H, Math.min(z0, z1) - HALF_D + zOff);
+        parent.add(mesh);
+        return mesh;
       }
 
-      function buildP5ExpCompactScene(explodeVal, shellMode) {
+      function buildP5ThreeScene(explodeVal, shellMode) {
         const ex = explodeVal;
         const zTray = -ex * 34;
         const zLipo = -ex * 16;
@@ -743,287 +716,263 @@
         const zLid = ex * 44;
         const xSide = ex * 14;
 
-        const boxes = [];
-        const shellCfg = {
-          photoreal:   { fill: '#2e3136', edge: 'rgba(15,18,22,0.28)', alpha: 1.0 },
-          transparent: { fill: '#dbeafe', edge: '#60a5fa', alpha: 0.17 },
-          smoke:       { fill: '#1e293b', edge: '#94a3b8', alpha: 0.34 },
-          solid:       { fill: '#262930', edge: '#52525b', alpha: 0.96 },
+        const scene = new THREE.Scene();
+        scene.add(new THREE.AmbientLight(0xffffff, 0.72));
+        const keyLight = new THREE.DirectionalLight(0xffffff, 0.95);
+        keyLight.position.set(85, 110, 140);
+        scene.add(keyLight);
+        const fillLight = new THREE.DirectionalLight(0xb8d4ff, 0.42);
+        fillLight.position.set(-110, -40, 80);
+        scene.add(fillLight);
+        const rimLight = new THREE.DirectionalLight(0xffffff, 0.35);
+        rimLight.position.set(0, 90, -120);
+        scene.add(rimLight);
+
+        const group = new THREE.Group();
+        scene.add(group);
+
+        const shellStyle = {
+          photoreal:   { hex: "#282b30", opacity: 1.0,  rough: 0.76, metal: 0.06 },
+          transparent: { hex: "#cfe2ff", opacity: 0.24, rough: 0.22, metal: 0.05 },
+          smoke:       { hex: "#3b4252", opacity: 0.42, rough: 0.32, metal: 0.05 },
+          solid:       { hex: "#24272d", opacity: 0.96, rough: 0.65, metal: 0.08 },
           open:        null
         }[shellMode];
+        const shellMat = shellStyle ? getStdMat(shellStyle.hex, shellStyle) : null;
+        const cradleMat = shellStyle ? getStdMat(shellStyle.hex, { opacity: Math.min(0.65, shellStyle.opacity + 0.14), rough: 0.72 }) : null;
 
-        const p5Corners = [
-          [5.4, 5.4, 'bl', 3.6, 3.6],
-          [66.6, 5.4, 'br', 68.4, 3.6],
-          [66.6, 78.6, 'tr', 68.4, 80.4],
-          [5.4, 78.6, 'tl', 3.6, 80.4]
-        ];
-        if (shellCfg) {
-          const s = shellCfg;
-          boxes.push(cadBox(5.4, 66.6, 0, 84.0, 0, 1.8, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(0, 5.4, 5.4, 78.6, 0, 1.8, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(66.6, 72.0, 5.4, 78.6, 0, 1.8, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(0, 1.8, 5.4, 45.0, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(0, 1.8, 55.4, 78.6, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(0.0, 0.35, 45.7, 54.7, 13.5, 16.7, zTray, '#0b0f17', '#64748b', 1.0, 'usbc_port_recess'));
-          boxes.push(cadBox(70.2, 72.0, 5.4, 6.0, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(70.2, 72.0, 23.9, 40.8, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(70.2, 72.0, 77.2, 78.6, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(5.4, 66.6, 0, 1.8, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(5.4, 10.5, 82.2, 84.0, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          boxes.push(cadBox(17.0, 66.6, 82.2, 84.0, 1.8, 17.7, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          for (const [cx, cy, q] of p5Corners) {
-            boxes.push(cadCornerSector(cx, cy, 5.4, q, 0.0, 17.7, 10, zTray, s.fill, s.edge, s.alpha, 'shell'));
-          }
-        }
+        const mDarkPCB = getStdMat("#121826", { rough: 0.5 });
+        const mPurplePCB = getStdMat("#7e22ce", { rough: 0.45 });
+        const mGreenPCB = getStdMat("#15803d", { rough: 0.48 });
+        const mBluePCB = getStdMat("#1d4ed8", { rough: 0.45 });
+        const mCyanPCB = getStdMat("#0284c7", { rough: 0.45 });
+        const mSilver = getStdMat("#cbd5e1", { rough: 0.26, metal: 0.75 });
+        const mGold = getStdMat("#eab308", { rough: 0.25, metal: 0.85 });
+        const mBlackCap = getStdMat("#1b1e24", { rough: 0.62 });
+        const mCavity = getStdMat("#07090e", { rough: 0.9 });
+        const mLiPo = getStdMat("#cbd5e1", { rough: 0.4, metal: 0.25 });
+        const mKapton = getStdMat("#eab308", { rough: 0.35, metal: 0.1 });
 
-        if (uiState.showCradles) {
-          const cCol = '#5c7c9e', cEdg = '#93c5fd', cAlp = shellMode === 'solid' ? 0.98 : 0.86;
-          for (const [, , , sx, sy] of p5Corners) {
-            boxes.push(cadCyl(sx, sy, 1.8, 17.7, 1.7, 14, zTray, cCol, cEdg, cAlp, 'cradle'));
-          }
-          boxes.push(cadBox(4.5, 5.4, 37.5, 74.5, 1.8, 7.0, zTray, cCol, cEdg, cAlp, 'cradle'));
-          boxes.push(cadBox(64.6, 65.5, 60.0, 74.5, 1.8, 7.0, zTray, cCol, cEdg, cAlp, 'cradle'));
-          boxes.push(cadBox(31.5, 34.0, 5.5, 15.5, 1.8, 7.9, zTray, cCol, cEdg, cAlp, 'cradle'));
-          boxes.push(cadBox(48.8, 51.2, 5.5, 15.5, 1.8, 7.9, zTray, cCol, cEdg, cAlp, 'cradle'));
-          boxes.push(cadBox(66.0, 68.5, 5.5, 20.5, 1.8, 7.9, zTray, cCol, cEdg, cAlp, 'cradle'));
-          boxes.push(cadBox(64.6, 70.2, 20.8, 21.8, 1.8, 17.2, zTray, cCol, cEdg, cAlp, 'cradle'));
-          boxes.push(cadBox(64.6, 70.2, 59.2, 60.2, 1.8, 17.2, zTray, cCol, cEdg, cAlp, 'cradle'));
-          boxes.push(cadBox(59.0, 61.0, 22.0, 36.0, 1.8, 9.0, zTray, cCol, cEdg, cAlp, 'cradle'));
-          boxes.push(cadBox(53.0, 59.0, 22.0, 36.0, 7.5, 9.0, zTray, cCol, cEdg, cAlp, 'cradle'));
-          boxes.push(cadBox(1.8, 4.5, 44.0, 45.0, 12.5, 17.7, zTray, cCol, cEdg, cAlp, 'cradle'));
-          boxes.push(cadBox(1.8, 4.5, 55.4, 56.4, 12.5, 17.7, zTray, cCol, cEdg, cAlp, 'cradle'));
-        }
+        const p5CornerPts = [[5.4, 5.4, 3.6, 3.6], [66.6, 5.4, 68.4, 3.6], [66.6, 78.6, 68.4, 80.4], [5.4, 78.6, 3.6, 80.4]];
 
-        // LiPo + Shield
-        boxes.push(cadBox(5.5, 64.5, 37.5, 74.5, 1.8, 6.8, zLipo, '#cbd5e1', '#94a3b8', 1, 'lipo'));
-        boxes.push(cadBox(5.5, 10.0, 37.5, 74.5, 1.9, 6.9, zLipo, '#eab308', '#fef08a', 1, 'lipo_tape'));
-        boxes.push(cadBox(5.5, 64.5, 37.2, 74.7, 7.0, 7.8, zLipo + ex * 4, '#334155', '#64748b', 0.88, 'shield'));
+        if (shellMat) {
+          const baseShape = roundedRectShape(-HALF_W, -HALF_H, 72.0, 84.0, 5.4);
+          const baseGeo = new THREE.ExtrudeGeometry(baseShape, { depth: 1.8, bevelEnabled: false, curveSegments: 16 });
+          const baseMesh = new THREE.Mesh(baseGeo, shellMat);
+          baseMesh.position.z = -HALF_D + zTray;
+          group.add(baseMesh);
 
-        // KY-023 + Front 1x4 + Right-Side 1x4
-        boxes.push(cadBox(5.5, 30.5, 3.5, 36.5, 2.4, 4.0, zMid, '#1e293b', '#64748b', 1, 'ky_pcb'));
-        boxes.push(cadBox(9.5, 25.5, 12.8, 28.8, 4.0, 14.4, zMid, '#94a3b8', '#cbd5e1', 1, 'ky_gimbal'));
+          addBoxMesh(group, 0, 1.8, 5.4, 45.0, 1.8, 17.7, zTray, shellMat);
+          addBoxMesh(group, 0, 1.8, 55.4, 78.6, 1.8, 17.7, zTray, shellMat);
+          addBoxMesh(group, 0, 1.8, 45.0, 55.4, 1.8, 13.5, zTray, shellMat);
+          addBoxMesh(group, 0, 1.8, 45.0, 55.4, 16.7, 17.7, zTray, shellMat);
+          addBoxMesh(group, 0.2, 2.0, 45.7, 54.7, 13.5, 16.7, zTray, mCavity);
 
-        const frontCapXs = [36.0, 45.2, 54.4, 63.6];
-        const frontCapCY = 20.8;
-        boxes.push(cadBox(31.5, 68.5, 13.3, 28.3, 7.9, 9.5, zMid, '#15803d', '#4ade80', 1, 'pad_front'));
-        for (const cx of frontCapXs) {
-          boxes.push(cadBox(cx - 3, cx + 3, frontCapCY - 3, frontCapCY + 3, 9.5, 16.9, zMid, '#0f172a', '#475569', 1, 'sw_front'));
-        }
-
-        const sideCapYs = [72.8, 63.6, 54.4, 45.2];
-        boxes.push(cadBox(65.0, 66.6, 40.5, 77.5, 2.2, 17.2, zMid, '#15803d', '#4ade80', 1, 'pad_side', xSide));
-        for (const cy of sideCapYs) {
-          boxes.push(cadBox(66.6, 70.2, cy - 3, cy + 3, 6.7, 12.7, zMid, '#0f172a', '#475569', 1, 'sw_side', xSide));
-          boxes.push(cadBox(70.2, 72.8, cy - 4.1, cy + 4.1, 5.6, 13.8, zMid, '#262930', '#64748b', 1, 'cap_side', xSide));
-        }
-
-        // Mid-Right & Upper Deck
-        boxes.push(cadBox(31.5, 51.5, 9.5, 36.0, 2.0, 3.6, zMid, '#1e293b', '#64748b', 1, 'boost_pcb'));
-        boxes.push(cadBox(38.0, 45.0, 28.0, 35.0, 3.6, 6.8, zMid, '#334155', '#94a3b8', 1, 'boost_ind'));
-        boxes.push(cadBox(30.5, 54.0, 38.0, 53.5, 8.2, 10.7, zMid + ex * 4, '#1d4ed8', '#60a5fa', 1, 'bt_tx'));
-        boxes.push(cadBox(15.0, 30.0, 38.0, 62.0, 8.2, 11.0, zMid + ex * 5, '#0f172a', '#94a3b8', 1, 'pam8302a'));
-        boxes.push(cadBox(5.5, 37.5, 65.0, 82.0, 9.2, 10.8, zMid + ex * 6, '#7e22ce', '#c084fc', 1, 'pcm_pcb'));
-        boxes.push(cadBox(9.5, 18.0, 70.0, 82.2, 10.8, 14.7, zMid + ex * 6, '#0f172a', '#475569', 1, 'pcm_trs'));
-        boxes.push(cadBox(11.1, 16.4, 82.0, 84.5, 11.3, 14.2, zMid + ex * 6, '#eab308', '#fef08a', 1, 'pcm_ring'));
-        boxes.push(cadBox(52.3, 70.2, 5.5, 23.4, 2.0, 3.6, zMid, '#0284c7', '#7dd3fc', 1, 'sd_pcb'));
-        boxes.push(cadBox(55.7, 70.2, 7.0, 20.8, 3.6, 6.0, zMid, '#cbd5e1', '#94a3b8', 1, 'sd_cage'));
-        boxes.push(cadBox(70.1, 71.8, 8.4, 19.4, 4.0, 5.0, zMid, '#1e293b', '#eab308', 1, 'sd_slot_trim'));
-
-        // Centered AMOLED + INMP441
-        boxes.push(cadBox(4.0, 64.0, 37.5, 63.0, 13.5, 15.1, zAmoled, '#0f172a', '#475569', 1, 'amoled_pcb'));
-        boxes.push(cadBox(4.2, 13.5, 38.5, 62.2, 9.7, 13.5, zAmoled, '#94a3b8', '#cbd5e1', 1, 'amoled_jst'));
-        boxes.push(cadBox(54.5, 63.8, 42.0, 58.5, 10.0, 13.5, zAmoled, '#94a3b8', '#cbd5e1', 1, 'amoled_ant'));
-        boxes.push(cadBox(11.0, 61.0, 39.0, 60.5, 15.1, 17.7, zAmoled, '#05080f', '#38bdf8', 1, 'amoled_glass'));
-        boxes.push(cadBox(2.0, 8.8, 45.7, 54.7, 13.5, 16.7, zAmoled, '#cbd5e1', '#94a3b8', 1, 'amoled_usbc'));
-        boxes.push(cadBox(19.3, 34.3, 68.0, 79.0, 14.5, 16.5, zAmoled - ex * 4, '#0f172a', '#94a3b8', 1, 'spk_body'));
-        boxes.push(cadCyl(26.8, 73.5, 16.5, 17.5, 4.8, 12, zAmoled - ex * 4, '#1e293b', '#64748b', 1, 'spk_gasket'));
-        boxes.push(cadCyl(45.2, 73.5, 14.5, 16.1, 7.0, 12, zAmoled - ex * 4, '#1e293b', '#64748b', 1, 'inmp_pcb'));
-        boxes.push(cadCyl(45.2, 73.5, 16.1, 17.5, 4.5, 12, zAmoled - ex * 4, '#0f172a', '#475569', 1, 'inmp_gasket'));
-
-        // Coral Thumb-Disc + Front 1x4 Keycaps
-        const jX = 17.5 + uiState.joyTiltX * 2.2, jY = 20.8 - uiState.joyTiltY * 2.2;
-        boxes.push(cadCyl(jX, jY, 16.3, 20.1, 8.0, 14, zCaps, '#e0634e', '#fca5a5', 1, 'thumb_disc'));
-        boxes.push(cadDiscFace(jX, jY, 20.15, 5.6, 16, zCaps, '#c9503d', 'rgba(120,40,20,0.65)', 1, 'thumb_dish'));
-
-        const frontCols = ['#e3a84b', '#45b09c', '#ebd15e', '#eb876b'];
-        const frontEdges = ['#fef08a', '#99f6e4', '#fef08a', '#fecaca'];
-        frontCapXs.forEach((cx, i) => {
-          boxes.push(cadBox(cx - 4.1, cx + 4.1, frontCapCY - 4.1, frontCapCY + 4.1, 17.7, 20.5, zCaps, frontCols[i], frontEdges[i], 1, 'cap_front_' + i));
-        });
-
-        // Top Faceplate Lid
-        if (shellCfg) {
-          const s = shellCfg;
-          boxes.push(cadBox(0, 72.0, 62.0, 78.6, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          boxes.push(cadBox(5.4, 66.6, 78.6, 84.0, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          boxes.push(cadBox(0, 11.0, 37.5, 62.0, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          boxes.push(cadBox(61.0, 72.0, 37.5, 62.0, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          boxes.push(cadBox(31.5, 72.0, 25.2, 37.5, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          boxes.push(cadBox(0, 5.0, 5.4, 37.5, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          boxes.push(cadBox(30.0, 66.6, 0, 16.4, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          boxes.push(cadBox(66.6, 72.0, 5.4, 16.4, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          frontCapXs.forEach((cx, i) => {
-            const prevX = i === 0 ? 31.5 : frontCapXs[i - 1] + 4.4;
-            boxes.push(cadBox(prevX, cx - 4.4, 16.4, 25.2, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          addBoxMesh(group, 70.2, 72.0, 5.4, 6.0, 1.8, 17.7, zTray, shellMat);
+          addBoxMesh(group, 70.2, 72.0, 6.0, 23.9, 1.8, 2.8, zTray, shellMat);
+          addBoxMesh(group, 70.2, 72.0, 6.0, 23.9, 6.4, 17.7, zTray, shellMat);
+          addBoxMesh(group, 70.2, 72.0, 23.9, 40.8, 1.8, 17.7, zTray, shellMat);
+          addBoxMesh(group, 70.2, 72.0, 40.8, 77.2, 1.8, 5.3, zTray, shellMat);
+          addBoxMesh(group, 70.2, 72.0, 40.8, 77.2, 14.1, 17.7, zTray, shellMat);
+          const sYs = [45.2, 54.4, 63.6, 72.8];
+          sYs.forEach((cy, i) => {
+            const prevY = i === 0 ? 40.8 : sYs[i - 1] + 4.4;
+            if (cy - 4.4 > prevY + 0.01) addBoxMesh(group, 70.2, 72.0, prevY, cy - 4.4, 5.3, 14.1, zTray, shellMat);
           });
-          boxes.push(cadBox(68.0, 72.0, 16.4, 25.2, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          for (const [cx, cy, q] of p5Corners) {
-            boxes.push(cadCornerSector(cx, cy, 5.4, q, 17.7, 19.5, 10, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          addBoxMesh(group, 70.2, 72.0, 77.2, 78.6, 1.8, 17.7, zTray, shellMat);
+
+          addBoxMesh(group, 5.4, 66.6, 0, 1.8, 1.8, 17.7, zTray, shellMat);
+          addBoxMesh(group, 5.4, 10.5, 82.2, 84.0, 1.8, 17.7, zTray, shellMat);
+          addBoxMesh(group, 10.5, 17.0, 82.2, 84.0, 1.8, 9.8, zTray, shellMat);
+          addBoxMesh(group, 17.0, 66.6, 82.2, 84.0, 1.8, 17.7, zTray, shellMat);
+
+          for (const [cx, cy] of p5CornerPts) {
+            addCylZMesh(group, cx, cy, 1.8, 17.7, 5.4, 16, zTray, shellMat);
           }
-          boxes.push(cadCyl(17.5, 20.8, 16.3, 19.5, 13.8, 16, zLid, s.fill, s.edge, Math.min(0.45, s.alpha + 0.08), 'stick_well'));
-          boxes.push(cadCyl(26.8, 73.5, 16.1, 19.5, 5.4, 14, zLid, s.fill, s.edge, Math.min(0.45, s.alpha + 0.08), 'spk_collar'));
-          boxes.push(cadCyl(45.2, 73.5, 16.1, 19.5, 5.8, 14, zLid, s.fill, s.edge, Math.min(0.45, s.alpha + 0.08), 'mic_collar'));
+
+          const lidShape = roundedRectShape(-HALF_W, -HALF_H, 72.0, 84.0, 5.4);
+          lidShape.holes.push(rectPath(11.0, 61.0, 39.0, 60.5));
+          lidShape.holes.push(circlePath(17.5, 20.8, 12.5));
+          for (const cx of [36.0, 45.2, 54.4, 63.6]) {
+            lidShape.holes.push(rectPath(cx - 4.4, cx + 4.4, 16.4, 25.2));
+          }
+          lidShape.holes.push(circlePath(26.8, 73.5, 4.6));
+          lidShape.holes.push(circlePath(45.2, 73.5, 4.6));
+          const lidGeo = new THREE.ExtrudeGeometry(lidShape, { depth: 1.8, bevelEnabled: false, curveSegments: 20 });
+          const lidMesh = new THREE.Mesh(lidGeo, shellMat);
+          lidMesh.position.z = 17.7 - HALF_D + zLid;
+          group.add(lidMesh);
+
+          addTubeZMesh(group, 17.5, 20.8, 16.3, 19.5, 12.5, 13.8, 24, zLid, shellMat);
+          addCylZMesh(group, 17.5, 20.8, 16.0, 16.4, 12.6, 24, zLid, mCavity);
           for (const gx of [26.8, 45.2]) {
-            boxes.push(cadDiscFace(gx, 73.5, 19.52, 4.6, 16, zLid, '#161920', '#94a3b8', 1, 'grille_detail'));
+            addTubeZMesh(group, gx, 73.5, 16.1, 19.5, 4.6, 5.5, 20, zLid, shellMat);
+            addCylZMesh(group, gx, 73.5, 17.7, 19.05, 4.65, 20, zLid, shellMat);
             for (const dx of [-3.0, -1.5, 0, 1.5, 3.0]) {
               for (const dy of [-3.0, -1.5, 0, 1.5, 3.0]) {
                 if (Math.abs(dx) + Math.abs(dy) < 5.5) {
-                  boxes.push(cadDiscFace(gx + dx, 73.5 + dy, 19.55, 0.42, 8, zLid, '#06080d', '#06080d', 1, 'grille_detail'));
+                  addCylZMesh(group, gx + dx, 73.5 + dy, 19.04, 19.22, 0.44, 10, zLid, mCavity);
                 }
               }
             }
           }
-          for (const [sx, sy] of [[3.6, 3.6], [68.4, 3.6], [3.6, 80.4], [68.4, 80.4]]) {
-            boxes.push(cadDiscFace(sx, sy, 19.54, 1.5, 12, zLid, '#0f172a', '#94a3b8', 1, 'm2_screw'));
+          for (const [,, sx, sy] of p5CornerPts) {
+            addCylZMesh(group, sx, sy, 19.45, 19.65, 1.55, 16, zLid, mBlackCap);
+            addCylZMesh(group, sx, sy, 19.64, 19.72, 0.72, 6, zLid, mSilver);
+          }
+
+          if (uiState.showCradles && cradleMat) {
+            addBoxMesh(group, 4.0, 4.9, 37.5, 74.5, 1.8, 7.0, zTray, cradleMat);
+            addBoxMesh(group, 31.5, 34.0, 6.0, 9.0, 1.8, 7.9, zTray, cradleMat);
+            addBoxMesh(group, 52.3, 55.0, 24.5, 28.3, 1.8, 7.9, zTray, cradleMat);
+            addBoxMesh(group, 66.0, 68.5, 24.5, 28.3, 1.8, 7.9, zTray, cradleMat);
+            addBoxMesh(group, 65.0, 70.2, 39.3, 40.3, 1.8, 17.2, zTray, cradleMat);
+            addBoxMesh(group, 65.0, 70.2, 77.7, 78.5, 1.8, 17.2, zTray, cradleMat);
+            addBoxMesh(group, 3.5, 4.9, 65.0, 78.4, 1.8, 9.2, zTray, cradleMat);
+            addBoxMesh(group, 31.5, 51.5, 8.8, 9.2, 1.8, 4.5, zTray, cradleMat);
           }
         }
 
-        const wires = [];
-        if (uiState.showWires) {
-          wires.push({ a: [26 - HALF_W, HALF_H - 63, 14.5 - HALF_D + zAmoled], b: [20 - HALF_W, HALF_H - 74, 11.5 - HALF_D + zMid], color: '#c084fc' });
-          wires.push({ a: [38 - HALF_W, HALF_H - 63, 14.5 - HALF_D + zAmoled], b: [45.2 - HALF_W, HALF_H - 73.5, 15.5 - HALF_D + zAmoled], color: '#facc15' });
-          wires.push({ a: [52 - HALF_W, HALF_H - 63, 14.5 - HALF_D + zAmoled], b: [60 - HALF_W, HALF_H - 15, 3.2 - HALF_D + zMid], color: '#38bdf8' });
-          wires.push({ a: [22 - HALF_W, HALF_H - 38, 14.0 - HALF_D + zAmoled], b: [18 - HALF_W, HALF_H - 34, 3.2 - HALF_D + zMid], color: '#34d399' });
-          wires.push({ a: [44 - HALF_W, HALF_H - 38, 14.0 - HALF_D + zAmoled], b: [48 - HALF_W, HALF_H - 20.8, 8.7 - HALF_D + zMid], color: '#f97316' });
-          wires.push({ a: [64.6 - HALF_W + xSide, HALF_H - 72.8, 9.7 - HALF_D + zMid], b: [42 - HALF_W, HALF_H - 23, 3.2 - HALF_D + zMid], color: '#ef4444' });
-          wires.push({ a: [22 - HALF_W, HALF_H - 50, 9.6 - HALF_D + zMid], b: [26.8 - HALF_W, HALF_H - 73.5, 15.5 - HALF_D + zAmoled], color: '#ec4899' });
-        }
+        addBoxMesh(group, 5.0, 64.0, 37.5, 74.5, 1.8, 6.8, zLipo, mLiPo);
+        addBoxMesh(group, 5.0, 9.5, 37.5, 74.5, 1.9, 6.9, zLipo, mKapton);
+        addBoxMesh(group, 5.0, 64.0, 37.2, 74.7, 7.0, 7.8, zLipo + ex * 4, getStdMat("#334155", { opacity: 0.9, rough: 0.7 }));
 
-        return { boxes, wires, zAmoled, zLid, zCaps };
+        addBoxMesh(group, 5.5, 30.5, 3.5, 36.5, 2.4, 4.0, zMid, mDarkPCB);
+        addBoxMesh(group, 9.5, 25.5, 12.8, 28.8, 4.0, 14.4, zMid, mSilver);
+        const jX = 17.5 + uiState.joyTiltX * 2.2, jY = 20.8 + uiState.joyTiltY * 2.2;
+        const mCoral = getStdMat("#e0634e", { rough: 0.45 });
+        const mCoralInner = getStdMat("#c74d3a", { rough: 0.55 });
+        addCylZMesh(group, jX, jY, 16.3, 19.2, 8.0, 24, zCaps, mCoral);
+        addTubeZMesh(group, jX, jY, 19.2, 20.2, 5.7, 8.0, 24, zCaps, mCoral);
+        addCylZMesh(group, jX, jY, 19.1, 19.3, 5.7, 24, zCaps, mCoralInner);
+
+        const frontCapXs = [36.0, 45.2, 54.4, 63.6];
+        const frontMats = [
+          getStdMat("#e3a84b", { rough: 0.42 }),
+          getStdMat("#45b09c", { rough: 0.42 }),
+          getStdMat("#ebd15e", { rough: 0.42 }),
+          getStdMat("#eb876b", { rough: 0.42 })
+        ];
+        addBoxMesh(group, 31.5, 68.5, 13.3, 28.3, 7.9, 9.5, zMid, mGreenPCB);
+        frontCapXs.forEach((cx, i) => {
+          addBoxMesh(group, cx - 3.0, cx + 3.0, 17.8, 23.8, 9.5, 16.9, zMid, mBlackCap);
+          addBoxMesh(group, cx - 4.1, cx + 4.1, 16.7, 24.9, 17.7, 20.5, zCaps, frontMats[i]);
+        });
+
+        const sideCapYs = [72.8, 63.6, 54.4, 45.2];
+        addBoxMesh(group, 65.0, 66.6, 40.5, 77.5, 2.2, 17.2, zMid, mGreenPCB, xSide);
+        sideCapYs.forEach(cy => {
+          addBoxMesh(group, 66.6, 70.2, cy - 3.0, cy + 3.0, 6.7, 12.7, zMid, mBlackCap, xSide);
+          addBoxMesh(group, 70.2, 72.8, cy - 4.1, cy + 4.1, 5.6, 13.8, zMid, mBlackCap, xSide);
+        });
+
+        addBoxMesh(group, 31.5, 51.5, 9.5, 36.0, 2.0, 3.6, zMid, mDarkPCB);
+        addBoxMesh(group, 38.0, 45.0, 28.0, 35.0, 3.6, 6.8, zMid, mBlackCap);
+        addBoxMesh(group, 30.5, 54.0, 38.0, 53.5, 8.2, 10.7, zMid + ex * 4, mBluePCB);
+        addBoxMesh(group, 15.0, 30.0, 38.0, 62.0, 8.2, 11.0, zMid + ex * 5, mDarkPCB);
+        addBoxMesh(group, 5.5, 37.5, 65.0, 82.0, 9.2, 10.8, zMid + ex * 6, mPurplePCB);
+        addBoxMesh(group, 9.5, 18.0, 70.0, 82.2, 10.8, 14.7, zMid + ex * 6, mBlackCap);
+        const trsRing = new THREE.Mesh(new THREE.CylinderGeometry(3.0, 3.0, 2.4, 20), mGold);
+        trsRing.position.set(13.75 - HALF_W, 83.2 - HALF_H, 12.75 - HALF_D + zMid + ex * 6);
+        group.add(trsRing);
+        const trsBore = new THREE.Mesh(new THREE.CylinderGeometry(1.75, 1.75, 2.5, 16), mCavity);
+        trsBore.position.set(13.75 - HALF_W, 83.25 - HALF_H, 12.75 - HALF_D + zMid + ex * 6);
+        group.add(trsBore);
+
+        addBoxMesh(group, 52.3, 70.2, 5.5, 23.4, 2.0, 3.6, zMid, mCyanPCB);
+        addBoxMesh(group, 55.7, 70.2, 7.0, 20.8, 3.6, 6.0, zMid, mSilver);
+        addBoxMesh(group, 68.5, 71.8, 8.4, 19.4, 4.0, 5.0, zMid, mBlackCap);
+
+        addBoxMesh(group, 4.0, 64.0, 37.5, 63.0, 13.5, 15.1, zAmoled, mDarkPCB);
+        addBoxMesh(group, 4.2, 13.5, 38.5, 62.2, 9.7, 13.5, zAmoled, mSilver);
+        addBoxMesh(group, 54.5, 63.8, 42.0, 58.5, 10.0, 13.5, zAmoled, mSilver);
+        addBoxMesh(group, 11.0, 61.0, 39.0, 60.5, 15.1, 17.7, zAmoled, getStdMat("#05080f", { rough: 0.12, metal: 0.15 }));
+        addBoxMesh(group, 2.0, 8.8, 45.7, 54.7, 13.5, 16.7, zAmoled, mSilver);
+        addBoxMesh(group, 19.3, 34.3, 68.0, 79.0, 14.5, 16.5, zAmoled - ex * 4, mBlackCap);
+        addCylZMesh(group, 26.8, 73.5, 16.5, 17.5, 4.8, 16, zAmoled - ex * 4, mDarkPCB);
+        addCylZMesh(group, 45.2, 73.5, 14.5, 16.1, 7.0, 16, zAmoled - ex * 4, mDarkPCB);
+        addCylZMesh(group, 45.2, 73.5, 16.1, 17.5, 4.5, 16, zAmoled - ex * 4, mBlackCap);
+
+        const ipsCvs = document.getElementById("ips-canvas");
+        if (!window._amoledTex && ipsCvs) {
+          window._amoledTex = new THREE.CanvasTexture(ipsCvs);
+          window._amoledTex.minFilter = THREE.LinearFilter;
+          window._amoledTex.magFilter = THREE.LinearFilter;
+        }
+        const scrMat = uiState.screenOn && window._amoledTex
+          ? new THREE.MeshBasicMaterial({ map: window._amoledTex })
+          : new THREE.MeshStandardMaterial({ color: 0x05070b, roughness: 0.08, metalness: 0.25 });
+        const scrPlane = new THREE.Mesh(new THREE.PlaneGeometry(44.2, 19.8), scrMat);
+        scrPlane.position.set(36.0 - HALF_W, 49.7 - HALF_H, 17.76 - HALF_D + zAmoled);
+        group.add(scrPlane);
+
+        if (uiState.showWires) {
+          const wireList = [
+            [[26, 63, 14.5 + zAmoled], [20, 74, 11.5 + zMid], "#c084fc"],
+            [[38, 63, 14.5 + zAmoled], [45.2, 73.5, 15.5 + zAmoled], "#facc15"],
+            [[52, 63, 14.5 + zAmoled], [60, 15, 3.2 + zMid], "#38bdf8"],
+            [[22, 38, 14.0 + zAmoled], [18, 34, 3.2 + zMid], "#34d399"],
+            [[44, 38, 14.0 + zAmoled], [48, 20.8, 8.7 + zMid], "#f97316"],
+            [[65.0 + xSide, 72.8, 9.7 + zMid], [42, 23, 3.2 + zMid], "#ef4444"],
+            [[22, 50, 9.6 + zMid], [26.8, 73.5, 15.5 + zAmoled], "#ec4899"]
+          ];
+          for (const [a, b, col] of wireList) {
+            const p0 = new THREE.Vector3(a[0] - HALF_W, a[1] - HALF_H, a[2] - HALF_D);
+            const p2 = new THREE.Vector3(b[0] - HALF_W, b[1] - HALF_H, b[2] - HALF_D);
+            const p1 = new THREE.Vector3((p0.x + p2.x) * 0.5, (p0.y + p2.y) * 0.5, Math.min(p0.z, p2.z) - 2.5);
+            const curve = new THREE.QuadraticBezierCurve3(p0, p1, p2);
+            group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 12, 0.45, 6, false), getStdMat(col, { rough: 0.4 })));
+          }
+        }
+        return scene;
       }
 
-      function renderModelInRegion(ctx, rx, ry, rw, rh, explodeVal, shellMode, subLabel, theme) {
-        ctx.save();
-        ctx.beginPath(); ctx.rect(rx, ry, rw, rh); ctx.clip();
-        const cx = rx + rw / 2, cy = ry + rh / 2 + 8;
-        const scale = Math.min(rw, rh) / (116 + explodeVal * 26);
-
-        if (shellMode === 'photoreal') {
-          ctx.save();
-          const sg = ctx.createRadialGradient(cx, cy + 165, 10, cx, cy + 165, 175);
-          sg.addColorStop(0, 'rgba(0,0,0,0.34)');
-          sg.addColorStop(1, 'rgba(0,0,0,0)');
-          ctx.fillStyle = sg;
-          ctx.beginPath();
-          ctx.ellipse(cx, cy + 165, 165, 36, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
-        }
-
-        const { boxes, wires, zAmoled, zLid, zCaps } = buildP5ExpCompactScene(explodeVal, shellMode);
-
-        const isOpaqueAssembled = (explodeVal < 0.02 && (shellMode === 'photoreal' || shellMode === 'solid'));
-        const EXTERIOR_TAGS = new Set(['shell', 'shell_lid', 'spk_collar', 'mic_collar', 'grille_detail', 'm2_screw', 'amoled_glass', 'usbc_port_recess', 'pcm_ring', 'sd_slot_trim', 'thumb_disc', 'thumb_dish', 'cap_side']);
-        const quads = [];
-        for (const box of boxes) {
-          if (isOpaqueAssembled && !EXTERIOR_TAGS.has(box.tag) && !box.tag.startsWith('cap_front_')) continue;
-          const pv = box.verts.map(v => projectPoint(v, uiState.yaw, uiState.pitch, cx, cy, scale));
-          for (const f of box.faces) {
-            const pts = []; let sumZ = 0;
-            for (let k = 0; k < f.length - 1; k++) { pts.push(pv[f[k]]); sumZ += pv[f[k]].z; }
-            quads.push({ pts, avgZ: sumZ / pts.length, fill: shadeHex(box.color, f[f.length - 1]), stroke: box.edgeColor, alpha: box.alpha, isShell: box.tag === 'shell' || box.tag === 'shell_lid' });
-          }
-        }
-        quads.sort((a, b) => a.avgZ - b.avgZ);
-
-        function drawWires() {
-          if (isOpaqueAssembled) return;
-          for (const wr of wires) {
-            const a = projectPoint(wr.a, uiState.yaw, uiState.pitch, cx, cy, scale);
-            const b = projectPoint(wr.b, uiState.yaw, uiState.pitch, cx, cy, scale);
-            ctx.beginPath(); ctx.moveTo(a.x, a.y);
-            ctx.quadraticCurveTo((a.x + b.x) / 2, Math.min(a.y, b.y) - 10, b.x, b.y);
-            ctx.strokeStyle = wr.color; ctx.lineWidth = 1.8; ctx.stroke();
-          }
-        }
-
-        let wiresDone = false;
-        for (const q of quads) {
-          if (!wiresDone && q.avgZ > 1.5) { drawWires(); wiresDone = true; }
-          ctx.save(); ctx.globalAlpha = q.alpha; ctx.beginPath();
-          ctx.moveTo(q.pts[0].x, q.pts[0].y);
-          for (let i = 1; i < q.pts.length; i++) ctx.lineTo(q.pts[i].x, q.pts[i].y);
-          ctx.closePath(); ctx.fillStyle = q.fill; ctx.fill();
-          ctx.strokeStyle = q.stroke; ctx.lineWidth = q.isShell ? 0.85 : 0.7; ctx.stroke();
-          ctx.restore();
-        }
-        if (!wiresDone) drawWires();
-
-        if (Math.cos(uiState.yaw) > -0.15) {
-          const zScr = 7.96 + zAmoled;
-          const pTL = projectPoint([13.9 - HALF_W, HALF_H - 59.6, zScr], uiState.yaw, uiState.pitch, cx, cy, scale);
-          const pTR = projectPoint([58.1 - HALF_W, HALF_H - 59.6, zScr], uiState.yaw, uiState.pitch, cx, cy, scale);
-          const pBR = projectPoint([58.1 - HALF_W, HALF_H - 39.8, zScr], uiState.yaw, uiState.pitch, cx, cy, scale);
-          const pBL = projectPoint([13.9 - HALF_W, HALF_H - 39.8, zScr], uiState.yaw, uiState.pitch, cx, cy, scale);
-          const winding = (pTR.x - pTL.x) * (pBL.y - pTL.y) - (pTR.y - pTL.y) * (pBL.x - pTL.x);
-          if (winding > 8) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(pTL.x, pTL.y);
-            ctx.lineTo(pTR.x, pTR.y);
-            ctx.lineTo(pBR.x, pBR.y);
-            ctx.lineTo(pBL.x, pBL.y);
-            ctx.closePath();
-            ctx.clip();
-            const ipsCvs = document.getElementById('ips-canvas');
-            if (uiState.screenOn && ipsCvs) {
-              const sw = ipsCvs.width, sh = ipsCvs.height;
-              ctx.transform(
-                (pTR.x - pTL.x) / sw, (pTR.y - pTL.y) / sw,
-                (pBL.x - pTL.x) / sh, (pBL.y - pTL.y) / sh,
-                pTL.x, pTL.y
-              );
-              ctx.drawImage(ipsCvs, 0, 0);
-            } else {
-              ctx.fillStyle = '#05070b';
-              ctx.fill();
-              const sheen = ctx.createLinearGradient(pTL.x, pTL.y, pBR.x, pBR.y);
-              sheen.addColorStop(0, 'rgba(255,255,255,0.11)');
-              sheen.addColorStop(0.5, 'rgba(255,255,255,0)');
-              ctx.fillStyle = sheen;
-              ctx.fill();
-            }
-            ctx.restore();
-          }
-        }
-
-        if (subLabel) {
-          ctx.fillStyle = theme.primary; ctx.font = 'bold 11px ui-monospace, monospace';
-          ctx.fillText(subLabel, rx + 12, ry + 20);
-        }
-        ctx.restore();
+      function renderThreeScene(scene, explodeVal) {
+        const dist = 148 + explodeVal * 42;
+        const cp = Math.cos(uiState.pitch), sp = Math.sin(uiState.pitch);
+        const cy = Math.cos(uiState.yaw), sy = Math.sin(uiState.yaw);
+        _threeCam.position.set(dist * cp * sy, -dist * sp, dist * cp * cy);
+        _threeCam.lookAt(0, 0, 0);
+        _threeRenderer.render(scene, _threeCam);
       }
 
       function drawScene() {
-        const cvs = document.getElementById('cad-canvas');
-        if (!cvs) return;
-        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+        const cvs = document.getElementById("cad-canvas");
+        if (!cvs || typeof THREE === "undefined") return;
         const rect = cvs.getBoundingClientRect();
         const w = Math.max(300, Math.floor(rect.width)), h = Math.max(300, Math.floor(rect.height));
-        if (cvs.width !== w * dpr || cvs.height !== h * dpr) { cvs.width = w * dpr; cvs.height = h * dpr; }
-        const ctx = cvs.getContext('2d');
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+        if (!_threeRenderer) {
+          _threeRenderer = new THREE.WebGLRenderer({ canvas: cvs, antialias: true, alpha: true });
+          _threeRenderer.setPixelRatio(dpr);
+          _threeCam = new THREE.PerspectiveCamera(34, w / h, 1, 1000);
+        }
+        _threeRenderer.setSize(w, h, false);
         const theme = getThemeColors();
-        ctx.fillStyle = theme.bg; ctx.fillRect(0, 0, w, h);
+        _threeRenderer.setClearColor(new THREE.Color(theme.bg), 1);
+        if (window._amoledTex) window._amoledTex.needsUpdate = true;
+
         if (uiState.dualView) {
           const halfW = Math.floor(w / 2);
-          renderModelInRegion(ctx, 0, 0, halfW, h, 0.0, 'transparent', 'TRANSPARENT ASSEMBLED (72×84×19.5 mm)', theme);
-          ctx.strokeStyle = theme.border; ctx.lineWidth = 1.5;
-          ctx.beginPath(); ctx.moveTo(halfW, 12); ctx.lineTo(halfW, h - 12); ctx.stroke();
-          renderModelInRegion(ctx, halfW, 0, w - halfW, h, 1.0, 'transparent', 'EXPLODED Z-STACK + RIGHT-SIDE 1×4', theme);
+          _threeRenderer.setScissorTest(true);
+          _threeCam.aspect = halfW / h;
+          _threeCam.updateProjectionMatrix();
+          _threeRenderer.setViewport(0, 0, halfW, h);
+          _threeRenderer.setScissor(0, 0, halfW, h);
+          renderThreeScene(buildP5ThreeScene(0.0, "transparent"), 0.0);
+
+          _threeCam.aspect = (w - halfW) / h;
+          _threeCam.updateProjectionMatrix();
+          _threeRenderer.setViewport(halfW, 0, w - halfW, h);
+          _threeRenderer.setScissor(halfW, 0, w - halfW, h);
+          renderThreeScene(buildP5ThreeScene(1.0, "smoke"), 1.0);
+          _threeRenderer.setScissorTest(false);
         } else {
-          renderModelInRegion(ctx, 0, 0, w, h, uiState.explode, uiState.shellMode, null, theme);
+          _threeRenderer.setScissorTest(false);
+          _threeCam.aspect = w / h;
+          _threeCam.updateProjectionMatrix();
+          _threeRenderer.setViewport(0, 0, w, h);
+          renderThreeScene(buildP5ThreeScene(uiState.explode, uiState.shellMode), uiState.explode);
         }
       }
 
