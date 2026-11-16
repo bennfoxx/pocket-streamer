@@ -398,10 +398,10 @@ func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot:
     addBox(tray, "wall_left_under_usbc", 0, 1.8, 45.0, 55.4, 1.8 + dzShellBot, 13.5 + dzShellBot, shellMat, renderOrder: renderOrder)
     addBox(tray, "wall_left_over_usbc", 0, 1.8, 45.0, 55.4, 16.7 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
     // Internal USB-C funnel guide cheeks (X: 1.8..4.5) framing Y: 45.0..55.4, Z: 13.5..16.7
-    addBox(tray, "usbc_funnel_bot_y", 1.8, 4.5, 44.0, 45.0, 12.5 + dzShellBot, 17.7 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "usbc_funnel_top_y", 1.8, 4.5, 55.4, 56.4, 12.5 + dzShellBot, 17.7 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "usbc_funnel_under_z", 1.8, 4.5, 45.0, 55.4, 12.5 + dzShellBot, 13.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "usbc_funnel_over_z", 1.8, 4.5, 45.0, 55.4, 16.7 + dzShellBot, 17.7 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "usbc_funnel_bot_y", 1.8, 4.0, 44.0, 45.0, 12.5 + dzShellBot, 17.7 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "usbc_funnel_top_y", 1.8, 4.0, 55.4, 56.4, 12.5 + dzShellBot, 17.7 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "usbc_funnel_under_z", 1.8, 4.0, 45.0, 55.4, 12.5 + dzShellBot, 13.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "usbc_funnel_over_z", 1.8, 4.0, 45.0, 55.4, 16.7 + dzShellBot, 17.7 + dzShellBot, cradleMat, renderOrder: renderOrder)
 
     // Right Wall (X: 70.2..72.0, Y: 5.4..78.6, Z: 1.8..17.7) with Bottom-Right MicroSD Cutout (Y: 6.0..23.9, Z: 2.8..6.4) & Upper Side 1x4 Keypad Cutouts (Y: 40.8..77.2)
     addBox(tray, "wall_right_bot", 70.2, 72.0, 5.4, 6.0, 1.8 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
@@ -423,10 +423,10 @@ func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot:
     // Bottom Wall (X: 5.4..66.6, Y: 0..1.8)
     addBox(tray, "wall_bot", 5.4, 66.6, 0, 1.8, 1.8 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
 
-    // Top Wall (X: 5.4..66.6, Y: 82.2..84.0) with 3.5mm TRS Jack Opening (X: 11.0..17.5, Z: 11.5..17.7)
-    addBox(tray, "wall_top_left", 5.4, 11.0, 82.2, 84.0, 1.8 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
-    addBox(tray, "wall_top_under_trs", 11.0, 17.5, 82.2, 84.0, 1.8 + dzShellBot, 11.5 + dzShellBot, shellMat, renderOrder: renderOrder)
-    addBox(tray, "wall_top_right", 17.5, 66.6, 82.2, 84.0, 1.8 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
+    // Top Wall (X: 5.4..66.6, Y: 82.2..84.0) with 3.5mm TRS Jack Opening (X: 10.5..17.0, Z: 9.8..17.7)
+    addBox(tray, "wall_top_left", 5.4, 10.5, 82.2, 84.0, 1.8 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
+    addBox(tray, "wall_top_under_trs", 10.5, 17.0, 82.2, 84.0, 1.8 + dzShellBot, 9.8 + dzShellBot, shellMat, renderOrder: renderOrder)
+    addBox(tray, "wall_top_right", 17.0, 66.6, 82.2, 84.0, 1.8 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
 
     // 4x Monolithic R=5.4mm Rounded Corner Pillars w/ Ø2.0mm M2 Pilot Bores above Z=4.2
     let trayCornerMesh = STLMesh()
@@ -440,8 +440,8 @@ func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot:
     addSTLMeshNode(tray, "tray_rounded_corners", trayCornerMesh, shellMat, renderOrder: renderOrder)
 
     // Internal Molded PCB Cradles, Support Rails & LiPo Retention
-    // a. LiPo lateral rail (X: 4.5..5.4 left)
-    addBox(tray, "cradle_lipo_l", 4.5, 5.4, 37.5, 74.5, 1.8 + dzShellBot, 7.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    // a. LiPo lateral rail (X: 4.0..4.9 left)
+    addBox(tray, "cradle_lipo_l", 4.0, 4.9, 37.5, 74.5, 1.8 + dzShellBot, 7.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
     // b. KY-023 4x Corner Standoffs (25.0 x 33.0 mm PCB, Y: 3.5..36.5, Z: 1.8..2.4 mm)
     for (kx0, kx1, ky0, ky1) in [
         (5.5, 8.5, 3.5, 6.5), (27.5, 30.5, 3.5, 6.5),
@@ -453,18 +453,18 @@ func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot:
     addBox(tray, "cradle_front_pad_l", 31.5, 34.0, 6.0, 9.0, 1.8 + dzShellBot, 7.9 + dzShellBot, cradleMat, renderOrder: renderOrder)
     addBox(tray, "cradle_front_pad_c", 52.3, 55.0, 24.5, 28.3, 1.8 + dzShellBot, 7.9 + dzShellBot, cradleMat, renderOrder: renderOrder)
     addBox(tray, "cradle_front_pad_r", 66.0, 68.5, 24.5, 28.3, 1.8 + dzShellBot, 7.9 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    // d. Right-Side Vertical 1x4 Keypad Mounting Rails (Y: 39.3..40.3 bot, Y: 77.7..78.5 top, X: 64.6..70.2)
-    addBox(tray, "cradle_side_pad_bot", 64.6, 70.2, 39.3, 40.3, 1.8 + dzShellBot, 17.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_side_pad_top", 64.6, 70.2, 77.7, 78.5, 1.8 + dzShellBot, 17.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_side_pad_floor", 64.6, 66.6, 40.5, 77.5, 1.8 + dzShellBot, 2.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    // e. T-Display-S3 AMOLED Support Ledges (Centered Display: PCB X: 4.5..64.5, Y: 37.5..63.0, Z: 13.5..15.1)
-    addBox(tray, "cradle_amoled_l1", 4.5, 6.2, 37.5, 38.4, 8.0 + dzShellBot, 13.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_amoled_l2", 4.5, 6.2, 62.3, 63.0, 8.0 + dzShellBot, 13.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_amoled_r_shelf", 60.0, 64.6, 38.0, 39.0, 8.0 + dzShellBot, 13.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    // f. GY-PCM5102 Support Pillars (Z: 1.8..11.0)
-    addBox(tray, "cradle_pcm_l_stem", 3.5, 5.3, 65.0, 78.4, 1.8 + dzShellBot, 11.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_pcm_l_shelf", 5.3, 7.8, 65.0, 78.4, 9.0 + dzShellBot, 11.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_pcm_r", 29.1, 29.7, 75.5, 81.5, 1.8 + dzShellBot, 11.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    // d. Right-Side Vertical 1x4 Keypad Mounting Rails (Y: 39.3..40.3 bot, Y: 77.7..78.5 top, X: 65.0..70.2)
+    addBox(tray, "cradle_side_pad_bot", 65.0, 70.2, 39.3, 40.3, 1.8 + dzShellBot, 17.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "cradle_side_pad_top", 65.0, 70.2, 77.7, 78.5, 1.8 + dzShellBot, 17.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "cradle_side_pad_floor", 65.0, 67.0, 40.5, 77.5, 1.8 + dzShellBot, 2.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    // e. T-Display-S3 AMOLED Support Ledges (Centered Display: PCB X: 4.0..64.0, Y: 37.5..63.0, Z: 13.5..15.1)
+    addBox(tray, "cradle_amoled_l1", 4.0, 5.8, 37.5, 38.4, 8.0 + dzShellBot, 13.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "cradle_amoled_l2", 4.0, 5.8, 62.3, 63.0, 8.0 + dzShellBot, 13.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "cradle_amoled_r_shelf", 59.5, 64.0, 38.0, 39.0, 8.0 + dzShellBot, 13.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    // f. GY-PCM5102 Support Pillars (Z: 1.8..9.2)
+    addBox(tray, "cradle_pcm_l_stem", 3.5, 4.9, 65.0, 78.4, 1.8 + dzShellBot, 9.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "cradle_pcm_l_shelf", 4.9, 7.5, 65.0, 78.4, 8.0 + dzShellBot, 9.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "cradle_pcm_r", 29.1, 29.7, 75.5, 81.5, 1.8 + dzShellBot, 9.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
     // g. Mini 3.3V MicroSD Bottom-Right Retention Floor/Stop (X: 52.3..70.2, Y: 6.0..23.9, Z: 2.0..6.0)
     addBox(tray, "cradle_sd_floor", 52.3, 70.2, 6.0, 23.9, 1.8 + dzShellBot, 2.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
     addBox(tray, "cradle_sd_stop", 52.3, 53.5, 24.1, 24.4, 1.8 + dzShellBot, 6.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
@@ -581,7 +581,7 @@ func buildP5ExpCompactPortrait(exploded: Bool = false, opaque: Bool = false) -> 
     boxes.append(("boss_tr", makeAABB("boss_tr", 66.6, 72.0, 78.6, 84.0, 1.8, 17.7)))
 
     // Register Internal Printed Support Cradles for Collision Verification
-    boxes.append(("cradles", makeAABB("cradle_lipo_l", 4.5, 5.4, 37.5, 74.5, 1.8, 7.0)))
+    boxes.append(("cradles", makeAABB("cradle_lipo_l", 4.0, 4.9, 37.5, 74.5, 1.8, 7.0)))
     for (kx0, kx1, ky0, ky1) in [
         (5.5, 8.5, 3.5, 6.5), (27.5, 30.5, 3.5, 6.5),
         (5.5, 8.5, 33.5, 36.5), (27.5, 30.5, 33.5, 36.5)
@@ -591,30 +591,30 @@ func buildP5ExpCompactPortrait(exploded: Bool = false, opaque: Bool = false) -> 
     boxes.append(("cradles", makeAABB("cradle_front_pad_l", 31.5, 34.0, 6.0, 9.0, 1.8, 7.9)))
     boxes.append(("cradles", makeAABB("cradle_front_pad_c", 52.3, 55.0, 24.5, 28.3, 1.8, 7.9)))
     boxes.append(("cradles", makeAABB("cradle_front_pad_r", 66.0, 68.5, 24.5, 28.3, 1.8, 7.9)))
-    boxes.append(("cradles", makeAABB("cradle_side_pad_bot", 64.6, 70.2, 39.3, 40.3, 1.8, 17.2)))
-    boxes.append(("cradles", makeAABB("cradle_side_pad_top", 64.6, 70.2, 77.7, 78.5, 1.8, 17.2)))
-    boxes.append(("cradles", makeAABB("cradle_side_pad_floor", 64.6, 66.6, 40.5, 77.5, 1.8, 2.2)))
-    boxes.append(("cradles", makeAABB("cradle_amoled_l1", 4.5, 6.2, 37.5, 38.4, 8.0, 13.5)))
-    boxes.append(("cradles", makeAABB("cradle_amoled_l2", 4.5, 6.2, 62.3, 63.0, 8.0, 13.5)))
-    boxes.append(("cradles", makeAABB("cradle_amoled_r_shelf", 60.0, 64.6, 38.0, 39.0, 8.0, 13.5)))
-    boxes.append(("cradles", makeAABB("cradle_pcm_l_stem", 3.5, 5.3, 65.0, 78.4, 1.8, 11.0)))
-    boxes.append(("cradles", makeAABB("cradle_pcm_l_shelf", 5.3, 7.8, 65.0, 78.4, 9.0, 11.0)))
-    boxes.append(("cradles", makeAABB("cradle_pcm_r", 29.1, 29.7, 75.5, 81.5, 1.8, 11.0)))
+    boxes.append(("cradles", makeAABB("cradle_side_pad_bot", 65.0, 70.2, 39.3, 40.3, 1.8, 17.2)))
+    boxes.append(("cradles", makeAABB("cradle_side_pad_top", 65.0, 70.2, 77.7, 78.5, 1.8, 17.2)))
+    boxes.append(("cradles", makeAABB("cradle_side_pad_floor", 65.0, 67.0, 40.5, 77.5, 1.8, 2.2)))
+    boxes.append(("cradles", makeAABB("cradle_amoled_l1", 4.0, 5.8, 37.5, 38.4, 8.0, 13.5)))
+    boxes.append(("cradles", makeAABB("cradle_amoled_l2", 4.0, 5.8, 62.3, 63.0, 8.0, 13.5)))
+    boxes.append(("cradles", makeAABB("cradle_amoled_r_shelf", 59.5, 64.0, 38.0, 39.0, 8.0, 13.5)))
+    boxes.append(("cradles", makeAABB("cradle_pcm_l_stem", 3.5, 4.9, 65.0, 78.4, 1.8, 9.2)))
+    boxes.append(("cradles", makeAABB("cradle_pcm_l_shelf", 4.9, 7.5, 65.0, 78.4, 8.0, 9.2)))
+    boxes.append(("cradles", makeAABB("cradle_pcm_r", 29.1, 29.7, 75.5, 81.5, 1.8, 9.2)))
     boxes.append(("cradles", makeAABB("cradle_sd_floor", 52.3, 70.2, 6.0, 23.9, 1.8, 2.0)))
     boxes.append(("cradles", makeAABB("cradle_sd_stop", 52.3, 53.5, 24.1, 24.4, 1.8, 6.0)))
     boxes.append(("cradles", makeAABB("cradle_boost_stop", 31.5, 51.5, 8.8, 9.2, 1.8, 4.5)))
-    boxes.append(("cradles", makeAABB("usbc_funnel_bot_y", 1.8, 4.5, 44.0, 45.0, 12.5, 17.7)))
-    boxes.append(("cradles", makeAABB("usbc_funnel_top_y", 1.8, 4.5, 55.4, 56.4, 12.5, 17.7)))
-    boxes.append(("cradles", makeAABB("usbc_funnel_under_z", 1.8, 4.5, 45.0, 55.4, 12.5, 13.5)))
-    boxes.append(("cradles", makeAABB("usbc_funnel_over_z", 1.8, 4.5, 45.0, 55.4, 16.7, 17.7)))
+    boxes.append(("cradles", makeAABB("usbc_funnel_bot_y", 1.8, 4.0, 44.0, 45.0, 12.5, 17.7)))
+    boxes.append(("cradles", makeAABB("usbc_funnel_top_y", 1.8, 4.0, 55.4, 56.4, 12.5, 17.7)))
+    boxes.append(("cradles", makeAABB("usbc_funnel_under_z", 1.8, 4.0, 45.0, 55.4, 12.5, 13.5)))
+    boxes.append(("cradles", makeAABB("usbc_funnel_over_z", 1.8, 4.0, 45.0, 55.4, 16.7, 17.7)))
 
-    // 1. 503759 1300 mAh LiPo (59.0 x 37.0 x 5.0 mm, X: 5.5..64.5, Y: 37.5..74.5) + 0.8 mm Shield Rib
+    // 1. 503759 1300 mAh LiPo (59.0 x 37.0 x 5.0 mm, X: 5.0..64.0, Y: 37.5..74.5) + 0.8 mm Shield Rib
     let lipoNode = SCNNode()
-    addBox(lipoNode, "lipo_503759", 5.5, 64.5, 37.5, 74.5, 1.8 + dzLiPo, 6.8 + dzLiPo, matLiPo, chamfer: 0.4)
-    addBox(lipoNode, "lipo_tape", 5.5, 10.0, 37.5, 74.5, 1.9 + dzLiPo, 6.9 + dzLiPo, matAmberCap)
-    addBox(lipoNode, "shield_rib", 5.5, 64.5, 37.2, 74.7, 7.0 + dzShield, 7.8 + dzShield, shellMat, renderOrder: ro)
-    boxes.append(("lipo", makeAABB("lipo_503759", 5.5, 64.5, 37.5, 74.5, 1.8, 6.8)))
-    boxes.append(("shield_rib", makeAABB("shield_rib", 5.5, 64.5, 37.2, 74.7, 7.0, 7.8)))
+    addBox(lipoNode, "lipo_503759", 5.0, 64.0, 37.5, 74.5, 1.8 + dzLiPo, 6.8 + dzLiPo, matLiPo, chamfer: 0.4)
+    addBox(lipoNode, "lipo_tape", 5.0, 9.5, 37.5, 74.5, 1.9 + dzLiPo, 6.9 + dzLiPo, matAmberCap)
+    addBox(lipoNode, "shield_rib", 5.0, 64.0, 37.2, 74.7, 7.0 + dzShield, 7.8 + dzShield, shellMat, renderOrder: ro)
+    boxes.append(("lipo", makeAABB("lipo_503759", 5.0, 64.0, 37.5, 74.5, 1.8, 6.8)))
+    boxes.append(("shield_rib", makeAABB("shield_rib", 5.0, 64.0, 37.2, 74.7, 7.0, 7.8)))
     root.addChildNode(lipoNode)
 
     // 2. KY-023 Low-Profile Gimbal (25.0 x 33.0 mm on Z=2.4mm standoffs) + Ø16.0mm Concave Cap Recessed in Ø25.0mm Well
@@ -641,39 +641,38 @@ func buildP5ExpCompactPortrait(exploded: Bool = false, opaque: Bool = false) -> 
     }
     boxes.append(("pad_front", makeAABB("pad_front", 31.5, 68.5, 13.3, 28.3, 7.9, 17.5)))
 
-    // 3b. 1x Right-Side 1x4 Keypad (37.0 x 15.0 mm vertical along X=72.0, Y: 40.5..77.5, Z: 2.2..17.2; 4x Matte Black caps)
+    // 3b. 1x Right-Side 1x4 Keypad (37.0 x 15.0 mm vertical along X=72.0, Y: 40.5..77.5, Z: 2.2..17.2; 1.0mm clear of AMOLED/LiPo!)
     let dxSide = exploded ? 8.0 : 0.0
-    addBox(padNode, "pad_side_pcb", 64.6 + dxSide, 66.2 + dxSide, 40.5, 77.5, 2.2 + dzControls, 17.2 + dzControls, matGreenPCB)
+    addBox(padNode, "pad_side_pcb", 65.0 + dxSide, 66.6 + dxSide, 40.5, 77.5, 2.2 + dzControls, 17.2 + dzControls, matGreenPCB)
     for (i, cy) in sideCapYs.enumerated() {
-        addBox(padNode, "sw_side_\(i)", 66.2 + dxSide, 70.2 + dxSide, cy - 3.0, cy + 3.0, 6.7 + dzControls, 12.7 + dzControls, matBlackCap)
+        addBox(padNode, "sw_side_\(i)", 66.6 + dxSide, 70.2 + dxSide, cy - 3.0, cy + 3.0, 6.7 + dzControls, 12.7 + dzControls, matBlackCap)
         addBox(padNode, "cap_side_flange_\(i)", 69.4 + dxSide, 70.2 + dxSide, cy - 4.7, cy + 4.7, 5.0 + dzControls, 14.4 + dzControls, matBlackCap)
         addBox(padNode, "cap_side_\(i)", 70.2 + dxSide, 72.8 + dxSide, cy - 4.1, cy + 4.1, 5.6 + dzControls, 13.8 + dzControls, matBlackCap, chamfer: 0.5)
     }
-    boxes.append(("pad_side", makeAABB("pad_side", 64.6, 70.2, 40.5, 77.5, 2.2, 17.2)))
+    boxes.append(("pad_side", makeAABB("pad_side", 65.0, 70.2, 40.5, 77.5, 2.2, 17.2)))
     root.addChildNode(padNode)
 
     // 4. Dead-Centered LILYGO T-Display-S3 AMOLED (60.0 x 25.5 x 4.2 mm, Active Window centered at X=36.0 mm!)
     let espNode = SCNNode()
-    addBox(espNode, "amoled_pcb", 4.5, 64.5, 37.5, 63.0, 13.5 + dzAMOLED, 15.1 + dzAMOLED, matDarkPCB)
-    addBox(espNode, "amoled_rear_jst", 4.7, 14.0, 38.5, 62.2, 9.7 + dzAMOLED, 13.5 + dzAMOLED, matSilver)
-    addBox(espNode, "amoled_rear_ant", 54.5, 64.3, 42.0, 58.5, 10.0 + dzAMOLED, 13.5 + dzAMOLED, matSilver)
+    addBox(espNode, "amoled_pcb", 4.0, 64.0, 37.5, 63.0, 13.5 + dzAMOLED, 15.1 + dzAMOLED, matDarkPCB)
+    addBox(espNode, "amoled_rear_jst", 4.2, 13.5, 38.5, 62.2, 9.7 + dzAMOLED, 13.5 + dzAMOLED, matSilver)
+    addBox(espNode, "amoled_rear_ant", 54.5, 63.8, 42.0, 58.5, 10.0 + dzAMOLED, 13.5 + dzAMOLED, matSilver)
     addBox(espNode, "amoled_glass", 11.0, 61.0, 39.0, 60.5, 15.1 + dzAMOLED, 17.7 + dzAMOLED, matAMOLEDGlass)
     addBox(espNode, "amoled_active", 13.9, 58.1, 39.8, 59.6, 17.55 + dzAMOLED, 17.80 + dzAMOLED, matAMOLEDActive)
-    // USB-C receptacle (X: 2.5..9.3, Y: 45.7..54.7, Z: 13.5..16.7) behind 4.5mm Left-Wall Funnel
-    addBox(espNode, "amoled_usbc_shell", 2.5, 9.3, 45.7, 54.7, 13.5 + dzAMOLED, 16.7 + dzAMOLED, matSilver, chamfer: 0.5)
-    addBox(espNode, "amoled_usbc_bore", 2.45, 4.0, 46.5, 53.9, 14.0 + dzAMOLED, 16.2 + dzAMOLED, matPortCavity, chamfer: 0.3)
-    boxes.append(("amoled", makeAABB("t_display_s3_amoled", 4.5, 64.5, 37.5, 63.0, 13.5, 17.7)))
-    boxes.append(("amoled", makeAABB("amoled_rear_jst", 4.7, 14.0, 38.5, 62.2, 9.7, 13.5)))
-    boxes.append(("amoled", makeAABB("amoled_rear_ant", 54.5, 64.3, 42.0, 58.5, 10.0, 13.5)))
-    boxes.append(("amoled", makeAABB("amoled_usbc", 2.5, 9.3, 45.7, 54.7, 13.5, 16.7)))
+    // USB-C receptacle (X: 2.0..8.8, Y: 45.7..54.7, Z: 13.5..16.7) behind 4.5mm Left-Wall Funnel
+    addBox(espNode, "amoled_usbc_shell", 2.0, 8.8, 45.7, 54.7, 13.5 + dzAMOLED, 16.7 + dzAMOLED, matSilver, chamfer: 0.5)
+    addBox(espNode, "amoled_usbc_bore", 1.95, 3.8, 46.5, 53.9, 14.0 + dzAMOLED, 16.2 + dzAMOLED, matPortCavity, chamfer: 0.3)
+    boxes.append(("amoled", makeAABB("t_display_s3_amoled", 4.0, 64.0, 37.5, 63.0, 13.5, 17.7)))
+    boxes.append(("amoled", makeAABB("amoled_rear_jst", 4.2, 13.5, 38.5, 62.2, 9.7, 13.5)))
+    boxes.append(("amoled", makeAABB("amoled_rear_ant", 54.5, 63.8, 42.0, 58.5, 10.0, 13.5)))
+    boxes.append(("amoled", makeAABB("amoled_usbc", 2.0, 8.8, 45.7, 54.7, 13.5, 16.7)))
     root.addChildNode(espNode)
 
     // 5. Mid-Right & Upper Deck:
     let topBay = SCNNode()
-    // 5a1. AOICRIE V713 5V 2A Boost (rotated 20.0 x 26.5 x 4.8 mm) in Mid-Right Lower Bay (X: 31.5..51.5, Y: 9.5..36.0, Z: 2.0..6.8)
-    addBox(topBay, "boost_5v2a_pcb", 31.5, 51.5, 11.0, 36.0, 2.0 + dzTopBay, 3.6 + dzTopBay, matDarkPCB)
-    addBox(topBay, "boost_inductor", 38.0, 45.0, 23.0, 30.0, 3.6 + dzTopBay, 6.8 + dzTopBay, matBlackCap)
-    addBox(topBay, "boost_usbc_shell", 37.0, 46.0, 9.5, 16.3, 3.6 + dzTopBay, 6.8 + dzTopBay, matSilver, chamfer: 0.5)
+    // 5a1. AOICRIE V713 5V 2A Boost (rotated 20.0 x 26.5 x 4.8 mm) in Mid-Right Lower Bay (X: 31.5..51.5, Y: 9.5..36.0, Z: 2.0..6.8; unused USB-C desoldered)
+    addBox(topBay, "boost_5v2a_pcb", 31.5, 51.5, 9.5, 36.0, 2.0 + dzTopBay, 3.6 + dzTopBay, matDarkPCB)
+    addBox(topBay, "boost_inductor", 38.0, 45.0, 28.0, 35.0, 3.6 + dzTopBay, 6.8 + dzTopBay, matBlackCap)
     boxes.append(("boost_5v2a", makeAABB("boost_5v2a", 31.5, 51.5, 9.5, 36.0, 2.0, 6.8)))
 
     // 5a2. Acxico KCX_BT_EMITTER (23.5 x 15.5 x 2.5 mm) above Shield Rib under AMOLED (X: 30.5..54.0, Y: 38.0..53.5, Z: 8.2..10.7)
@@ -687,13 +686,13 @@ func buildP5ExpCompactPortrait(exploded: Bool = false, opaque: Bool = false) -> 
     addBox(topBay, "pam8302a_trim", 20.0, 24.0, 54.0, 58.0, 9.6 + dzTopBay, 11.0 + dzTopBay, matSilver)
     boxes.append(("pam8302a", makeAABB("pam8302a_amp", 15.0, 30.0, 38.0, 62.0, 8.2, 11.0)))
 
-    // 5b. GY-PCM5102 (32.0 x 17.0 x 5.5 mm) Top-Left (Z: 11.0..16.5), 3.5mm TRS Jack flush at Top Wall Y=84.0!
-    addBox(topBay, "pcm5102_pcb", 6.0, 38.0, 65.0, 82.0, 11.0 + dzTopBay, 12.6 + dzTopBay, matPurplePCB)
-    addBox(topBay, "pcm5102_trs", 10.0, 18.5, 70.0, 82.2, 12.6 + dzTopBay, 16.5 + dzTopBay, matBlackCap)
-    addCylY(topBay, "pcm5102_trs_ring", 14.25, 14.55 + dzTopBay, 81.8, 84.35, 3.0, matGold)
-    addCylY(topBay, "pcm5102_trs_bore", 14.25, 14.55 + dzTopBay, 82.0, 84.42, 1.75, matPortCavity)
-    boxes.append(("pcm5102", makeAABB("gy_pcm5102_pcb", 6.0, 38.0, 65.0, 82.0, 11.0, 12.6)))
-    boxes.append(("pcm5102", makeAABB("gy_pcm5102_trs", 10.0, 18.5, 70.0, 82.2, 12.6, 16.5)))
+    // 5b. GY-PCM5102 (32.0 x 17.0 x 5.5 mm) Top-Left (X: 5.5..37.5, Z: 9.2..14.7), 3.7mm Z-clearance below 1511 Speaker & 1.3mm X-clearance from TRS block!
+    addBox(topBay, "pcm5102_pcb", 5.5, 37.5, 65.0, 82.0, 9.2 + dzTopBay, 10.8 + dzTopBay, matPurplePCB)
+    addBox(topBay, "pcm5102_trs", 9.5, 18.0, 70.0, 82.2, 10.8 + dzTopBay, 14.7 + dzTopBay, matBlackCap)
+    addCylY(topBay, "pcm5102_trs_ring", 13.75, 12.75 + dzTopBay, 81.8, 84.35, 3.0, matGold)
+    addCylY(topBay, "pcm5102_trs_bore", 13.75, 12.75 + dzTopBay, 82.0, 84.42, 1.75, matPortCavity)
+    boxes.append(("pcm5102", makeAABB("gy_pcm5102_pcb", 5.5, 37.5, 65.0, 82.0, 9.2, 10.8)))
+    boxes.append(("pcm5102", makeAABB("gy_pcm5102_trs", 9.5, 18.0, 70.0, 82.2, 10.8, 14.7)))
 
     // 5b2. 1511 8-ohm 1W Micro-Speaker (15.0 x 11.0 x 3.0 mm) Top-Middle-Left at (26.8, 73.5), Z: 14.5..17.5
     addBox(topBay, "speaker_1511_body", spkCX - 7.5, spkCX + 7.5, spkCY - 5.5, spkCY + 5.5, 14.5 + dzTopBay, 16.5 + dzTopBay, matBlackCap, chamfer: 0.4)
@@ -705,11 +704,11 @@ func buildP5ExpCompactPortrait(exploded: Bool = false, opaque: Bool = false) -> 
     addCylZ(topBay, "inmp441_gasket", micCX, micCY, 16.1 + dzTopBay, 17.5 + dzTopBay, 4.5, matBlackCap)
     boxes.append(("inmp441", makeAABB("inmp441", micCX - 7.0, micCX + 7.0, micCY - 7.0, micCY + 7.0, 14.5, 17.5)))
 
-    // 5d. WWZMDiB Mini 3.3V MicroSD (17.9 x 17.9 x 4.0 mm) Bottom-Right, card slot flush at Right Wall X=72.0!
-    addBox(topBay, "microsd_pcb", 52.3, 70.2, 6.0, 23.9, 2.0 + dzTopBay, 3.6 + dzTopBay, matBluePCB)
-    addBox(topBay, "microsd_cage", 55.7, 70.2, 8.0, 21.8, 3.6 + dzTopBay, 6.0 + dzTopBay, matSilver)
-    addBox(topBay, "microsd_card_edge", 68.0, 71.9, 9.2, 20.2, 4.0 + dzTopBay, 5.2 + dzTopBay, matGold)
-    boxes.append(("microsd", makeAABB("mini_3v3_microsd", 52.3, 70.2, 6.0, 23.9, 2.0, 6.0)))
+    // 5d. WWZMDiB Mini 3.3V MicroSD (17.9 x 17.9 x 4.0 mm) Bottom-Right (Z: 2.0..6.0, 1.9mm under Front 1x4 PCB), card slot flush inside Right Wall X=72.0!
+    addBox(topBay, "microsd_pcb", 52.3, 70.2, 5.5, 23.4, 2.0 + dzTopBay, 3.6 + dzTopBay, matBluePCB)
+    addBox(topBay, "microsd_cage", 55.7, 70.2, 7.0, 20.8, 3.6 + dzTopBay, 6.0 + dzTopBay, matSilver)
+    addBox(topBay, "microsd_card_edge", 68.5, 71.8, 8.4, 19.4, 4.0 + dzTopBay, 5.0 + dzTopBay, matBlackCap)
+    boxes.append(("microsd", makeAABB("mini_3v3_microsd", 52.3, 70.2, 5.5, 23.4, 2.0, 6.0)))
     root.addChildNode(topBay)
 
     root.addChildNode(lid)
@@ -739,10 +738,10 @@ func exportPrintableSTLs() throws {
     tray.addBox(0, 1.8, 55.4, 78.6, 1.8, 17.7)
     tray.addBox(0, 1.8, 45.0, 55.4, 1.8, 13.5)
     tray.addBox(0, 1.8, 45.0, 55.4, 16.7, 17.7)
-    tray.addBox(1.8, 4.5, 44.0, 45.0, 12.5, 17.7)
-    tray.addBox(1.8, 4.5, 55.4, 56.4, 12.5, 17.7)
-    tray.addBox(1.8, 4.5, 45.0, 55.4, 12.5, 13.5)
-    tray.addBox(1.8, 4.5, 45.0, 55.4, 16.7, 17.7)
+    tray.addBox(1.8, 4.0, 44.0, 45.0, 12.5, 17.7)
+    tray.addBox(1.8, 4.0, 55.4, 56.4, 12.5, 17.7)
+    tray.addBox(1.8, 4.0, 45.0, 55.4, 12.5, 13.5)
+    tray.addBox(1.8, 4.0, 45.0, 55.4, 16.7, 17.7)
     // Right Wall (X: 70.2..72.0) w/ Bottom-Right MicroSD Cutout (Y: 6.0..23.9) & Upper Side 1x4 Keypad Cutouts (Y: 40.8..77.2)
     tray.addBox(70.2, 72.0, 5.4, 6.0, 1.8, 17.7)
     tray.addBox(70.2, 72.0, 6.0, 23.9, 1.8, 2.8)
@@ -760,9 +759,9 @@ func exportPrintableSTLs() throws {
     tray.addBox(70.2, 72.0, 77.2, 78.6, 1.8, 17.7)
     // Bottom & Top Walls
     tray.addBox(5.4, 66.6, 0, 1.8, 1.8, 17.7)
-    tray.addBox(5.4, 11.0, 82.2, 84.0, 1.8, 17.7)
-    tray.addBox(11.0, 17.5, 82.2, 84.0, 1.8, 11.5)
-    tray.addBox(17.5, 66.6, 82.2, 84.0, 1.8, 17.7)
+    tray.addBox(5.4, 10.5, 82.2, 84.0, 1.8, 17.7)
+    tray.addBox(10.5, 17.0, 82.2, 84.0, 1.8, 9.8)
+    tray.addBox(17.0, 66.6, 82.2, 84.0, 1.8, 17.7)
     // 4x Monolithic R=5.4mm Rounded Corner Pillars w/ Ø2.0mm M2 pilot bore above Z=4.2 mm
     for c in p5CornerSpecs {
         tray.addCornerSector(cx: c.cx, cy: c.cy, rCorner: p5CornerRadius, quadrant: c.q,
@@ -771,7 +770,7 @@ func exportPrintableSTLs() throws {
                              holeX: c.hx, holeY: c.hy, rHole: 1.0, z0: 4.2, z1: 17.7)
     }
     // Internal PCB Cradles & Support Rails
-    tray.addBox(4.5, 5.4, 37.5, 74.5, 1.8, 7.0)
+    tray.addBox(4.0, 4.9, 37.5, 74.5, 1.8, 7.0)
     for (kx0, kx1, ky0, ky1) in [
         (5.5, 8.5, 3.5, 6.5), (27.5, 30.5, 3.5, 6.5),
         (5.5, 8.5, 33.5, 36.5), (27.5, 30.5, 33.5, 36.5)
@@ -781,15 +780,15 @@ func exportPrintableSTLs() throws {
     tray.addBox(31.5, 34.0, 6.0, 9.0, 1.8, 7.9)
     tray.addBox(52.3, 55.0, 24.5, 28.3, 1.8, 7.9)
     tray.addBox(66.0, 68.5, 24.5, 28.3, 1.8, 7.9)
-    tray.addBox(64.6, 70.2, 39.3, 40.3, 1.8, 17.2)
-    tray.addBox(64.6, 70.2, 77.7, 78.5, 1.8, 17.2)
-    tray.addBox(64.6, 66.6, 40.5, 77.5, 1.8, 2.2)
-    tray.addBox(4.5, 6.2, 37.5, 38.4, 8.0, 13.5)
-    tray.addBox(4.5, 6.2, 62.3, 63.0, 8.0, 13.5)
-    tray.addBox(60.0, 64.6, 38.0, 39.0, 8.0, 13.5)
-    tray.addBox(3.5, 5.3, 65.0, 78.4, 1.8, 11.0)
-    tray.addBox(5.3, 7.8, 65.0, 78.4, 9.0, 11.0)
-    tray.addBox(29.1, 29.7, 75.5, 81.5, 1.8, 11.0)
+    tray.addBox(65.0, 70.2, 39.3, 40.3, 1.8, 17.2)
+    tray.addBox(65.0, 70.2, 77.7, 78.5, 1.8, 17.2)
+    tray.addBox(65.0, 67.0, 40.5, 77.5, 1.8, 2.2)
+    tray.addBox(4.0, 5.8, 37.5, 38.4, 8.0, 13.5)
+    tray.addBox(4.0, 5.8, 62.3, 63.0, 8.0, 13.5)
+    tray.addBox(59.5, 64.0, 38.0, 39.0, 8.0, 13.5)
+    tray.addBox(3.5, 4.9, 65.0, 78.4, 1.8, 9.2)
+    tray.addBox(4.9, 7.5, 65.0, 78.4, 8.0, 9.2)
+    tray.addBox(29.1, 29.7, 75.5, 81.5, 1.8, 9.2)
     tray.addBox(52.3, 70.2, 6.0, 23.9, 1.8, 2.0)
     tray.addBox(52.3, 53.5, 24.1, 24.4, 1.8, 6.0)
     tray.addBox(31.5, 51.5, 8.8, 9.2, 1.8, 4.5)
@@ -994,6 +993,14 @@ let imgTopDown = renderSnapshot(topDownScene,
                                 orthoScale: 58.0,
                                 size: CGSize(width: 1400, height: 1050))
 savePNG(imgTopDown, to: "\(renderDir)/exp_cp_ortho_topdown.png")
+
+let imgSmokeTopDown = renderSnapshot(p5Smoke.clone(),
+                                     camPos: SCNVector3(36, 220, -42),
+                                     lookAt: SCNVector3(36, 9.75, -42),
+                                     up: SCNVector3(0, 0, -1),
+                                     orthoScale: 50.0,
+                                     size: CGSize(width: 1200, height: 1200))
+savePNG(imgSmokeTopDown, to: "\(renderDir)/exp_cp_ortho_smoke_topdown.png")
 
 // 2. 4-Panel Port & Side-Button Elevation Sheet
 let sheetSize = CGSize(width: 1600, height: 1200)
