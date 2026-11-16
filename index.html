@@ -307,9 +307,9 @@
           </h2>
           <ul class="space-y-1.5 text-[var(--muted-foreground)]">
             <li><strong class="text-[var(--foreground)]">Centered AMOLED + 4.5 mm Funnel:</strong> Active window (<code>44.2×19.8 mm</code>) centered at <code>X = 36.0 mm</code> (<code>amoled_pcb X: 4.5..64.5, Y: 37.5..63.0, Z: 13.5..17.7</code>); left wall has a <code>4.5 mm</code> recessed USB-C plug funnel (<code>Y: 45.0..55.4, Z: 13.5..16.7</code>).</li>
-            <li><strong class="text-[var(--foreground)]">Right-Side 1×4 Keypad:</strong> Vertical <code>37×15 mm</code> board inside right-wall rails (<code>X: 64.6..70.2, Y: 22.0..59.0, Z: 2.2..17.2</code>) with <code>4×</code> matte black caps <code>0.8 mm</code> proud (<code>B1</code> at topmost <code>Y = 54.3</code>).</li>
-            <li><strong class="text-[var(--foreground)]">Front &amp; Mid-Right Bay:</strong> <code>KY-023</code> (<code>X: 5.5..30.5, Y: 3.5..36.5</code>) + <code>1×4</code> color keypad (<code>X: 31.5..68.5, Y: 5.5..20.5</code>), with internal <code>V713</code> Boost (<code>Z: 2.0..6.8</code>), <code>KCX_BT_EMITTER</code> (<code>Z: 9.0..11.5</code>) &amp; <code>PAM8302A</code> 2.5W Mono Amp (<code>Z: 12.2..15.0</code>) stacked cleanly in <code>X: 32.0..58.5, Y: 16.5..37.0</code>.</li>
-            <li><strong class="text-[var(--foreground)]">Upper Deck:</strong> <code>GY-PCM5102</code> (<code>Y: 65.0..82.0, Z: 11.0..16.5</code>), dual symmetrical <code>21</code>-dot grilles for <code>1511</code> 8Ω 1W Micro-Speaker at <code>(26.8, 73.5, Z: 14.5..17.5)</code> + <code>INMP441</code> at <code>(45.2, 73.5, Z: 14.5..17.5)</code>, and <code>MicroSD</code> (<code>Y: 60.5..78.4, Z: 9.0..13.0</code>) tucked under the right wing.</li>
+            <li><strong class="text-[var(--foreground)]">Right-Side 1×4 Keypad:</strong> Vertical <code>37×15 mm</code> board raised into upper right-wall rails (<code>X: 64.6..70.2, Y: 40.5..77.5, Z: 2.2..17.2</code>) with <code>4×</code> matte black caps <code>0.8 mm</code> proud (<code>B1</code> at topmost <code>Y = 72.8</code>).</li>
+            <li><strong class="text-[var(--foreground)]">Front Symmetrical Row &amp; Bottom-Right MicroSD:</strong> <code>KY-023</code> (<code>Y_center = 20.8</code>) + raised <code>1×4</code> color keypad (<code>Y: 13.3..28.3, Y_center = 20.8</code>, dead-level with thumbstick), with <code>MicroSD</code> at bottom-right (<code>X: 52.3..70.2, Y: 6.0..23.9, Z: 2.0..6.0</code>) and <code>V713</code> Boost (<code>X: 31.5..51.5, Y: 9.5..36.0, Z: 2.0..6.8</code>).</li>
+            <li><strong class="text-[var(--foreground)]">Upper &amp; Mid-Z Deck:</strong> <code>GY-PCM5102</code> (<code>Y: 65.0..82.0, Z: 11.0..16.5</code>), dual symmetrical <code>21</code>-dot grilles for <code>1511</code> 8Ω 1W Micro-Speaker at <code>(26.8, 73.5)</code> + <code>INMP441</code> at <code>(45.2, 73.5)</code>, and <code>PAM8302A</code> + <code>KCX_BT_EMITTER</code> tucked cleanly in <code>Z: 8.2..11.0</code> above the LiPo shield.</li>
           </ul>
         </section>
       </aside>
@@ -792,30 +792,31 @@
         boxes.push(cadBox(9.5, 25.5, 12.8, 28.8, 4.0, 14.4, zMid, '#94a3b8', '#cbd5e1', 1, 'ky_gimbal'));
 
         const frontCapXs = [36.0, 45.2, 54.4, 63.6];
-        boxes.push(cadBox(31.5, 68.5, 5.5, 20.5, 7.9, 9.5, zMid, '#15803d', '#4ade80', 1, 'pad_front'));
+        const frontCapCY = 20.8;
+        boxes.push(cadBox(31.5, 68.5, 13.3, 28.3, 7.9, 9.5, zMid, '#15803d', '#4ade80', 1, 'pad_front'));
         for (const cx of frontCapXs) {
-          boxes.push(cadBox(cx - 3, cx + 3, 10.0, 16.0, 9.5, 16.9, zMid, '#0f172a', '#475569', 1, 'sw_front'));
+          boxes.push(cadBox(cx - 3, cx + 3, frontCapCY - 3, frontCapCY + 3, 9.5, 16.9, zMid, '#0f172a', '#475569', 1, 'sw_front'));
         }
 
-        const sideCapYs = [54.3, 45.1, 35.9, 26.7];
-        boxes.push(cadBox(64.6, 66.2, 22.0, 59.0, 2.2, 17.2, zMid, '#15803d', '#4ade80', 1, 'pad_side', xSide));
+        const sideCapYs = [72.8, 63.6, 54.4, 45.2];
+        boxes.push(cadBox(64.6, 66.2, 40.5, 77.5, 2.2, 17.2, zMid, '#15803d', '#4ade80', 1, 'pad_side', xSide));
         for (const cy of sideCapYs) {
           boxes.push(cadBox(66.2, 70.2, cy - 3, cy + 3, 6.7, 12.7, zMid, '#0f172a', '#475569', 1, 'sw_side', xSide));
           boxes.push(cadBox(70.2, 72.8, cy - 4.1, cy + 4.1, 5.6, 13.8, zMid, '#262930', '#64748b', 1, 'cap_side', xSide));
         }
 
         // Mid-Right & Upper Deck
-        boxes.push(cadBox(32.0, 57.0, 16.5, 36.5, 2.0, 3.6, zMid, '#1e293b', '#64748b', 1, 'boost_pcb'));
-        boxes.push(cadBox(35.5, 42.5, 23.0, 30.0, 3.6, 6.8, zMid, '#334155', '#94a3b8', 1, 'boost_ind'));
-        boxes.push(cadBox(51.7, 58.5, 22.0, 31.0, 3.6, 6.8, zMid, '#cbd5e1', '#94a3b8', 1, 'boost_usbc'));
-        boxes.push(cadBox(32.0, 55.5, 21.5, 37.0, 9.0, 11.5, zMid + ex * 4, '#1d4ed8', '#60a5fa', 1, 'bt_tx'));
-        boxes.push(cadBox(32.0, 56.0, 21.5, 36.5, 12.2, 15.0, zMid + ex * 5, '#0f172a', '#94a3b8', 1, 'pam8302a'));
+        boxes.push(cadBox(31.5, 51.5, 11.0, 36.0, 2.0, 3.6, zMid, '#1e293b', '#64748b', 1, 'boost_pcb'));
+        boxes.push(cadBox(38.0, 45.0, 23.0, 30.0, 3.6, 6.8, zMid, '#334155', '#94a3b8', 1, 'boost_ind'));
+        boxes.push(cadBox(37.0, 46.0, 9.5, 16.3, 3.6, 6.8, zMid, '#cbd5e1', '#94a3b8', 1, 'boost_usbc'));
+        boxes.push(cadBox(30.5, 54.0, 38.0, 53.5, 8.2, 10.7, zMid + ex * 4, '#1d4ed8', '#60a5fa', 1, 'bt_tx'));
+        boxes.push(cadBox(15.0, 30.0, 38.0, 62.0, 8.2, 11.0, zMid + ex * 5, '#0f172a', '#94a3b8', 1, 'pam8302a'));
         boxes.push(cadBox(6.0, 38.0, 65.0, 82.0, 11.0, 12.6, zMid + ex * 6, '#7e22ce', '#c084fc', 1, 'pcm_pcb'));
         boxes.push(cadBox(10.0, 18.5, 70.0, 84.2, 12.6, 16.5, zMid + ex * 6, '#0f172a', '#475569', 1, 'pcm_trs'));
         boxes.push(cadBox(11.6, 16.9, 82.0, 84.5, 13.1, 16.0, zMid + ex * 6, '#eab308', '#fef08a', 1, 'pcm_ring'));
-        boxes.push(cadBox(52.3, 70.2, 60.5, 78.4, 9.0, 10.6, zMid + ex * 6, '#0284c7', '#7dd3fc', 1, 'sd_pcb'));
-        boxes.push(cadBox(55.7, 70.2, 62.5, 76.3, 10.6, 13.0, zMid + ex * 6, '#cbd5e1', '#94a3b8', 1, 'sd_cage'));
-        boxes.push(cadBox(70.1, 71.8, 62.5, 76.3, 11.1, 12.7, zMid + ex * 6, '#1e293b', '#eab308', 1, 'sd_slot_trim'));
+        boxes.push(cadBox(52.3, 70.2, 6.0, 23.9, 2.0, 3.6, zMid, '#0284c7', '#7dd3fc', 1, 'sd_pcb'));
+        boxes.push(cadBox(55.7, 70.2, 8.0, 21.8, 3.6, 6.0, zMid, '#cbd5e1', '#94a3b8', 1, 'sd_cage'));
+        boxes.push(cadBox(70.1, 71.8, 8.0, 21.8, 4.0, 5.6, zMid, '#1e293b', '#eab308', 1, 'sd_slot_trim'));
 
         // Centered AMOLED + INMP441
         boxes.push(cadBox(4.5, 64.5, 37.5, 63.0, 13.5, 15.1, zAmoled, '#0f172a', '#475569', 1, 'amoled_pcb'));
@@ -835,7 +836,7 @@
         const frontCols = ['#e3a84b', '#45b09c', '#ebd15e', '#eb876b'];
         const frontEdges = ['#fef08a', '#99f6e4', '#fef08a', '#fecaca'];
         frontCapXs.forEach((cx, i) => {
-          boxes.push(cadBox(cx - 4.1, cx + 4.1, 8.9, 17.1, 17.7, 20.5, zCaps, frontCols[i], frontEdges[i], 1, 'cap_front_' + i));
+          boxes.push(cadBox(cx - 4.1, cx + 4.1, frontCapCY - 4.1, frontCapCY + 4.1, 17.7, 20.5, zCaps, frontCols[i], frontEdges[i], 1, 'cap_front_' + i));
         });
 
         // Top Faceplate Lid
@@ -845,11 +846,10 @@
           boxes.push(cadBox(5.4, 66.6, 78.6, 84.0, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           boxes.push(cadBox(0, 11.0, 37.5, 62.0, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           boxes.push(cadBox(61.0, 72.0, 37.5, 62.0, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          boxes.push(cadBox(31.5, 72.0, 22.0, 37.5, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(31.5, 72.0, 25.2, 37.5, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           boxes.push(cadBox(0, 5.0, 5.4, 37.5, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          boxes.push(cadBox(30.0, 66.6, 0, 8.6, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          boxes.push(cadBox(66.6, 72.0, 5.4, 8.6, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
-          boxes.push(cadBox(31.5, 72.0, 17.4, 22.0, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(30.0, 66.6, 0, 16.4, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
+          boxes.push(cadBox(66.6, 72.0, 5.4, 16.4, 17.7, 19.5, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           for (const [cx, cy, q] of p5Corners) {
             boxes.push(cadCornerSector(cx, cy, 5.4, q, 17.7, 19.5, 10, zLid, s.fill, s.edge, s.alpha, 'shell_lid'));
           }
@@ -862,11 +862,11 @@
         if (uiState.showWires) {
           wires.push({ a: [26 - HALF_W, HALF_H - 63, 14.5 - HALF_D + zAmoled], b: [20 - HALF_W, HALF_H - 74, 11.5 - HALF_D + zMid], color: '#c084fc' });
           wires.push({ a: [38 - HALF_W, HALF_H - 63, 14.5 - HALF_D + zAmoled], b: [45.2 - HALF_W, HALF_H - 73.5, 15.5 - HALF_D + zAmoled], color: '#facc15' });
-          wires.push({ a: [52 - HALF_W, HALF_H - 63, 14.5 - HALF_D + zAmoled], b: [56 - HALF_W, HALF_H - 69, 10.0 - HALF_D + zMid], color: '#38bdf8' });
+          wires.push({ a: [52 - HALF_W, HALF_H - 63, 14.5 - HALF_D + zAmoled], b: [60 - HALF_W, HALF_H - 15, 3.2 - HALF_D + zMid], color: '#38bdf8' });
           wires.push({ a: [22 - HALF_W, HALF_H - 38, 14.0 - HALF_D + zAmoled], b: [18 - HALF_W, HALF_H - 34, 3.2 - HALF_D + zMid], color: '#34d399' });
-          wires.push({ a: [44 - HALF_W, HALF_H - 38, 14.0 - HALF_D + zAmoled], b: [48 - HALF_W, HALF_H - 13, 8.7 - HALF_D + zMid], color: '#f97316' });
-          wires.push({ a: [64.6 - HALF_W + xSide, HALF_H - 54.3, 9.7 - HALF_D + zMid], b: [44 - HALF_W, HALF_H - 26, 3.2 - HALF_D + zMid], color: '#ef4444' });
-          wires.push({ a: [44 - HALF_W, HALF_H - 29, 13.6 - HALF_D + zMid], b: [26.8 - HALF_W, HALF_H - 73.5, 15.5 - HALF_D + zAmoled], color: '#ec4899' });
+          wires.push({ a: [44 - HALF_W, HALF_H - 38, 14.0 - HALF_D + zAmoled], b: [48 - HALF_W, HALF_H - 20.8, 8.7 - HALF_D + zMid], color: '#f97316' });
+          wires.push({ a: [64.6 - HALF_W + xSide, HALF_H - 72.8, 9.7 - HALF_D + zMid], b: [42 - HALF_W, HALF_H - 23, 3.2 - HALF_D + zMid], color: '#ef4444' });
+          wires.push({ a: [22 - HALF_W, HALF_H - 50, 9.6 - HALF_D + zMid], b: [26.8 - HALF_W, HALF_H - 73.5, 15.5 - HALF_D + zAmoled], color: '#ec4899' });
         }
 
         return { boxes, wires, zAmoled, zLid, zCaps };

@@ -338,7 +338,8 @@ let p5CornerSpecs: [(q: Int, cx: Double, cy: Double, hx: Double, hy: Double)] = 
 ]
 
 let frontCapXs = [36.0, 45.2, 54.4, 63.6]
-let sideCapYs  = [54.3, 45.1, 35.9, 26.7] // B1 (V713 5V Audio Power) at topmost Y=54.3!
+let frontCapCY = 20.8
+let sideCapYs  = [72.8, 63.6, 54.4, 45.2] // B1 (V713 5V Audio Power) at topmost Y=72.8!
 let spkCX = 26.8
 let spkCY = 73.5
 let micCX = 45.2
@@ -402,22 +403,22 @@ func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot:
     addBox(tray, "usbc_funnel_under_z", 1.8, 4.5, 45.0, 55.4, 12.5 + dzShellBot, 13.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
     addBox(tray, "usbc_funnel_over_z", 1.8, 4.5, 45.0, 55.4, 16.7 + dzShellBot, 17.7 + dzShellBot, cradleMat, renderOrder: renderOrder)
 
-    // Right Wall (X: 70.2..72.0, Y: 5.4..78.6, Z: 1.8..17.7) with Side 1x4 Keypad Cutouts (Y: 22.3..58.7) & MicroSD Cutout (Y: 60.5..78.4, Z: 9.8..13.4)
-    addBox(tray, "wall_right_bot", 70.2, 72.0, 5.4, 22.3, 1.8 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
-    addBox(tray, "wall_right_side_under", 70.2, 72.0, 22.3, 58.7, 1.8 + dzShellBot, 5.3 + dzShellBot, shellMat, renderOrder: renderOrder)
-    addBox(tray, "wall_right_side_over", 70.2, 72.0, 22.3, 58.7, 14.1 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
-    let sortedSideYs = sideCapYs.sorted() // [26.7, 35.9, 45.1, 54.3]
+    // Right Wall (X: 70.2..72.0, Y: 5.4..78.6, Z: 1.8..17.7) with Bottom-Right MicroSD Cutout (Y: 6.0..23.9, Z: 2.8..6.4) & Upper Side 1x4 Keypad Cutouts (Y: 40.8..77.2)
+    addBox(tray, "wall_right_bot", 70.2, 72.0, 5.4, 6.0, 1.8 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
+    // MicroSD cutout (Y: 6.0..23.9, Z: 2.8..6.4)
+    addBox(tray, "wall_right_under_sd", 70.2, 72.0, 6.0, 23.9, 1.8 + dzShellBot, 2.8 + dzShellBot, shellMat, renderOrder: renderOrder)
+    addBox(tray, "wall_right_over_sd", 70.2, 72.0, 6.0, 23.9, 6.4 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
+    addBox(tray, "wall_right_mid", 70.2, 72.0, 23.9, 40.8, 1.8 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
+    addBox(tray, "wall_right_side_under", 70.2, 72.0, 40.8, 77.2, 1.8 + dzShellBot, 5.3 + dzShellBot, shellMat, renderOrder: renderOrder)
+    addBox(tray, "wall_right_side_over", 70.2, 72.0, 40.8, 77.2, 14.1 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
+    let sortedSideYs = sideCapYs.sorted() // [45.2, 54.4, 63.6, 72.8]
     for (i, cy) in sortedSideYs.enumerated() {
-        let prevY = i == 0 ? 22.3 : sortedSideYs[i - 1] + 4.4
+        let prevY = i == 0 ? 40.8 : sortedSideYs[i - 1] + 4.4
         if cy - 4.4 > prevY + 0.01 {
             addBox(tray, "wall_right_side_div_\(i)", 70.2, 72.0, prevY, cy - 4.4, 5.3 + dzShellBot, 14.1 + dzShellBot, shellMat, renderOrder: renderOrder)
         }
     }
-    addBox(tray, "wall_right_mid", 70.2, 72.0, 58.7, 60.5, 1.8 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
-    // MicroSD cutout (Y: 60.5..78.4, Z: 9.8..13.4)
-    addBox(tray, "wall_right_under_sd", 70.2, 72.0, 60.5, 78.4, 1.8 + dzShellBot, 9.8 + dzShellBot, shellMat, renderOrder: renderOrder)
-    addBox(tray, "wall_right_over_sd", 70.2, 72.0, 60.5, 78.4, 13.4 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
-    addBox(tray, "wall_right_top", 70.2, 72.0, 78.4, 78.6, 1.8 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
+    addBox(tray, "wall_right_top", 70.2, 72.0, 77.2, 78.6, 1.8 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
 
     // Bottom Wall (X: 5.4..66.6, Y: 0..1.8)
     addBox(tray, "wall_bot", 5.4, 66.6, 0, 1.8, 1.8 + dzShellBot, 17.7 + dzShellBot, shellMat, renderOrder: renderOrder)
@@ -439,9 +440,8 @@ func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot:
     addSTLMeshNode(tray, "tray_rounded_corners", trayCornerMesh, shellMat, renderOrder: renderOrder)
 
     // Internal Molded PCB Cradles, Support Rails & LiPo Retention
-    // a. LiPo lateral rails (X: 4.5..5.4 left, X: 64.6..65.5 right above Y=60.0)
+    // a. LiPo lateral rail (X: 4.5..5.4 left)
     addBox(tray, "cradle_lipo_l", 4.5, 5.4, 37.5, 74.5, 1.8 + dzShellBot, 7.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_lipo_r", 64.6, 65.5, 60.0, 74.5, 1.8 + dzShellBot, 7.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
     // b. KY-023 4x Corner Standoffs (25.0 x 33.0 mm PCB, Y: 3.5..36.5, Z: 1.8..2.4 mm)
     for (kx0, kx1, ky0, ky1) in [
         (5.5, 8.5, 3.5, 6.5), (27.5, 30.5, 3.5, 6.5),
@@ -449,30 +449,27 @@ func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot:
     ] {
         addBox(tray, "cradle_ky_\(kx0)_\(ky0)", kx0, kx1, ky0, ky1, 1.8 + dzShellBot, 2.4 + dzShellBot, cradleMat, renderOrder: renderOrder)
     }
-    // c. Front 1x4 Keypad Support Rails (X: 31.5..68.5, Y: 5.5..20.5, Z: 1.8..7.9 mm; L/C stop at Y=15.5 to clear V713)
-    addBox(tray, "cradle_front_pad_l", 31.5, 34.0, 5.5, 15.5, 1.8 + dzShellBot, 7.9 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_front_pad_c", 48.8, 51.2, 5.5, 15.5, 1.8 + dzShellBot, 7.9 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_front_pad_r", 66.0, 68.5, 5.5, 20.5, 1.8 + dzShellBot, 7.9 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    // d. Right-Side Vertical 1x4 Keypad Mounting Rails (Y: 20.8..21.8 bot, Y: 59.2..60.2 top, X: 64.6..70.2)
-    addBox(tray, "cradle_side_pad_bot", 64.6, 70.2, 20.8, 21.8, 1.8 + dzShellBot, 17.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_side_pad_top", 64.6, 70.2, 59.2, 60.2, 1.8 + dzShellBot, 17.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_side_pad_floor", 64.6, 66.6, 22.0, 59.0, 1.8 + dzShellBot, 2.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    // c. Front 1x4 Keypad Support Rails (Y: 13.3..28.3, Z: 1.8..7.9 mm; positioned clear of V713 & MicroSD)
+    addBox(tray, "cradle_front_pad_l", 31.5, 34.0, 6.0, 9.0, 1.8 + dzShellBot, 7.9 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "cradle_front_pad_c", 52.3, 55.0, 24.5, 28.3, 1.8 + dzShellBot, 7.9 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "cradle_front_pad_r", 66.0, 68.5, 24.5, 28.3, 1.8 + dzShellBot, 7.9 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    // d. Right-Side Vertical 1x4 Keypad Mounting Rails (Y: 39.3..40.3 bot, Y: 77.7..78.5 top, X: 64.6..70.2)
+    addBox(tray, "cradle_side_pad_bot", 64.6, 70.2, 39.3, 40.3, 1.8 + dzShellBot, 17.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "cradle_side_pad_top", 64.6, 70.2, 77.7, 78.5, 1.8 + dzShellBot, 17.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "cradle_side_pad_floor", 64.6, 66.6, 40.5, 77.5, 1.8 + dzShellBot, 2.2 + dzShellBot, cradleMat, renderOrder: renderOrder)
     // e. T-Display-S3 AMOLED Support Ledges (Centered Display: PCB X: 4.5..64.5, Y: 37.5..63.0, Z: 13.5..15.1)
     addBox(tray, "cradle_amoled_l1", 4.5, 6.2, 37.5, 38.4, 8.0 + dzShellBot, 13.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
     addBox(tray, "cradle_amoled_l2", 4.5, 6.2, 62.3, 63.0, 8.0 + dzShellBot, 13.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_amoled_r_shelf", 60.0, 64.6, 59.2, 60.2, 8.0 + dzShellBot, 13.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "cradle_amoled_r_shelf", 60.0, 64.6, 38.0, 39.0, 8.0 + dzShellBot, 13.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
     // f. GY-PCM5102 Support Pillars (Z: 1.8..11.0)
     addBox(tray, "cradle_pcm_l_stem", 3.5, 5.3, 65.0, 78.4, 1.8 + dzShellBot, 11.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
     addBox(tray, "cradle_pcm_l_shelf", 5.3, 7.8, 65.0, 78.4, 9.0 + dzShellBot, 11.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
     addBox(tray, "cradle_pcm_r", 29.1, 29.7, 75.5, 81.5, 1.8 + dzShellBot, 11.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    // g. Mini 3.3V MicroSD U-Pedestal (Y: 60.5..78.4, Z: 9.0)
-    addBox(tray, "cradle_sd_rear_top", 56.8, 66.4, 79.5, 81.6, 1.8 + dzShellBot, 9.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_sd_front_r", 66.6, 70.2, 60.5, 65.0, 1.8 + dzShellBot, 9.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_sd_shelf_l", 52.3, 56.8, 60.5, 78.4, 8.0 + dzShellBot, 9.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    // h. V713 5V 2A Boost Retention Stop-Lip + KCX_BT_EMITTER Elevated Shelf (Z: 9.0 above V713)
-    addBox(tray, "cradle_boost_stop", 32.0, 57.0, 15.8, 16.2, 1.8 + dzShellBot, 4.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_kcx_stem", 59.0, 61.0, 22.0, 36.0, 1.8 + dzShellBot, 9.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
-    addBox(tray, "cradle_kcx_shelf", 53.0, 59.0, 22.0, 36.0, 7.5 + dzShellBot, 9.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    // g. Mini 3.3V MicroSD Bottom-Right Retention Floor/Stop (X: 52.3..70.2, Y: 6.0..23.9, Z: 2.0..6.0)
+    addBox(tray, "cradle_sd_floor", 52.3, 70.2, 6.0, 23.9, 1.8 + dzShellBot, 2.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    addBox(tray, "cradle_sd_stop", 52.3, 53.5, 24.1, 24.4, 1.8 + dzShellBot, 6.0 + dzShellBot, cradleMat, renderOrder: renderOrder)
+    // h. V713 5V 2A Boost Retention Stop-Lip (X: 31.5..51.5, Y: 8.8..9.2)
+    addBox(tray, "cradle_boost_stop", 31.5, 51.5, 8.8, 9.2, 1.8 + dzShellBot, 4.5 + dzShellBot, cradleMat, renderOrder: renderOrder)
 
     // Complete Segmented Front Faceplate Lid (Z: 17.7..19.5 mm) w/ R=5.4mm Rounded Corners
     let lid = SCNNode()
@@ -517,8 +514,8 @@ func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot:
     addBox(lid, "lid_amoled_t", 11.0, 61.0, 60.5, 62.0, 17.7 + dzLid, 19.5 + dzLid, matOpaqueBezel, renderOrder: renderOrder)
     addBox(lid, "lid_amoled_b", 11.0, 61.0, 37.5, 39.0, 17.7 + dzLid, 19.5 + dzLid, matOpaqueBezel, renderOrder: renderOrder)
 
-    // 3. Upper-Right solid deck over Front Keypad (X: 31.5..72.0, Y: 22.0..37.5)
-    addBox(lid, "lid_upper_right_solid", 31.5, 72.0, 22.0, 37.5, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
+    // 3. Upper-Right solid deck over Front Keypad (X: 31.5..72.0, Y: 25.2..37.5)
+    addBox(lid, "lid_upper_right_solid", 31.5, 72.0, 25.2, 37.5, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
 
     // 4. Lower-left thumbstick deck (X: 0..31.5, Y: 0..37.5) centered at (17.5, 20.8)
     addTubeZ(lid, "lid_stick_collar", 17.5, 20.8, 16.3 + dzLid, 19.5 + dzLid, 12.5, 14.15, shellMat)
@@ -543,15 +540,14 @@ func buildShellAndLid(shellMat: SCNMaterial, cradleMat: SCNMaterial, dzShellBot:
     addCylZ(lid, "lid_stick_well", 17.5, 20.8, 16.1 + dzLid, 16.4 + dzLid, 12.6, matPortCavity)
     addTubeZ(lid, "lid_stick_wall", 17.5, 20.8, 16.3 + dzLid, 19.45 + dzLid, 12.35, 12.55, matOpaqueBezel)
 
-    // 5. Lower-right 1x4 Front Keypad Grid (X: 31.5..72.0, Y: 0..22.0, cap Y center = 13.0)
-    addBox(lid, "lid_pad_bot_strip", 31.5, 66.6, 0, 8.6, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
-    addBox(lid, "lid_pad_bot_rcap", 66.6, 72.0, 5.4, 8.6, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
-    addBox(lid, "lid_pad_top_strip", 31.5, 72.0, 17.4, 22.0, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
+    // 5. Lower-right 1x4 Front Keypad Grid (X: 31.5..72.0, Y: 0..25.2, cap Y center = 20.8, dead-level with thumbstick)
+    addBox(lid, "lid_pad_bot_strip", 31.5, 66.6, 0, 16.4, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
+    addBox(lid, "lid_pad_bot_rcap", 66.6, 72.0, 5.4, 16.4, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
     for (i, cx) in frontCapXs.enumerated() {
         let prevX = i == 0 ? 31.5 : frontCapXs[i - 1] + 4.4
-        addBox(lid, "lid_pad_b_div_\(i)", prevX, cx - 4.4, 8.6, 17.4, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
+        addBox(lid, "lid_pad_b_div_\(i)", prevX, cx - 4.4, 16.4, 25.2, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
     }
-    addBox(lid, "lid_pad_b_right", 68.0, 72.0, 8.6, 17.4, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
+    addBox(lid, "lid_pad_b_right", 68.0, 72.0, 16.4, 25.2, 17.7 + dzLid, 19.5 + dzLid, shellMat, renderOrder: renderOrder)
 
     // 6. 4x Countersunk M2 Corner Screw Heads on Faceplate
     for (sx, sy) in [(3.6, 3.6), (68.4, 3.6), (3.6, 80.4), (68.4, 80.4)] {
@@ -586,31 +582,27 @@ func buildP5ExpCompactPortrait(exploded: Bool = false, opaque: Bool = false) -> 
 
     // Register Internal Printed Support Cradles for Collision Verification
     boxes.append(("cradles", makeAABB("cradle_lipo_l", 4.5, 5.4, 37.5, 74.5, 1.8, 7.0)))
-    boxes.append(("cradles", makeAABB("cradle_lipo_r", 64.6, 65.5, 60.0, 74.5, 1.8, 7.0)))
     for (kx0, kx1, ky0, ky1) in [
         (5.5, 8.5, 3.5, 6.5), (27.5, 30.5, 3.5, 6.5),
         (5.5, 8.5, 33.5, 36.5), (27.5, 30.5, 33.5, 36.5)
     ] {
         boxes.append(("cradles", makeAABB("cradle_ky_\(kx0)_\(ky0)", kx0, kx1, ky0, ky1, 1.8, 2.4)))
     }
-    boxes.append(("cradles", makeAABB("cradle_front_pad_l", 31.5, 34.0, 5.5, 15.5, 1.8, 7.9)))
-    boxes.append(("cradles", makeAABB("cradle_front_pad_c", 48.8, 51.2, 5.5, 15.5, 1.8, 7.9)))
-    boxes.append(("cradles", makeAABB("cradle_front_pad_r", 66.0, 68.5, 5.5, 20.5, 1.8, 7.9)))
-    boxes.append(("cradles", makeAABB("cradle_side_pad_bot", 64.6, 70.2, 20.8, 21.8, 1.8, 17.2)))
-    boxes.append(("cradles", makeAABB("cradle_side_pad_top", 64.6, 70.2, 59.2, 60.2, 1.8, 17.2)))
-    boxes.append(("cradles", makeAABB("cradle_side_pad_floor", 64.6, 66.6, 22.0, 59.0, 1.8, 2.2)))
+    boxes.append(("cradles", makeAABB("cradle_front_pad_l", 31.5, 34.0, 6.0, 9.0, 1.8, 7.9)))
+    boxes.append(("cradles", makeAABB("cradle_front_pad_c", 52.3, 55.0, 24.5, 28.3, 1.8, 7.9)))
+    boxes.append(("cradles", makeAABB("cradle_front_pad_r", 66.0, 68.5, 24.5, 28.3, 1.8, 7.9)))
+    boxes.append(("cradles", makeAABB("cradle_side_pad_bot", 64.6, 70.2, 39.3, 40.3, 1.8, 17.2)))
+    boxes.append(("cradles", makeAABB("cradle_side_pad_top", 64.6, 70.2, 77.7, 78.5, 1.8, 17.2)))
+    boxes.append(("cradles", makeAABB("cradle_side_pad_floor", 64.6, 66.6, 40.5, 77.5, 1.8, 2.2)))
     boxes.append(("cradles", makeAABB("cradle_amoled_l1", 4.5, 6.2, 37.5, 38.4, 8.0, 13.5)))
     boxes.append(("cradles", makeAABB("cradle_amoled_l2", 4.5, 6.2, 62.3, 63.0, 8.0, 13.5)))
-    boxes.append(("cradles", makeAABB("cradle_amoled_r_shelf", 60.0, 64.6, 59.2, 60.2, 8.0, 13.5)))
+    boxes.append(("cradles", makeAABB("cradle_amoled_r_shelf", 60.0, 64.6, 38.0, 39.0, 8.0, 13.5)))
     boxes.append(("cradles", makeAABB("cradle_pcm_l_stem", 3.5, 5.3, 65.0, 78.4, 1.8, 11.0)))
     boxes.append(("cradles", makeAABB("cradle_pcm_l_shelf", 5.3, 7.8, 65.0, 78.4, 9.0, 11.0)))
     boxes.append(("cradles", makeAABB("cradle_pcm_r", 29.1, 29.7, 75.5, 81.5, 1.8, 11.0)))
-    boxes.append(("cradles", makeAABB("cradle_sd_rear_top", 56.8, 66.4, 79.5, 81.6, 1.8, 9.0)))
-    boxes.append(("cradles", makeAABB("cradle_sd_front_r", 66.6, 70.2, 60.5, 65.0, 1.8, 9.0)))
-    boxes.append(("cradles", makeAABB("cradle_sd_shelf_l", 52.3, 56.8, 60.5, 78.4, 8.0, 9.0)))
-    boxes.append(("cradles", makeAABB("cradle_boost_stop", 32.0, 57.0, 15.8, 16.2, 1.8, 4.5)))
-    boxes.append(("cradles", makeAABB("cradle_kcx_stem", 59.0, 61.0, 22.0, 36.0, 1.8, 9.0)))
-    boxes.append(("cradles", makeAABB("cradle_kcx_shelf", 53.0, 59.0, 22.0, 36.0, 7.5, 9.0)))
+    boxes.append(("cradles", makeAABB("cradle_sd_floor", 52.3, 70.2, 6.0, 23.9, 1.8, 2.0)))
+    boxes.append(("cradles", makeAABB("cradle_sd_stop", 52.3, 53.5, 24.1, 24.4, 1.8, 6.0)))
+    boxes.append(("cradles", makeAABB("cradle_boost_stop", 31.5, 51.5, 8.8, 9.2, 1.8, 4.5)))
     boxes.append(("cradles", makeAABB("usbc_funnel_bot_y", 1.8, 4.5, 44.0, 45.0, 12.5, 17.7)))
     boxes.append(("cradles", makeAABB("usbc_funnel_top_y", 1.8, 4.5, 55.4, 56.4, 12.5, 17.7)))
     boxes.append(("cradles", makeAABB("usbc_funnel_under_z", 1.8, 4.5, 45.0, 55.4, 12.5, 13.5)))
@@ -638,26 +630,26 @@ func buildP5ExpCompactPortrait(exploded: Bool = false, opaque: Bool = false) -> 
     boxes.append(("ky023", makeAABB("ky_body", 5.5, 30.5, 3.5, 36.5, 2.4, 14.4)))
     root.addChildNode(kyNode)
 
-    // 3a. 1x Front 1x4 Keypad (37.0 x 15.0 mm at X: 31.5..68.5, Y: 5.5..20.5, Z: 7.9..17.5; Color: Amber, Teal, Amber, Coral)
+    // 3a. 1x Front 1x4 Keypad (37.0 x 15.0 mm at X: 31.5..68.5, Y: 13.3..28.3, cap Y=20.8 dead-level w/ thumbstick; Color: Amber, Teal, Amber, Coral)
     let padNode = SCNNode()
-    addBox(padNode, "pad_front_pcb", 31.5, 68.5, 5.5, 20.5, 7.9 + dzControls, 9.5 + dzControls, matGreenPCB)
+    addBox(padNode, "pad_front_pcb", 31.5, 68.5, 13.3, 28.3, 7.9 + dzControls, 9.5 + dzControls, matGreenPCB)
     let frontMats = [matAmberCap, matTealCap, matAmberCap, matCoralCap]
     for (i, cx) in frontCapXs.enumerated() {
-        addBox(padNode, "sw_front_\(i)", cx - 3.0, cx + 3.0, 10.0, 16.0, 9.5 + dzControls, 16.9 + dzControls, matBlackCap)
-        addBox(padNode, "cap_front_flange_\(i)", cx - 4.7, cx + 4.7, 8.3, 17.7, 16.9 + dzControls, 17.7 + dzControls, frontMats[i])
-        addBox(padNode, "cap_front_\(i)", cx - 4.1, cx + 4.1, 8.9, 17.1, 17.7 + dzControls, 20.5 + dzControls, frontMats[i], chamfer: 0.6)
+        addBox(padNode, "sw_front_\(i)", cx - 3.0, cx + 3.0, frontCapCY - 3.0, frontCapCY + 3.0, 9.5 + dzControls, 16.9 + dzControls, matBlackCap)
+        addBox(padNode, "cap_front_flange_\(i)", cx - 4.7, cx + 4.7, frontCapCY - 4.7, frontCapCY + 4.7, 16.9 + dzControls, 17.7 + dzControls, frontMats[i])
+        addBox(padNode, "cap_front_\(i)", cx - 4.1, cx + 4.1, frontCapCY - 4.1, frontCapCY + 4.1, 17.7 + dzControls, 20.5 + dzControls, frontMats[i], chamfer: 0.6)
     }
-    boxes.append(("pad_front", makeAABB("pad_front", 31.5, 68.5, 5.5, 20.5, 7.9, 17.5)))
+    boxes.append(("pad_front", makeAABB("pad_front", 31.5, 68.5, 13.3, 28.3, 7.9, 17.5)))
 
-    // 3b. 1x Right-Side 1x4 Keypad (37.0 x 15.0 mm vertical along X=72.0, Y: 22.0..59.0, Z: 2.2..17.2; 4x Matte Black caps)
+    // 3b. 1x Right-Side 1x4 Keypad (37.0 x 15.0 mm vertical along X=72.0, Y: 40.5..77.5, Z: 2.2..17.2; 4x Matte Black caps)
     let dxSide = exploded ? 8.0 : 0.0
-    addBox(padNode, "pad_side_pcb", 64.6 + dxSide, 66.2 + dxSide, 22.0, 59.0, 2.2 + dzControls, 17.2 + dzControls, matGreenPCB)
+    addBox(padNode, "pad_side_pcb", 64.6 + dxSide, 66.2 + dxSide, 40.5, 77.5, 2.2 + dzControls, 17.2 + dzControls, matGreenPCB)
     for (i, cy) in sideCapYs.enumerated() {
         addBox(padNode, "sw_side_\(i)", 66.2 + dxSide, 70.2 + dxSide, cy - 3.0, cy + 3.0, 6.7 + dzControls, 12.7 + dzControls, matBlackCap)
         addBox(padNode, "cap_side_flange_\(i)", 69.4 + dxSide, 70.2 + dxSide, cy - 4.7, cy + 4.7, 5.0 + dzControls, 14.4 + dzControls, matBlackCap)
         addBox(padNode, "cap_side_\(i)", 70.2 + dxSide, 72.8 + dxSide, cy - 4.1, cy + 4.1, 5.6 + dzControls, 13.8 + dzControls, matBlackCap, chamfer: 0.5)
     }
-    boxes.append(("pad_side", makeAABB("pad_side", 64.6, 70.2, 22.0, 59.0, 2.2, 17.2)))
+    boxes.append(("pad_side", makeAABB("pad_side", 64.6, 70.2, 40.5, 77.5, 2.2, 17.2)))
     root.addChildNode(padNode)
 
     // 4. Dead-Centered LILYGO T-Display-S3 AMOLED (60.0 x 25.5 x 4.2 mm, Active Window centered at X=36.0 mm!)
@@ -678,22 +670,22 @@ func buildP5ExpCompactPortrait(exploded: Bool = false, opaque: Bool = false) -> 
 
     // 5. Mid-Right & Upper Deck:
     let topBay = SCNNode()
-    // 5a1. AOICRIE V713 5V 2A Boost (26.5 x 20.0 x 4.8 mm) in Mid-Right Lower Bay (X: 32.0..58.5, Y: 16.5..36.5, Z: 2.0..6.8)
-    addBox(topBay, "boost_5v2a_pcb", 32.0, 57.0, 16.5, 36.5, 2.0 + dzTopBay, 3.6 + dzTopBay, matDarkPCB)
-    addBox(topBay, "boost_inductor", 35.5, 42.5, 23.0, 30.0, 3.6 + dzTopBay, 6.8 + dzTopBay, matBlackCap)
-    addBox(topBay, "boost_usbc_shell", 51.7, 58.5, 22.0, 31.0, 3.6 + dzTopBay, 6.8 + dzTopBay, matSilver, chamfer: 0.5)
-    boxes.append(("boost_5v2a", makeAABB("boost_5v2a", 32.0, 58.5, 16.5, 36.5, 2.0, 6.8)))
+    // 5a1. AOICRIE V713 5V 2A Boost (rotated 20.0 x 26.5 x 4.8 mm) in Mid-Right Lower Bay (X: 31.5..51.5, Y: 9.5..36.0, Z: 2.0..6.8)
+    addBox(topBay, "boost_5v2a_pcb", 31.5, 51.5, 11.0, 36.0, 2.0 + dzTopBay, 3.6 + dzTopBay, matDarkPCB)
+    addBox(topBay, "boost_inductor", 38.0, 45.0, 23.0, 30.0, 3.6 + dzTopBay, 6.8 + dzTopBay, matBlackCap)
+    addBox(topBay, "boost_usbc_shell", 37.0, 46.0, 9.5, 16.3, 3.6 + dzTopBay, 6.8 + dzTopBay, matSilver, chamfer: 0.5)
+    boxes.append(("boost_5v2a", makeAABB("boost_5v2a", 31.5, 51.5, 9.5, 36.0, 2.0, 6.8)))
 
-    // 5a2. Acxico KCX_BT_EMITTER (23.5 x 15.5 x 2.5 mm) Elevated above V713 (X: 32.0..55.5, Y: 21.5..37.0, Z: 9.0..11.5)
-    addBox(topBay, "bt_emitter_pcb", 32.0, 55.5, 21.5, 37.0, 9.0 + dzTopBay, 10.4 + dzTopBay, matBluePCB)
-    addBox(topBay, "bt_emitter_ic", 38.5, 47.5, 25.0, 32.0, 10.4 + dzTopBay, 11.5 + dzTopBay, matBlackCap)
-    boxes.append(("bt_emitter", makeAABB("kcx_bt_emitter", 32.0, 55.5, 21.5, 37.0, 9.0, 11.5)))
+    // 5a2. Acxico KCX_BT_EMITTER (23.5 x 15.5 x 2.5 mm) above Shield Rib under AMOLED (X: 30.5..54.0, Y: 38.0..53.5, Z: 8.2..10.7)
+    addBox(topBay, "bt_emitter_pcb", 30.5, 54.0, 38.0, 53.5, 8.2 + dzTopBay, 9.6 + dzTopBay, matBluePCB)
+    addBox(topBay, "bt_emitter_ic", 37.0, 46.0, 42.0, 49.0, 9.6 + dzTopBay, 10.7 + dzTopBay, matBlackCap)
+    boxes.append(("bt_emitter", makeAABB("kcx_bt_emitter", 30.5, 54.0, 38.0, 53.5, 8.2, 10.7)))
 
-    // 5a3. PAM8302A 2.5W Mono Class-D Amp (24.0 x 15.0 x 2.8 mm) above KCX_BT_EMITTER (X: 32.0..56.0, Y: 21.5..36.5, Z: 12.2..15.0)
-    addBox(topBay, "pam8302a_pcb", 32.0, 56.0, 21.5, 36.5, 12.2 + dzTopBay, 13.6 + dzTopBay, matDarkPCB)
-    addBox(topBay, "pam8302a_ic", 40.0, 46.0, 26.0, 32.0, 13.6 + dzTopBay, 14.8 + dzTopBay, matBlackCap)
-    addBox(topBay, "pam8302a_trim", 34.0, 38.0, 26.5, 30.5, 13.6 + dzTopBay, 15.0 + dzTopBay, matSilver)
-    boxes.append(("pam8302a", makeAABB("pam8302a_amp", 32.0, 56.0, 21.5, 36.5, 12.2, 15.0)))
+    // 5a3. PAM8302A 2.5W Mono Class-D Amp (rotated 15.0 x 24.0 x 2.8 mm) beside KCX_BT_EMITTER under AMOLED (X: 15.0..30.0, Y: 38.0..62.0, Z: 8.2..11.0)
+    addBox(topBay, "pam8302a_pcb", 15.0, 30.0, 38.0, 62.0, 8.2 + dzTopBay, 9.6 + dzTopBay, matDarkPCB)
+    addBox(topBay, "pam8302a_ic", 19.5, 25.5, 46.0, 52.0, 9.6 + dzTopBay, 10.8 + dzTopBay, matBlackCap)
+    addBox(topBay, "pam8302a_trim", 20.0, 24.0, 54.0, 58.0, 9.6 + dzTopBay, 11.0 + dzTopBay, matSilver)
+    boxes.append(("pam8302a", makeAABB("pam8302a_amp", 15.0, 30.0, 38.0, 62.0, 8.2, 11.0)))
 
     // 5b. GY-PCM5102 (32.0 x 17.0 x 5.5 mm) Top-Left (Z: 11.0..16.5), 3.5mm TRS Jack flush at Top Wall Y=84.0!
     addBox(topBay, "pcm5102_pcb", 6.0, 38.0, 65.0, 82.0, 11.0 + dzTopBay, 12.6 + dzTopBay, matPurplePCB)
@@ -713,11 +705,11 @@ func buildP5ExpCompactPortrait(exploded: Bool = false, opaque: Bool = false) -> 
     addCylZ(topBay, "inmp441_gasket", micCX, micCY, 16.1 + dzTopBay, 17.5 + dzTopBay, 4.5, matBlackCap)
     boxes.append(("inmp441", makeAABB("inmp441", micCX - 7.0, micCX + 7.0, micCY - 7.0, micCY + 7.0, 14.5, 17.5)))
 
-    // 5d. WWZMDiB Mini 3.3V MicroSD (17.9 x 17.9 x 4.0 mm) Upper-Right, card slot flush at Right Wall X=72.0!
-    addBox(topBay, "microsd_pcb", 52.3, 70.2, 60.5, 78.4, 9.0 + dzTopBay, 10.6 + dzTopBay, matBluePCB)
-    addBox(topBay, "microsd_cage", 55.7, 70.2, 62.5, 76.3, 10.6 + dzTopBay, 13.0 + dzTopBay, matSilver)
-    addBox(topBay, "microsd_card_edge", 68.0, 71.9, 63.7, 74.7, 11.0 + dzTopBay, 12.2 + dzTopBay, matGold)
-    boxes.append(("microsd", makeAABB("mini_3v3_microsd", 52.3, 70.2, 60.5, 78.4, 9.0, 13.0)))
+    // 5d. WWZMDiB Mini 3.3V MicroSD (17.9 x 17.9 x 4.0 mm) Bottom-Right, card slot flush at Right Wall X=72.0!
+    addBox(topBay, "microsd_pcb", 52.3, 70.2, 6.0, 23.9, 2.0 + dzTopBay, 3.6 + dzTopBay, matBluePCB)
+    addBox(topBay, "microsd_cage", 55.7, 70.2, 8.0, 21.8, 3.6 + dzTopBay, 6.0 + dzTopBay, matSilver)
+    addBox(topBay, "microsd_card_edge", 68.0, 71.9, 9.2, 20.2, 4.0 + dzTopBay, 5.2 + dzTopBay, matGold)
+    boxes.append(("microsd", makeAABB("mini_3v3_microsd", 52.3, 70.2, 6.0, 23.9, 2.0, 6.0)))
     root.addChildNode(topBay)
 
     root.addChildNode(lid)
@@ -751,21 +743,21 @@ func exportPrintableSTLs() throws {
     tray.addBox(1.8, 4.5, 55.4, 56.4, 12.5, 17.7)
     tray.addBox(1.8, 4.5, 45.0, 55.4, 12.5, 13.5)
     tray.addBox(1.8, 4.5, 45.0, 55.4, 16.7, 17.7)
-    // Right Wall (X: 70.2..72.0) w/ Side 1x4 Keypad Cutouts (Y: 22.3..58.7) & MicroSD Cutout (Y: 60.5..78.4)
-    tray.addBox(70.2, 72.0, 5.4, 22.3, 1.8, 17.7)
-    tray.addBox(70.2, 72.0, 22.3, 58.7, 1.8, 5.3)
-    tray.addBox(70.2, 72.0, 22.3, 58.7, 14.1, 17.7)
+    // Right Wall (X: 70.2..72.0) w/ Bottom-Right MicroSD Cutout (Y: 6.0..23.9) & Upper Side 1x4 Keypad Cutouts (Y: 40.8..77.2)
+    tray.addBox(70.2, 72.0, 5.4, 6.0, 1.8, 17.7)
+    tray.addBox(70.2, 72.0, 6.0, 23.9, 1.8, 2.8)
+    tray.addBox(70.2, 72.0, 6.0, 23.9, 6.4, 17.7)
+    tray.addBox(70.2, 72.0, 23.9, 40.8, 1.8, 17.7)
+    tray.addBox(70.2, 72.0, 40.8, 77.2, 1.8, 5.3)
+    tray.addBox(70.2, 72.0, 40.8, 77.2, 14.1, 17.7)
     let sortedSideYs = sideCapYs.sorted()
     for (i, cy) in sortedSideYs.enumerated() {
-        let prevY = i == 0 ? 22.3 : sortedSideYs[i - 1] + 4.4
+        let prevY = i == 0 ? 40.8 : sortedSideYs[i - 1] + 4.4
         if cy - 4.4 > prevY + 0.01 {
             tray.addBox(70.2, 72.0, prevY, cy - 4.4, 5.3, 14.1)
         }
     }
-    tray.addBox(70.2, 72.0, 58.7, 60.5, 1.8, 17.7)
-    tray.addBox(70.2, 72.0, 60.5, 78.4, 1.8, 9.8)
-    tray.addBox(70.2, 72.0, 60.5, 78.4, 13.4, 17.7)
-    tray.addBox(70.2, 72.0, 78.4, 78.6, 1.8, 17.7)
+    tray.addBox(70.2, 72.0, 77.2, 78.6, 1.8, 17.7)
     // Bottom & Top Walls
     tray.addBox(5.4, 66.6, 0, 1.8, 1.8, 17.7)
     tray.addBox(5.4, 11.0, 82.2, 84.0, 1.8, 17.7)
@@ -780,31 +772,27 @@ func exportPrintableSTLs() throws {
     }
     // Internal PCB Cradles & Support Rails
     tray.addBox(4.5, 5.4, 37.5, 74.5, 1.8, 7.0)
-    tray.addBox(64.6, 65.5, 60.0, 74.5, 1.8, 7.0)
     for (kx0, kx1, ky0, ky1) in [
         (5.5, 8.5, 3.5, 6.5), (27.5, 30.5, 3.5, 6.5),
         (5.5, 8.5, 33.5, 36.5), (27.5, 30.5, 33.5, 36.5)
     ] {
         tray.addBox(kx0, kx1, ky0, ky1, 1.8, 2.4)
     }
-    tray.addBox(31.5, 34.0, 5.5, 15.5, 1.8, 7.9)
-    tray.addBox(48.8, 51.2, 5.5, 15.5, 1.8, 7.9)
-    tray.addBox(66.0, 68.5, 5.5, 20.5, 1.8, 7.9)
-    tray.addBox(64.6, 70.2, 20.8, 21.8, 1.8, 17.2)
-    tray.addBox(64.6, 70.2, 59.2, 60.2, 1.8, 17.2)
-    tray.addBox(64.6, 66.6, 22.0, 59.0, 1.8, 2.2)
+    tray.addBox(31.5, 34.0, 6.0, 9.0, 1.8, 7.9)
+    tray.addBox(52.3, 55.0, 24.5, 28.3, 1.8, 7.9)
+    tray.addBox(66.0, 68.5, 24.5, 28.3, 1.8, 7.9)
+    tray.addBox(64.6, 70.2, 39.3, 40.3, 1.8, 17.2)
+    tray.addBox(64.6, 70.2, 77.7, 78.5, 1.8, 17.2)
+    tray.addBox(64.6, 66.6, 40.5, 77.5, 1.8, 2.2)
     tray.addBox(4.5, 6.2, 37.5, 38.4, 8.0, 13.5)
     tray.addBox(4.5, 6.2, 62.3, 63.0, 8.0, 13.5)
-    tray.addBox(60.0, 64.6, 59.2, 60.2, 8.0, 13.5)
+    tray.addBox(60.0, 64.6, 38.0, 39.0, 8.0, 13.5)
     tray.addBox(3.5, 5.3, 65.0, 78.4, 1.8, 11.0)
     tray.addBox(5.3, 7.8, 65.0, 78.4, 9.0, 11.0)
     tray.addBox(29.1, 29.7, 75.5, 81.5, 1.8, 11.0)
-    tray.addBox(56.8, 66.4, 79.5, 81.6, 1.8, 9.0)
-    tray.addBox(66.6, 70.2, 60.5, 65.0, 1.8, 9.0)
-    tray.addBox(52.3, 56.8, 60.5, 78.4, 8.0, 9.0)
-    tray.addBox(32.0, 57.0, 15.8, 16.2, 1.8, 4.5)
-    tray.addBox(59.0, 61.0, 22.0, 36.0, 1.8, 9.0)
-    tray.addBox(53.0, 59.0, 22.0, 36.0, 7.5, 9.0)
+    tray.addBox(52.3, 70.2, 6.0, 23.9, 1.8, 2.0)
+    tray.addBox(52.3, 53.5, 24.1, 24.4, 1.8, 6.0)
+    tray.addBox(31.5, 51.5, 8.8, 9.2, 1.8, 4.5)
     try tray.writeBinarySTL(to: "\(stlDir)/p5_exp_compact_portrait_bottom_tray.stl", header: "P5-Exp-Compact-Portrait Bottom Tray 72x84x17.7mm R5.4mm")
 
     // Top Faceplate printed exterior-down (Z: 0..1.8 faceplate w/ R=5.4mm corners & Ø2.2mm M2 holes, Z: 1.8..3.4 collars)
@@ -850,7 +838,7 @@ func exportPrintableSTLs() throws {
     lid.addBox(61.0, 72.0, 37.5, 62.0, 0, 1.8)
     lid.addBox(11.0, 61.0, 60.5, 62.0, 0, 1.8)
     lid.addBox(11.0, 61.0, 37.5, 39.0, 0, 1.8)
-    lid.addBox(31.5, 72.0, 22.0, 37.5, 0, 1.8)
+    lid.addBox(31.5, 72.0, 25.2, 37.5, 0, 1.8)
     // Recessed Ø25.0mm thumbstick well skirt (Z: 0..3.2mm)
     lid.addAnnulusZ(cx: 17.5, cy: 20.8, rIn: 12.5, rOut: 14.15, z0: 0, z1: 3.2)
     lid.addBox(0, 5.0, 5.4, 37.5, 0, 1.8)
@@ -868,15 +856,14 @@ func exportPrintableSTLs() throws {
                        min(20.8 + sy * 6.4, 20.8 + sy * 9.0), max(20.8 + sy * 6.4, 20.8 + sy * 9.0), 0, 1.8)
         }
     }
-    // Lower-right 1x4 front keypad grid (Y: 0..22.0)
-    lid.addBox(31.5, 66.6, 0, 8.6, 0, 1.8)
-    lid.addBox(66.6, 72.0, 5.4, 8.6, 0, 1.8)
-    lid.addBox(31.5, 72.0, 17.4, 22.0, 0, 1.8)
+    // Lower-right 1x4 front keypad grid (Y: 0..25.2, cap Y=20.8 dead-level w/ thumbstick)
+    lid.addBox(31.5, 66.6, 0, 16.4, 0, 1.8)
+    lid.addBox(66.6, 72.0, 5.4, 16.4, 0, 1.8)
     for (i, cx) in frontCapXs.enumerated() {
         let prevX = i == 0 ? 31.5 : frontCapXs[i - 1] + 4.4
-        lid.addBox(prevX, cx - 4.4, 8.6, 17.4, 0, 1.8)
+        lid.addBox(prevX, cx - 4.4, 16.4, 25.2, 0, 1.8)
     }
-    lid.addBox(68.0, 72.0, 8.6, 17.4, 0, 1.8)
+    lid.addBox(68.0, 72.0, 16.4, 25.2, 0, 1.8)
     lid.mirrorYInPlace(yMax: boxH)
     try lid.writeBinarySTL(to: "\(stlDir)/p5_exp_compact_portrait_top_faceplate.stl", header: "P5-Exp-Compact-Portrait Top Faceplate 72x84x3.4mm")
 
