@@ -473,10 +473,10 @@
         { mod: 'WWZMDiB Mini 3.3V MicroSD', sig: '3.3V Supply + Dedicated HSPI Bus', from: '3V3 / CS / MOSI / CLK / MISO', to: '3.3V / GPIO 16 / 39 / 40 / 41', wire: 'Strictly 3.3V (no reg)!' },
         { mod: 'Right-Side 1×4 K1 (B1)', sig: 'Dedicated 5V Audio Rail Power Button', from: 'Side K1 Pad (Topmost Y=54.3)', to: 'AOICRIE V713 K Pad (ONLY)', wire: '1-click ON / 2-click OFF (<30µA)' },
         { mod: 'Right-Side 1×4 K2..K4 + Front 1×4', sig: '7× Direct UI Buttons B2..B8', from: 'Side K2..K4 + Front K1..K4', to: 'GPIO 42, 43, 44, 45, 2, 3, 46', wire: 'INPUT_PULLUP (init post-boot)' },
-        { mod: 'Liter 503759 + Internal V713', sig: '1300mAh LiPo + Audio-Only 5V Boost', from: 'BAT+/BAT- → T-Display-S3 + V713', to: 'V713 5V+ → PCM5102 + Acxico + PAM8302A', wire: 'Sealed internal mid-right bay' },
-        { mod: 'Acxico KCX_BT_EMITTER', sig: 'K-Switched 5V + Stereo Line-In', from: '+5V / PGND / IN_L / IN_R / AGND', to: 'V713 5V + PCM5102 L/R/G', wire: 'Elevated shelf above V713' },
-        { mod: 'PAM8302A 2.5W Mono Amp', sig: '5V Audio Amp + DAC Line-In + PTT Mute', from: 'VIN / GND / A+ / A- / SD', to: 'V713 5V / PCM5102 L+G / GPIO 21', wire: 'Z:12.2..15.0 above BT; SD=LOW on PTT' },
-        { mod: '1511 8Ω 1W Micro-Speaker', sig: '15×11×3.0 mm Top-Left Acoustic Chamber', from: 'SPK+ / SPK- (30 AWG Twisted)', to: 'PAM8302A VO+ / VO-', wire: 'Left 21-dot grille at (26.8, 73.5)' }
+        { mod: 'Liter 503759 + Internal V713', sig: '1300mAh LiPo (1-to-1 JST 1.25mm) + VSYS Boost', from: 'Battery → JST 1.25mm · VSYS/G → V713 IN+/IN-', to: 'V713 5V+ → PCM5102 + Acxico + PAM8302A', wire: 'No 3-way battery splice! Uses VSYS hole' },
+        { mod: 'Acxico KCX_BT_EMITTER', sig: 'K-Switched 5V + Stereo Line-In', from: '+5V / PGND / IN_L / IN_R / AGND', to: 'V713 5V + PCM5102 L/R/G', wire: 'Beside PAM8302A above LiPo shield' },
+        { mod: 'PAM8302A 2.5W Mono Amp', sig: '5V Audio Amp + DAC Line-In (SD Floating=ON)', from: 'VIN / GND / A+ / A-', to: 'V713 5V / PCM5102 L+G (I2S mute on PTT)', wire: 'Leave SD floating; software I2S mute on PTT' },
+        { mod: '1511 8Ω 1W Micro-Speaker', sig: '15.2×10.2×3.5 mm Top-Left Acoustic Chamber', from: 'SPK+ / SPK- (30 AWG Twisted)', to: 'PAM8302A VO+ / VO-', wire: 'Left 21-dot grille at (26.8, 73.5)' }
       ];
 
       function renderPinoutTable() {
