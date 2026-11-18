@@ -1430,6 +1430,15 @@
       action: 'openNowPlaying',
     });
 
+    if (global.FBoxFen && typeof global.FBoxFen.drawFen === 'function') {
+      global.FBoxFen.drawFen(ctx, 30, 210, 0.82, {
+        mood: 'RESTING',
+        den: true,
+        phase: phase,
+        accent: COLORS.coral
+      });
+    }
+
     drawToast(ctx, s);
     ctx.restore();
   }
@@ -1763,6 +1772,14 @@
     ctx.textAlign = 'right';
     ctx.fillText('-' + formatTimeWithHelpers(rem, helpers), trackX + trackW, 202);
 
+    if (global.FBoxFen && typeof global.FBoxFen.drawFen === 'function') {
+      global.FBoxFen.drawFen(ctx, 36, 212, 0.82, {
+        mood: 'LISTENING',
+        playing: !!s.playing,
+        phase: phase
+      });
+    }
+
     drawToast(ctx, s);
     ctx.restore();
   }
@@ -2024,6 +2041,13 @@
     ctx.fillStyle = flashing ? COLORS.amber : COLORS.textSecondary;
     ctx.fillText('Hold B1 + B5', WIDTH * 0.5, 194);
 
+    if (global.FBoxFen && typeof global.FBoxFen.drawFen === 'function') {
+      global.FBoxFen.drawFen(ctx, 486, 208, 0.88, {
+        mood: 'SLEEPING',
+        phase: phase
+      });
+    }
+
     drawToast(ctx, s);
     ctx.restore();
   }
@@ -2230,16 +2254,28 @@
     state.launcherIdx = targetIdx;
 
     if (targetIdx === 0) {
-      syncSourcePosition(state, 'ABS');
-      state.screen = 'NOW_PLAYING';
+      state.browseMode = 'BOOKS';
+      state.libTabIdx = 0;
+      state.libCursor = 0;
+      state.libScrollOffset = 0;
+      state.libDrill = null;
+      state.screen = 'LIBRARY_BROWSER';
     } else if (targetIdx === 1) {
-      syncSourcePosition(state, 'SPOTIFY');
-      state.screen = 'NOW_PLAYING';
+      state.browseMode = 'MUSIC';
+      state.libTabIdx = 0;
+      state.libCursor = 0;
+      state.libScrollOffset = 0;
+      state.libDrill = null;
+      state.screen = 'LIBRARY_BROWSER';
     } else if (targetIdx === 2) {
-      syncSourcePosition(state, 'MICROSD');
-      state.screen = 'NOW_PLAYING';
+      state.browseMode = 'FILES';
+      state.libTabIdx = 0;
+      state.libCursor = 0;
+      state.libScrollOffset = 0;
+      state.libDrill = null;
+      state.screen = 'LIBRARY_BROWSER';
     } else {
-      state.screen = 'AI_VOICE';
+      state.screen = 'VOICE_AI';
     }
 
     triggerBounce('launcher_' + targetIdx, 6.8);

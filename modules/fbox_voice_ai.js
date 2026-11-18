@@ -1553,9 +1553,9 @@
     ctx.fillStyle = isGemini ? COLORS.VOID : COLORS.CORAL;
     ctx.fillText('Gemini', GEMINI_CX, MODE_Y + 0.5);
 
-    // Bubble 2: Memo (cx=404, y=42) in Amber #E3A84B
+    // Bubble 2: Field Rec (cx=404, y=42) in Amber #E3A84B
     var mScale = clamp(anim.memoScale.val, 0.78, 1.32);
-    var mW = 78 * mScale;
+    var mW = 90 * mScale;
     var mH = 24 * mScale;
     fillRoundRect(
       ctx,
@@ -1574,7 +1574,13 @@
     }
     ctx.font = 'bold 11px ' + FONT_SANS;
     ctx.fillStyle = !isGemini ? COLORS.VOID : COLORS.AMBER;
-    ctx.fillText('Memo', MEMO_CX, MODE_Y + 0.5);
+    ctx.fillText('Field Rec', MEMO_CX, MODE_Y + 0.5);
+
+    // Crisp online/offline server indicator (y=63)
+    var online = state.serverOnline !== false;
+    ctx.font = '600 9.5px ' + FONT_MONO;
+    ctx.fillStyle = online ? COLORS.TEAL : COLORS.AMBER;
+    ctx.fillText(online ? 'Wi-Fi → Fen AI' : 'Offline → SD WAV', (GEMINI_CX + MEMO_CX) * 0.5, 63);
 
     ctx.restore();
   }
@@ -2012,6 +2018,25 @@
 
     // 4. Left/Center Living 5-Blob Lava-Lamp Voice Organism (cx=118, cy=132)
     drawLavaOrganism(ctx, state, anim);
+
+    // 4b. Fen companion sprite reacting to AI / Field Rec state
+    if (root && root.FBoxFen && typeof root.FBoxFen.drawFen === 'function') {
+      var fenMood = 'RESTING';
+      if (state.pttPhase === 'LISTENING') {
+        fenMood = state.voiceSubMode === 'VOICE_NOTE' ? 'FIELD_REC' : 'AI_LISTENING';
+      } else if (state.pttPhase === 'THINKING') {
+        fenMood = 'AI_THINKING';
+      } else if (state.voiceSubMode === 'VOICE_NOTE') {
+        fenMood = 'FIELD_REC';
+      } else if (state.pttPhase === 'RESPONSE') {
+        fenMood = 'BROWSING';
+      }
+      root.FBoxFen.drawFen(ctx, 34, 210, 0.78, {
+        mood: fenMood,
+        phase: anim.timeSec * 3.0,
+        playing: false
+      });
+    }
 
     // 5. Right Area (x=220..520)
     if (state.pttPhase === 'LISTENING') {

@@ -55,6 +55,43 @@
     { idx: 4, id: 'MARKS_NOTES', label: '5. ★ Marks & Notes', shortLabel: '★', caption: 'Marks', accent: PALETTE.marksCoral }
   ];
 
+  var MODE_TABS = {
+    BOOKS: [
+      { idx: 0, id: 'CONTINUE', caption: 'Continue', accent: PALETTE.absAmber, iconType: 'CONTINUE' },
+      { idx: 1, id: 'BOOKS', caption: 'Books', accent: PALETTE.absAmber, iconType: 'BOOKS' },
+      { idx: 2, id: 'PODCASTS', caption: 'Podcasts', accent: PALETTE.absAmber, iconType: 'PODCASTS' },
+      { idx: 3, id: 'SERIES', caption: 'Series', accent: PALETTE.absAmber, iconType: 'SERIES' },
+      { idx: 4, id: 'MARKS', caption: 'Marks', accent: PALETTE.marksCoral, iconType: 'MARKS' }
+    ],
+    MUSIC: [
+      { idx: 0, id: 'PLAYLISTS', caption: 'Playlists', accent: PALETTE.spotifyTeal, iconType: 'PLAYLISTS' },
+      { idx: 1, id: 'ALBUMS', caption: 'Albums', accent: PALETTE.spotifyTeal, iconType: 'ALBUMS' },
+      { idx: 2, id: 'LIKED', caption: 'Liked', accent: PALETTE.spotifyTeal, iconType: 'LIKED' },
+      { idx: 3, id: 'CONNECT', caption: 'Connect', accent: PALETTE.sdCyan, iconType: 'CONNECT' }
+    ],
+    FILES: [
+      { idx: 0, id: 'FOLDERS', caption: 'Folders', accent: PALETTE.chaptersGold, iconType: 'FOLDERS' },
+      { idx: 1, id: 'MEMOS', caption: 'Memos', accent: PALETTE.marksCoral, iconType: 'MEMOS' },
+      { idx: 2, id: 'STORAGE', caption: 'Storage', accent: PALETTE.chaptersGold, iconType: 'STORAGE' }
+    ]
+  };
+
+  function getBrowseMode(state) {
+    var m = String((state && state.browseMode) || 'BOOKS').toUpperCase();
+    if (m === 'MUSIC' || m === 'FILES' || m === 'BOOKS') return m;
+    return 'BOOKS';
+  }
+
+  function getActiveTabs(state) {
+    return MODE_TABS[getBrowseMode(state)] || MODE_TABS.BOOKS;
+  }
+
+  function getTabPositions(count) {
+    if (count === 3) return [136, 240, 344];
+    if (count === 4) return [102, 194, 286, 378];
+    return [84, 162, 240, 318, 396];
+  }
+
   // Retained on public API for external contract compatibility (not rendered on AMOLED void)
   var KEY_HINTS = [
     { key: 'STICK', label: 'Vel Scroll', color: PALETTE.marksCoral },
@@ -150,6 +187,82 @@
     { id: 'sd-4', title: 'ESP32_I2S_DMA_Notes.wav', folder: '/notes', format: 'WAV', bitrate: '1536k', durationSec: 198, bookmarkSec: 45 },
     { id: 'sd-5', title: 'Ambient_Tape_01.flac', folder: '/music', format: 'FLAC', bitrate: '960k', durationSec: 342, bookmarkSec: 0 },
     { id: 'sd-6', title: 'Systems_Rust_Async_Ep12.opus', folder: '/podcasts', format: 'OPUS', bitrate: '160k', durationSec: 2418, bookmarkSec: 710 }
+  ];
+
+  var DEFAULT_PODCASTS = [
+    {
+      id: 'pod-lex',
+      title: 'Lex Fridman Podcast',
+      author: 'Lex Fridman',
+      episodes: [
+        { id: 'ep-452', title: '#452 — AI & Consciousness', durationSec: 7420, date: '2d ago' },
+        { id: 'ep-448', title: '#448 — Humanoid Robotics', durationSec: 6180, date: '1w ago' },
+        { id: 'ep-440', title: '#440 — Distributed Systems', durationSec: 5890, date: '2w ago' }
+      ]
+    },
+    {
+      id: 'pod-acquired',
+      title: 'Acquired',
+      author: 'Ben Gilbert & David Rosenthal',
+      episodes: [
+        { id: 'acq-nvda', title: 'NVIDIA: The GPU Empire', durationSec: 9420, date: '4d ago' },
+        { id: 'acq-tsmc', title: 'TSMC: Silicon Foundry', durationSec: 8140, date: '3w ago' }
+      ]
+    },
+    {
+      id: 'pod-hardfork',
+      title: 'Hard Fork',
+      author: 'NYT Tech',
+      episodes: [
+        { id: 'hf-1', title: 'Agents Everywhere', durationSec: 3480, date: 'Yesterday' },
+        { id: 'hf-2', title: 'Open Hardware Handhelds', durationSec: 3120, date: '1w ago' }
+      ]
+    },
+    {
+      id: 'pod-darknet',
+      title: 'Darknet Diaries',
+      author: 'Jack Rhysider',
+      episodes: [
+        { id: 'dd-145', title: 'Ep 145: Hardware Implants', durationSec: 3640, date: '5d ago' },
+        { id: 'dd-142', title: 'Ep 142: RF Sniffing', durationSec: 2980, date: '2w ago' }
+      ]
+    }
+  ];
+
+  var DEFAULT_SERIES = [
+    { id: 'ser-carl', title: 'Dungeon Crawler Carl', author: 'Matt Dinniman', count: 7, progressPct: 64, bookIdx: 1 },
+    { id: 'ser-expanse', title: 'The Expanse', author: 'James S.A. Corey', count: 9, progressPct: 85, bookIdx: 0 },
+    { id: 'ser-bob', title: 'Bobiverse', author: 'Dennis E. Taylor', count: 5, progressPct: 40, bookIdx: 0 },
+    { id: 'ser-storm', title: 'The Stormlight Archive', author: 'Brandon Sanderson', count: 4, progressPct: 18, bookIdx: 2 }
+  ];
+
+  var DEFAULT_PLAYLISTS = [
+    { id: 'pl-study', title: 'Deep Study Focus', subtitle: 'Lo-Fi & Ambient · 18 tracks', badge: '18' },
+    { id: 'pl-night', title: 'Night Drive', subtitle: 'Synthwave · 24 tracks', badge: '24' },
+    { id: 'pl-jazz', title: 'Late Jazz', subtitle: 'Trio & Quartet · 14 tracks', badge: '14' },
+    { id: 'pl-code', title: 'ESP32 Firmware Sprint', subtitle: 'Instrumental · 31 tracks', badge: '31' }
+  ];
+
+  var DEFAULT_ALBUMS = [
+    { id: 'alb-odyssey', title: 'Odyssey', artist: 'HOME', year: '2014', badge: '12 trk' },
+    { id: 'alb-m83', title: "Hurry Up, We're Dreaming", artist: 'M83', year: '2011', badge: '22 trk' },
+    { id: 'alb-waltz', title: 'Waltz for Debby', artist: 'Bill Evans Trio', year: '1961', badge: '6 trk' },
+    { id: 'alb-ram', title: 'Random Access Memories', artist: 'Daft Punk', year: '2013', badge: '13 trk' }
+  ];
+
+  var SPOTIFY_CONNECT_DEVICES = [
+    { id: 'dev-esp32', name: 'fbox ESP32', kind: 'Handheld DAC / BT TX', badge: 'ESP32' },
+    { id: 'dev-mbp', name: 'MacBook Pro', kind: 'Desktop CoreAudio', badge: 'MAC' },
+    { id: 'dev-living', name: 'Living Room', kind: 'Sonos Speaker', badge: 'WIFI' },
+    { id: 'dev-airpods', name: 'AirPods BT TX', kind: 'KCX_BT_EMITTER', badge: 'BT' }
+  ];
+
+  var SD_FOLDERS = [
+    { path: '/AUDIOBOOKS', subtitle: 'M4B & MP3 chapters', badge: '4.2 GB' },
+    { path: '/PODCASTS', subtitle: 'Offline episodes', badge: '2.1 GB' },
+    { path: '/MUSIC', subtitle: 'FLAC & 320k MP3', badge: '5.8 GB' },
+    { path: '/LECTURES', subtitle: 'CS229 & Embedded Linux', badge: '4.9 GB' },
+    { path: '/VOICE_NOTES', subtitle: 'INMP441 48kHz WAV memos', badge: '1.4 GB' }
   ];
 
   var FONT_SANS = '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif';
@@ -267,11 +380,17 @@
     if (!state || typeof state !== 'object') {
       state = {};
     }
+    var activeTabs = getActiveTabs(state);
+    var tabCount = activeTabs.length;
+    state.browseMode = getBrowseMode(state);
     if (typeof state.libTabIdx !== 'number' || !Number.isFinite(state.libTabIdx)) state.libTabIdx = 0;
-    state.libTabIdx = ((Math.round(state.libTabIdx) % 5) + 5) % 5;
+    state.libTabIdx = ((Math.round(state.libTabIdx) % tabCount) + tabCount) % tabCount;
 
     if (typeof state.libCursor !== 'number' || !Number.isFinite(state.libCursor)) state.libCursor = 0;
     if (typeof state.libScrollOffset !== 'number' || !Number.isFinite(state.libScrollOffset)) state.libScrollOffset = 0;
+    if (state.libDrill && state.libDrill.mode && state.libDrill.mode !== state.browseMode) {
+      state.libDrill = null;
+    }
 
     if (!state.stick || typeof state.stick !== 'object') {
       state.stick = { x: 0, y: 0, adcX: 2048, adcY: 2048, pressed: false, scrubDeltaSec: 0, scrollVel: 0 };
@@ -292,9 +411,9 @@
     if (typeof state._tabLavaAnim !== 'number' || !Number.isFinite(state._tabLavaAnim)) {
       state._tabLavaAnim = 1;
     }
-    if (!Array.isArray(state._tabSprings) || state._tabSprings.length !== TABS.length) {
+    if (!Array.isArray(state._tabSprings) || state._tabSprings.length !== tabCount) {
       state._tabSprings = [];
-      for (var i = 0; i < TABS.length; i++) {
+      for (var i = 0; i < tabCount; i++) {
         state._tabSprings.push({
           r: i === state.libTabIdx ? DISPLAY.tabActiveR : DISPLAY.tabR,
           v: 0
@@ -350,7 +469,8 @@
     }
 
     // 2. Category circle underdamped radius springs (14px <-> 21px)
-    for (var i = 0; i < TABS.length; i++) {
+    var activeTabs = getActiveTabs(state);
+    for (var i = 0; i < activeTabs.length; i++) {
       var sp = state._tabSprings[i];
       var targetR = i === state.libTabIdx ? DISPLAY.tabActiveR : DISPLAY.tabR;
       var next = stepSpring(sp.r, sp.v, targetR, 380, 14, dt);
@@ -498,106 +618,7 @@
   // --------------------------------------------------------------------------
   // 1. Data Projection: getItemsForTab(state, tabIdx)
   // --------------------------------------------------------------------------
-  function getItemsForTab(state, tabIdx) {
-    var st = state || {};
-    var tab = typeof tabIdx === 'number' && Number.isFinite(tabIdx)
-      ? (((Math.round(tabIdx) % 5) + 5) % 5)
-      : (((Math.round(Number(st.libTabIdx) || 0) % 5) + 5) % 5);
-
-    var cat = getCatalog();
-
-    if (tab === 0) {
-      return cat.ABS_BOOKS.map(function (book, index) {
-        var chapters = Array.isArray(book.chapters) ? book.chapters : [];
-        var pct = resolveBookProgressPct(book);
-        return {
-          id: book.id != null ? book.id : ('abs-book-' + index),
-          title: book.title || ('Audiobook ' + (index + 1)),
-          subtitle: (book.author || 'Unknown Author') + ' · ' + chapters.length + ' ch',
-          badge: pct + '%',
-          progress: pct / 100,
-          isActive: isSourceAbs(st) && Number(st.absBookIdx || 0) === index,
-          accent: PALETTE.absAmber,
-          type: 'ABS_BOOK',
-          icon: 'ABS',
-          index: index,
-          raw: book
-        };
-      });
-    }
-
-    if (tab === 1) {
-      var books = cat.ABS_BOOKS;
-      if (!books.length) return [];
-      var bookIdx = clamp(Math.round(Number(st.absBookIdx) || 0), 0, books.length - 1);
-      var activeBook = books[bookIdx] || {};
-      var chList = Array.isArray(activeBook.chapters) ? activeBook.chapters : [];
-      return chList.map(function (ch, index) {
-        var num = ch.num != null ? ch.num : (index + 1);
-        var chTitle = ch.title || ('Chapter ' + num);
-        var dur = Number(ch.durationSec != null ? ch.durationSec : ch.duration) || 0;
-        var active = isSourceAbs(st) && Number(st.absChapterIdx || 0) === index;
-        var prog = undefined;
-        if (active && dur > 0 && typeof st.positionSec === 'number') {
-          prog = clamp(st.positionSec / dur, 0, 1);
-        }
-        return {
-          id: ch.id != null ? ch.id : ((activeBook.id || ('book-' + bookIdx)) + '-ch-' + index),
-          title: 'Ch. ' + num + ' — ' + chTitle,
-          subtitle: activeBook.title || 'Audiobookshelf',
-          badge: formatTime(dur),
-          progress: prog,
-          isActive: active,
-          accent: PALETTE.chaptersGold,
-          type: 'ABS_CHAPTER',
-          icon: 'CH',
-          bookIndex: bookIdx,
-          index: index,
-          raw: ch
-        };
-      });
-    }
-
-    if (tab === 2) {
-      return cat.SPOTIFY_TRACKS.map(function (tr, index) {
-        var dur = Number(tr.durationSec != null ? tr.durationSec : tr.duration) || 0;
-        return {
-          id: tr.id != null ? tr.id : ('spt-' + index),
-          title: tr.title || ('Track ' + (index + 1)),
-          subtitle: (tr.artist || 'Unknown Artist') + ' · ' + (tr.playlist || tr.album || 'Spotify'),
-          badge: formatTime(dur),
-          isActive: isSourceSpotify(st) && Number(st.spotifyTrackIdx || 0) === index,
-          accent: PALETTE.spotifyTeal,
-          type: 'SPOTIFY_TRACK',
-          icon: 'SPT',
-          index: index,
-          raw: tr
-        };
-      });
-    }
-
-    if (tab === 3) {
-      return cat.SD_FILES.map(function (f, index) {
-        var dur = Number(f.durationSec != null ? f.durationSec : f.duration) || 0;
-        var folder = f.folder || '/media';
-        var fmt = f.format || 'MP3';
-        var bitrate = f.bitrate || '320k';
-        return {
-          id: f.id != null ? f.id : ('sd-' + index),
-          title: f.title || f.name || f.shortTitle || ('File ' + (index + 1)),
-          subtitle: folder + ' · ' + fmt + ' ' + bitrate,
-          badge: formatTime(dur),
-          isActive: isSourceSd(st) && Number(st.sdFileIdx || 0) === index,
-          accent: PALETTE.sdCyan,
-          type: 'SD_FILE',
-          icon: 'SD',
-          index: index,
-          raw: f
-        };
-      });
-    }
-
-    // Tab 4: 5. ★ Marks & Notes (bookmarks + voiceNotes)
+  function buildMarksAndNotesItems(st) {
     var items = [];
     var bookmarks = Array.isArray(st.bookmarks) ? st.bookmarks : [];
     var voiceNotes = Array.isArray(st.voiceNotes) ? st.voiceNotes : [];
@@ -628,6 +649,7 @@
         accent: PALETTE.marksCoral,
         type: 'BOOKMARK',
         icon: '★',
+        iconType: 'MARKS',
         index: items.length,
         raw: bm
       });
@@ -660,13 +682,383 @@
         accent: PALETTE.marksCoral,
         type: 'VOICE_NOTE',
         icon: 'WAV',
+        iconType: 'MEMOS',
         voiceNoteIndex: vi,
         index: items.length,
         raw: vn
       });
     }
-
     return items;
+  }
+
+  function buildVoiceMemosItems(st) {
+    var voiceNotes = Array.isArray(st.voiceNotes) ? st.voiceNotes : [];
+    return voiceNotes.map(function (vn, vi) {
+      var item = vn || {};
+      var durSec = Number(item.durationSec != null ? item.durationSec : (item.duration != null ? item.duration : 12)) || 12;
+      var vnId = item.id != null ? item.id : ('vn-' + vi);
+      var synced = item.synced !== false && st.serverOnline !== false;
+      var isVnActive = Boolean(
+        (st.playingNoteId && st.playingNoteId === vnId) ||
+        (st.voiceNotePlayingId && st.voiceNotePlayingId === vnId) ||
+        item.playing
+      );
+      return {
+        id: vnId,
+        title: item.title || ('Field Rec #' + (vi + 1)),
+        subtitle: (synced ? 'Synced · ' : 'SD Local · ') + (item.linkedTo || item.date || '48kHz WAV'),
+        badge: formatTime(durSec),
+        isActive: isVnActive,
+        accent: PALETTE.marksCoral,
+        type: 'VOICE_NOTE',
+        icon: 'WAV',
+        iconType: 'MEMOS',
+        voiceNoteIndex: vi,
+        index: vi,
+        raw: item
+      };
+    });
+  }
+
+  function getItemsForTab(state, tabIdx) {
+    var st = state || {};
+    var mode = getBrowseMode(st);
+    var activeTabs = getActiveTabs(st);
+    var tabCount = activeTabs.length;
+    var tab = typeof tabIdx === 'number' && Number.isFinite(tabIdx)
+      ? (((Math.round(tabIdx) % tabCount) + tabCount) % tabCount)
+      : (((Math.round(Number(st.libTabIdx) || 0) % tabCount) + tabCount) % tabCount);
+
+    var cat = getCatalog();
+    var drill = st.libDrill && st.libDrill.mode === mode ? st.libDrill : null;
+
+    // ---- Drill-down lists ----
+    if (drill) {
+      if (drill.kind === 'BOOK_CHAPTERS') {
+        var books = cat.ABS_BOOKS;
+        var bookIdx = clamp(Math.round(Number(drill.bookIdx) || 0), 0, Math.max(0, books.length - 1));
+        var activeBook = books[bookIdx] || {};
+        var chList = Array.isArray(activeBook.chapters) ? activeBook.chapters : [];
+        var chRows = [{
+          id: 'drill-up-books',
+          title: '..  Back to ' + (activeBook.title || 'Books'),
+          subtitle: 'B5 or Tap to go up',
+          badge: 'UP',
+          isActive: false,
+          accent: PALETTE.absAmber,
+          type: 'DRILL_UP',
+          iconType: 'DRILL_UP',
+          index: 0
+        }];
+        for (var ci = 0; ci < chList.length; ci++) {
+          var ch = chList[ci];
+          var num = ch.num != null ? ch.num : (ci + 1);
+          var chTitle = ch.title || ('Chapter ' + num);
+          var dur = Number(ch.durationSec != null ? ch.durationSec : ch.duration) || 0;
+          var activeCh = isSourceAbs(st) && Number(st.absBookIdx || 0) === bookIdx && Number(st.absChapterIdx || 0) === ci;
+          chRows.push({
+            id: ch.id != null ? ch.id : ((activeBook.id || ('book-' + bookIdx)) + '-ch-' + ci),
+            title: 'Ch. ' + num + ' — ' + chTitle,
+            subtitle: activeBook.title || 'Audiobookshelf',
+            badge: formatTime(dur),
+            isActive: activeCh,
+            accent: PALETTE.absAmber,
+            type: 'ABS_CHAPTER',
+            iconType: 'BOOKS',
+            bookIndex: bookIdx,
+            index: ci,
+            raw: ch
+          });
+        }
+        return chRows;
+      }
+
+      if (drill.kind === 'PODCAST_EPISODES') {
+        var pod = DEFAULT_PODCASTS[clamp(Number(drill.podcastIdx) || 0, 0, DEFAULT_PODCASTS.length - 1)] || DEFAULT_PODCASTS[0];
+        var podRows = [{
+          id: 'drill-up-pod',
+          title: '..  Back to Podcasts',
+          subtitle: pod.title,
+          badge: 'UP',
+          isActive: false,
+          accent: PALETTE.absAmber,
+          type: 'DRILL_UP',
+          iconType: 'DRILL_UP',
+          index: 0
+        }];
+        for (var pi = 0; pi < pod.episodes.length; pi++) {
+          var ep = pod.episodes[pi];
+          podRows.push({
+            id: ep.id,
+            title: ep.title,
+            subtitle: pod.title + ' · ' + ep.date,
+            badge: formatTime(ep.durationSec),
+            isActive: st.activePodcastEpId === ep.id,
+            accent: PALETTE.absAmber,
+            type: 'PODCAST_EPISODE',
+            iconType: 'PODCASTS',
+            podcastTitle: pod.title,
+            index: pi,
+            raw: ep
+          });
+        }
+        return podRows;
+      }
+
+      if (drill.kind === 'PLAYLIST_TRACKS' || drill.kind === 'ALBUM_TRACKS') {
+        var isAlbum = drill.kind === 'ALBUM_TRACKS';
+        var headerTitle = drill.title || (isAlbum ? 'Album' : 'Playlist');
+        var trRows = [{
+          id: 'drill-up-music',
+          title: '..  Back to ' + (isAlbum ? 'Albums' : 'Playlists'),
+          subtitle: headerTitle,
+          badge: 'UP',
+          isActive: false,
+          accent: PALETTE.spotifyTeal,
+          type: 'DRILL_UP',
+          iconType: 'DRILL_UP',
+          index: 0
+        }];
+        var filtered = cat.SPOTIFY_TRACKS.filter(function (tr) {
+          if (!isAlbum && drill.title) return (tr.playlist || '').toLowerCase() === drill.title.toLowerCase();
+          return true;
+        });
+        if (!filtered.length) filtered = cat.SPOTIFY_TRACKS;
+        for (var ti = 0; ti < filtered.length; ti++) {
+          var tr = filtered[ti];
+          var origIdx = cat.SPOTIFY_TRACKS.indexOf(tr);
+          if (origIdx < 0) origIdx = ti;
+          trRows.push({
+            id: tr.id != null ? tr.id : ('spt-' + origIdx),
+            title: tr.title || ('Track ' + (ti + 1)),
+            subtitle: (tr.artist || 'Artist') + ' · ' + headerTitle,
+            badge: formatTime(Number(tr.durationSec) || 0),
+            isActive: isSourceSpotify(st) && Number(st.spotifyTrackIdx || 0) === origIdx,
+            accent: PALETTE.spotifyTeal,
+            type: 'SPOTIFY_TRACK',
+            iconType: isAlbum ? 'ALBUMS' : 'PLAYLISTS',
+            index: origIdx,
+            raw: tr
+          });
+        }
+        return trRows;
+      }
+
+      if (drill.kind === 'FOLDER') {
+        var fPath = String(drill.folderPath || '/LECTURES').toUpperCase();
+        var fRows = [{
+          id: 'drill-up-folder',
+          title: '..  Up to Folders',
+          subtitle: fPath,
+          badge: 'UP',
+          isActive: false,
+          accent: PALETTE.chaptersGold,
+          type: 'DRILL_UP',
+          iconType: 'DRILL_UP',
+          index: 0
+        }];
+        if (fPath === '/VOICE_NOTES') {
+          return fRows.concat(buildVoiceMemosItems(st));
+        }
+        var folderFiles = cat.SD_FILES.filter(function (f) {
+          return String(f.folder || '').toUpperCase() === fPath;
+        });
+        if (!folderFiles.length) folderFiles = cat.SD_FILES;
+        for (var fi = 0; fi < folderFiles.length; fi++) {
+          var f = folderFiles[fi];
+          var fIdx = cat.SD_FILES.indexOf(f);
+          if (fIdx < 0) fIdx = fi;
+          fRows.push({
+            id: f.id != null ? f.id : ('sd-' + fIdx),
+            title: f.title || ('File ' + (fi + 1)),
+            subtitle: (f.folder || fPath) + ' · ' + (f.format || 'MP3') + ' ' + (f.bitrate || '320k'),
+            badge: formatTime(Number(f.durationSec) || 0),
+            isActive: isSourceSd(st) && Number(st.sdFileIdx || 0) === fIdx,
+            accent: PALETTE.chaptersGold,
+            type: 'SD_FILE',
+            iconType: 'FOLDERS',
+            index: fIdx,
+            raw: f
+          });
+        }
+        return fRows;
+      }
+    }
+
+    // ---- BOOKS mode: Continue · Books · Podcasts · Series · Marks ----
+    if (mode === 'BOOKS') {
+      if (tab === 0) {
+        return cat.ABS_BOOKS.map(function (book, index) {
+          var chapters = Array.isArray(book.chapters) ? book.chapters : [];
+          var pct = resolveBookProgressPct(book);
+          var chIdx = isSourceAbs(st) && Number(st.absBookIdx || 0) === index ? Number(st.absChapterIdx || 0) : 0;
+          var chObj = chapters[chIdx] || chapters[0] || {};
+          return {
+            id: 'cont-' + (book.id != null ? book.id : index),
+            title: book.title || ('Audiobook ' + (index + 1)),
+            subtitle: 'Resume · ' + (chObj.title || ('Ch. ' + (chIdx + 1))),
+            badge: pct + '%',
+            isActive: isSourceAbs(st) && Number(st.absBookIdx || 0) === index,
+            accent: PALETTE.absAmber,
+            type: 'ABS_BOOK',
+            iconType: 'CONTINUE',
+            index: index,
+            raw: book
+          };
+        });
+      }
+      if (tab === 1) {
+        return cat.ABS_BOOKS.map(function (book, index) {
+          var chapters = Array.isArray(book.chapters) ? book.chapters : [];
+          var pct = resolveBookProgressPct(book);
+          return {
+            id: book.id != null ? book.id : ('abs-book-' + index),
+            title: book.title || ('Audiobook ' + (index + 1)),
+            subtitle: (book.author || 'Unknown Author') + ' · ' + chapters.length + ' ch ›',
+            badge: pct + '%',
+            isActive: isSourceAbs(st) && Number(st.absBookIdx || 0) === index,
+            accent: PALETTE.absAmber,
+            type: 'ABS_BOOK_DRILL',
+            iconType: 'BOOKS',
+            index: index,
+            raw: book
+          };
+        });
+      }
+      if (tab === 2) {
+        return DEFAULT_PODCASTS.map(function (pod, index) {
+          return {
+            id: pod.id,
+            title: pod.title,
+            subtitle: pod.author + ' · ' + pod.episodes.length + ' episodes ›',
+            badge: pod.episodes.length + ' ep',
+            isActive: false,
+            accent: PALETTE.absAmber,
+            type: 'PODCAST_SHOW',
+            iconType: 'PODCASTS',
+            index: index,
+            raw: pod
+          };
+        });
+      }
+      if (tab === 3) {
+        return DEFAULT_SERIES.map(function (ser, index) {
+          return {
+            id: ser.id,
+            title: ser.title,
+            subtitle: ser.author + ' · ' + ser.count + ' books ›',
+            badge: ser.progressPct + '%',
+            isActive: isSourceAbs(st) && Number(st.absBookIdx || 0) === ser.bookIdx,
+            accent: PALETTE.absAmber,
+            type: 'SERIES_ITEM',
+            iconType: 'SERIES',
+            index: index,
+            raw: ser
+          };
+        });
+      }
+      return buildMarksAndNotesItems(st);
+    }
+
+    // ---- MUSIC mode: Playlists · Albums · Liked · Connect ----
+    if (mode === 'MUSIC') {
+      if (tab === 0) {
+        return DEFAULT_PLAYLISTS.map(function (pl, index) {
+          return {
+            id: pl.id,
+            title: pl.title,
+            subtitle: pl.subtitle + ' ›',
+            badge: pl.badge,
+            isActive: false,
+            accent: PALETTE.spotifyTeal,
+            type: 'SPOTIFY_PLAYLIST',
+            iconType: 'PLAYLISTS',
+            index: index,
+            raw: pl
+          };
+        });
+      }
+      if (tab === 1) {
+        return DEFAULT_ALBUMS.map(function (alb, index) {
+          return {
+            id: alb.id,
+            title: alb.title,
+            subtitle: alb.artist + ' (' + alb.year + ') ›',
+            badge: alb.badge,
+            isActive: false,
+            accent: PALETTE.spotifyTeal,
+            type: 'SPOTIFY_ALBUM',
+            iconType: 'ALBUMS',
+            index: index,
+            raw: alb
+          };
+        });
+      }
+      if (tab === 2) {
+        var liked = cat.SPOTIFY_TRACKS.filter(function (tr) { return tr.liked !== false; });
+        if (!liked.length) liked = cat.SPOTIFY_TRACKS;
+        return liked.map(function (tr, idx) {
+          var origIdx = cat.SPOTIFY_TRACKS.indexOf(tr);
+          if (origIdx < 0) origIdx = idx;
+          return {
+            id: tr.id != null ? tr.id : ('spt-' + origIdx),
+            title: tr.title || ('Track ' + (idx + 1)),
+            subtitle: (tr.artist || 'Unknown Artist') + ' · ' + (tr.playlist || 'Liked Songs'),
+            badge: formatTime(Number(tr.durationSec) || 0),
+            isActive: isSourceSpotify(st) && Number(st.spotifyTrackIdx || 0) === origIdx,
+            accent: PALETTE.spotifyTeal,
+            type: 'SPOTIFY_TRACK',
+            iconType: 'LIKED',
+            index: origIdx,
+            raw: tr
+          };
+        });
+      }
+      // Tab 3: Spotify Connect Devices
+      var activeTarget = st.spotifyConnectTarget || 'fbox ESP32';
+      return SPOTIFY_CONNECT_DEVICES.map(function (dev, index) {
+        var isCur = dev.name === activeTarget;
+        return {
+          id: dev.id,
+          title: dev.name,
+          subtitle: dev.kind + (isCur ? ' · Active Output' : ' · Tap to Handoff'),
+          badge: isCur ? 'ACTIVE' : dev.badge,
+          isActive: isCur,
+          accent: PALETTE.sdCyan,
+          type: 'CONNECT_DEVICE',
+          iconType: 'CONNECT',
+          index: index,
+          raw: dev
+        };
+      });
+    }
+
+    // ---- FILES mode: Folders · Memos · Storage ----
+    if (tab === 0) {
+      return SD_FOLDERS.map(function (fld, index) {
+        return {
+          id: 'fld-' + index,
+          title: fld.path,
+          subtitle: fld.subtitle + ' ›',
+          badge: fld.badge,
+          isActive: false,
+          accent: PALETTE.chaptersGold,
+          type: 'SD_FOLDER',
+          iconType: 'FOLDERS',
+          index: index,
+          raw: fld
+        };
+      });
+    }
+    if (tab === 1) {
+      return buildVoiceMemosItems(st);
+    }
+    return [
+      { id: 'st-total', title: 'MicroSD HSPI (64 GB)', subtitle: '18.4 GB used · 45.6 GB free', badge: '29%', isActive: true, accent: PALETTE.chaptersGold, type: 'STORAGE_STAT', iconType: 'STORAGE', index: 0 },
+      { id: 'st-abs', title: '/AUDIOBOOKS & /PODCASTS', subtitle: 'M4B, MP3 & Opus offline cache', badge: '6.3 GB', isActive: false, accent: PALETTE.absAmber, type: 'STORAGE_STAT', iconType: 'BOOKS', index: 1 },
+      { id: 'st-music', title: '/MUSIC & /LECTURES', subtitle: 'FLAC lossless & CS229 MP3s', badge: '10.7 GB', isActive: false, accent: PALETTE.spotifyTeal, type: 'STORAGE_STAT', iconType: 'PLAYLISTS', index: 2 },
+      { id: 'st-wav', title: '/VOICE_NOTES (INMP441)', subtitle: '48kHz PCM WAV field recordings', badge: '1.4 GB', isActive: false, accent: PALETTE.marksCoral, type: 'STORAGE_STAT', iconType: 'MEMOS', index: 3 }
+    ];
   }
 
   // --------------------------------------------------------------------------
@@ -719,16 +1111,19 @@
 
   function switchTab(state, deltaOrIdx, explicit) {
     ensureState(state);
+    var activeTabs = getActiveTabs(state);
+    var tabCount = activeTabs.length;
     var prevTab = state.libTabIdx;
     var nextTab;
     if (explicit) {
-      nextTab = clamp(Math.round(Number(deltaOrIdx) || 0), 0, TABS.length - 1);
+      nextTab = clamp(Math.round(Number(deltaOrIdx) || 0), 0, tabCount - 1);
     } else {
       var delta = Number(deltaOrIdx) || 0;
-      nextTab = (((state.libTabIdx + Math.round(delta)) % TABS.length) + TABS.length) % TABS.length;
+      nextTab = (((state.libTabIdx + Math.round(delta)) % tabCount) + tabCount) % tabCount;
     }
 
     state.libTabIdx = nextTab;
+    state.libDrill = null;
     state._scrollAccum = 0;
 
     if (nextTab !== prevTab) {
@@ -758,6 +1153,18 @@
     syncWindow(state, items.length);
     state._lastFocusCursor = state.libCursor;
     return nextTab;
+  }
+
+  function popDrill(state, helpers) {
+    ensureState(state);
+    if (!state.libDrill) return false;
+    state.libDrill = null;
+    state.libCursor = 0;
+    state.libScrollOffset = 0;
+    state._lastFocusCursor = 0;
+    triggerToast(helpers, state, '‹ Back', PALETTE.textSecondary);
+    triggerEarcon(helpers, 'tick');
+    return true;
   }
 
   // --------------------------------------------------------------------------
@@ -1214,6 +1621,104 @@
 
     var cat = getCatalog();
 
+    if (item.type === 'DRILL_UP') {
+      popDrill(state, helpers);
+      return item;
+    }
+
+    if (item.type === 'ABS_BOOK_DRILL') {
+      state.libDrill = { mode: 'BOOKS', kind: 'BOOK_CHAPTERS', bookIdx: item.index, title: item.title };
+      state.libCursor = 0;
+      state.libScrollOffset = 0;
+      state._lastFocusCursor = 0;
+      triggerToast(helpers, state, item.title + ' · Chapters', PALETTE.absAmber);
+      triggerEarcon(helpers, 'tick');
+      return item;
+    }
+
+    if (item.type === 'PODCAST_SHOW') {
+      state.libDrill = { mode: 'BOOKS', kind: 'PODCAST_EPISODES', podcastIdx: item.index, title: item.title };
+      state.libCursor = 0;
+      state.libScrollOffset = 0;
+      state._lastFocusCursor = 0;
+      triggerToast(helpers, state, item.title + ' · Episodes', PALETTE.absAmber);
+      triggerEarcon(helpers, 'tick');
+      return item;
+    }
+
+    if (item.type === 'PODCAST_EPISODE') {
+      var ep = item.raw || {};
+      state.activePodcastEpId = ep.id || item.id;
+      state.activeSource = resolveSourceKey('ABS');
+      state.durationSec = Number(ep.durationSec) || 3600;
+      state.positionSec = 0;
+      state.playing = true;
+      state.screen = 'NOW_PLAYING';
+      triggerToast(helpers, state, 'Podcast: ' + item.title, PALETTE.absAmber);
+      triggerEarcon(helpers, 'confirm');
+      return item;
+    }
+
+    if (item.type === 'SERIES_ITEM') {
+      var ser = item.raw || {};
+      var bIdx = clamp(Number(ser.bookIdx) || 0, 0, Math.max(0, cat.ABS_BOOKS.length - 1));
+      state.libDrill = { mode: 'BOOKS', kind: 'BOOK_CHAPTERS', bookIdx: bIdx, title: item.title };
+      state.libCursor = 0;
+      state.libScrollOffset = 0;
+      state._lastFocusCursor = 0;
+      triggerToast(helpers, state, item.title, PALETTE.absAmber);
+      triggerEarcon(helpers, 'tick');
+      return item;
+    }
+
+    if (item.type === 'SPOTIFY_PLAYLIST') {
+      state.libDrill = { mode: 'MUSIC', kind: 'PLAYLIST_TRACKS', playlistId: item.id, title: item.title };
+      state.libCursor = 0;
+      state.libScrollOffset = 0;
+      state._lastFocusCursor = 0;
+      triggerToast(helpers, state, item.title, PALETTE.spotifyTeal);
+      triggerEarcon(helpers, 'tick');
+      return item;
+    }
+
+    if (item.type === 'SPOTIFY_ALBUM') {
+      state.libDrill = { mode: 'MUSIC', kind: 'ALBUM_TRACKS', albumId: item.id, title: item.title };
+      state.libCursor = 0;
+      state.libScrollOffset = 0;
+      state._lastFocusCursor = 0;
+      triggerToast(helpers, state, item.title, PALETTE.spotifyTeal);
+      triggerEarcon(helpers, 'tick');
+      return item;
+    }
+
+    if (item.type === 'CONNECT_DEVICE') {
+      var dev = item.raw || {};
+      state.spotifyConnectTarget = dev.name || item.title;
+      if (state.spotifyConnectTarget === 'AirPods BT TX') {
+        state.btTxOn = true;
+      }
+      triggerToast(helpers, state, 'Spotify Connect → ' + state.spotifyConnectTarget, PALETTE.sdCyan);
+      triggerEarcon(helpers, 'confirm');
+      return item;
+    }
+
+    if (item.type === 'SD_FOLDER') {
+      var fld = item.raw || {};
+      state.libDrill = { mode: 'FILES', kind: 'FOLDER', folderPath: fld.path || item.title, title: fld.path || item.title };
+      state.libCursor = 0;
+      state.libScrollOffset = 0;
+      state._lastFocusCursor = 0;
+      triggerToast(helpers, state, fld.path || item.title, PALETTE.chaptersGold);
+      triggerEarcon(helpers, 'tick');
+      return item;
+    }
+
+    if (item.type === 'STORAGE_STAT') {
+      triggerToast(helpers, state, item.title + ': ' + item.badge, PALETTE.chaptersGold);
+      triggerEarcon(helpers, 'tick');
+      return item;
+    }
+
     if (item.type === 'ABS_BOOK') {
       var book = item.raw || cat.ABS_BOOKS[item.index] || {};
       var chapters = Array.isArray(book.chapters) ? book.chapters : [];
@@ -1459,8 +1964,12 @@
     ctx.restore();
   }
 
-  function drawCategoryIcon(ctx, tabIdx, cx, cy, scale, color) {
+  function drawCategoryIcon(ctx, iconOrIdx, cx, cy, scale, color) {
     var s = scale || 1;
+    var kind = typeof iconOrIdx === 'string'
+      ? iconOrIdx
+      : (iconOrIdx === 0 ? 'BOOKS' : iconOrIdx === 1 ? 'SERIES' : iconOrIdx === 2 ? 'PLAYLISTS' : iconOrIdx === 3 ? 'FOLDERS' : 'MARKS');
+
     ctx.save();
     ctx.fillStyle = color;
     ctx.strokeStyle = color;
@@ -1468,7 +1977,15 @@
     ctx.lineJoin = 'round';
     ctx.lineWidth = Math.max(1.3, 1.75 * s);
 
-    if (tabIdx === 0) {
+    if (kind === 'CONTINUE') {
+      // Play triangle
+      ctx.beginPath();
+      ctx.moveTo(cx - 3.5 * s, cy - 5.2 * s);
+      ctx.lineTo(cx + 5.5 * s, cy);
+      ctx.lineTo(cx - 3.5 * s, cy + 5.2 * s);
+      ctx.closePath();
+      ctx.fill();
+    } else if (kind === 'BOOKS') {
       // Open Book
       ctx.beginPath();
       ctx.moveTo(cx, cy - 4.2 * s);
@@ -1479,13 +1996,23 @@
       ctx.lineTo(cx + 7.5 * s, cy - 4.2 * s);
       ctx.quadraticCurveTo(cx + 3.8 * s, cy - 6.0 * s, cx, cy - 4.2 * s);
       ctx.stroke();
-
       ctx.beginPath();
       ctx.moveTo(cx, cy - 4.0 * s);
       ctx.lineTo(cx, cy + 4.8 * s);
       ctx.stroke();
-    } else if (tabIdx === 1) {
-      // Chapters: 3 crisp staggered bullet lines
+    } else if (kind === 'PODCASTS') {
+      // Broadcast waves
+      ctx.beginPath();
+      ctx.arc(cx, cy + 1.5 * s, 2.1 * s, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx, cy + 1.5 * s, 5.0 * s, -Math.PI * 0.8, -Math.PI * 0.2, false);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy + 1.5 * s, 7.6 * s, -Math.PI * 0.85, -Math.PI * 0.15, false);
+      ctx.stroke();
+    } else if (kind === 'SERIES') {
+      // 3 crisp staggered bullet lines
       var ys = [-3.6, 0, 3.6];
       var ws = [6.4, 4.6, 5.8];
       for (var i = 0; i < 3; i++) {
@@ -1498,21 +2025,69 @@
         ctx.lineTo(cx + ws[i] * s, yy);
         ctx.stroke();
       }
-    } else if (tabIdx === 2) {
-      // Music: Beamed eighth notes
+    } else if (kind === 'PLAYLISTS') {
+      // Beamed eighth notes
       ctx.beginPath();
       ctx.arc(cx - 3.6 * s, cy + 3.8 * s, 2.2 * s, 0, Math.PI * 2);
       ctx.arc(cx + 3.6 * s, cy + 2.4 * s, 2.2 * s, 0, Math.PI * 2);
       ctx.fill();
-
       ctx.beginPath();
       ctx.moveTo(cx - 1.7 * s, cy + 3.5 * s);
       ctx.lineTo(cx - 1.7 * s, cy - 4.8 * s);
       ctx.lineTo(cx + 5.5 * s, cy - 6.2 * s);
       ctx.lineTo(cx + 5.5 * s, cy + 2.0 * s);
       ctx.stroke();
-    } else if (tabIdx === 3) {
-      // Files: Notched MicroSD card silhouette
+    } else if (kind === 'ALBUMS') {
+      // Vinyl disc
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6.2 * s, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy, 2.0 * s, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (kind === 'LIKED') {
+      // Heart
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + 5.0 * s);
+      ctx.bezierCurveTo(cx - 7.5 * s, cy + 0.5 * s, cx - 6.5 * s, cy - 5.5 * s, cx, cy - 2.0 * s);
+      ctx.bezierCurveTo(cx + 6.5 * s, cy - 5.5 * s, cx + 7.5 * s, cy + 0.5 * s, cx, cy + 5.0 * s);
+      ctx.fill();
+    } else if (kind === 'CONNECT') {
+      // Speaker / cast target
+      ctx.beginPath();
+      ctx.arc(cx - 3.2 * s, cy + 3.2 * s, 1.8 * s, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx - 3.2 * s, cy + 3.2 * s, 5.0 * s, -Math.PI * 0.5, 0, false);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx - 3.2 * s, cy + 3.2 * s, 8.0 * s, -Math.PI * 0.5, 0, false);
+      ctx.stroke();
+    } else if (kind === 'FOLDERS') {
+      // Folder silhouette
+      ctx.beginPath();
+      ctx.moveTo(cx - 6.5 * s, cy - 4.5 * s);
+      ctx.lineTo(cx - 1.5 * s, cy - 4.5 * s);
+      ctx.lineTo(cx + 0.2 * s, cy - 2.6 * s);
+      ctx.lineTo(cx + 6.5 * s, cy - 2.6 * s);
+      ctx.lineTo(cx + 6.5 * s, cy + 4.8 * s);
+      ctx.lineTo(cx - 6.5 * s, cy + 4.8 * s);
+      ctx.closePath();
+      ctx.stroke();
+    } else if (kind === 'MEMOS') {
+      // Mic capsule
+      ctx.beginPath();
+      ctx.arc(cx, cy - 1.8 * s, 2.8 * s, Math.PI, 0, false);
+      ctx.lineTo(cx + 2.8 * s, cy + 1.4 * s);
+      ctx.arc(cx, cy + 1.4 * s, 2.8 * s, 0, Math.PI, false);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + 4.4 * s);
+      ctx.lineTo(cx, cy + 6.6 * s);
+      ctx.stroke();
+    } else if (kind === 'STORAGE') {
+      // Notched MicroSD card silhouette
       ctx.beginPath();
       ctx.moveTo(cx - 4.8 * s, cy - 6.0 * s);
       ctx.lineTo(cx + 2.2 * s, cy - 6.0 * s);
@@ -1521,15 +2096,15 @@
       ctx.lineTo(cx - 4.8 * s, cy + 6.0 * s);
       ctx.closePath();
       ctx.stroke();
-
-      ctx.lineWidth = Math.max(1.1, 1.4 * s);
-      for (var p = 0; p < 3; p++) {
-        var px = cx - 2.5 * s + p * 2.2 * s;
-        ctx.beginPath();
-        ctx.moveTo(px, cy - 3.5 * s);
-        ctx.lineTo(px, cy - 0.8 * s);
-        ctx.stroke();
-      }
+    } else if (kind === 'DRILL_UP') {
+      // Up-left return arrow
+      ctx.beginPath();
+      ctx.moveTo(cx - 4.5 * s, cy);
+      ctx.lineTo(cx + 4.5 * s, cy);
+      ctx.moveTo(cx - 1.0 * s, cy - 3.6 * s);
+      ctx.lineTo(cx - 4.5 * s, cy);
+      ctx.lineTo(cx - 1.0 * s, cy + 3.6 * s);
+      ctx.stroke();
     } else {
       // ★ Marks & Notes: 5-point solid star
       var outerR = 7.0 * s;
@@ -1645,18 +2220,21 @@
   }
 
   function renderCategoryBridge(ctx, state) {
+    var activeTabs = getActiveTabs(state);
+    var tabCount = activeTabs.length;
+    var tabPositions = getTabPositions(tabCount);
     var anim = Number(state._tabLavaAnim);
-    var prevIdx = clamp(Math.round(Number(state._prevTabIdx) || 0), 0, TABS.length - 1);
-    var curIdx = clamp(Math.round(Number(state.libTabIdx) || 0), 0, TABS.length - 1);
+    var prevIdx = clamp(Math.round(Number(state._prevTabIdx) || 0), 0, tabCount - 1);
+    var curIdx = clamp(Math.round(Number(state.libTabIdx) || 0), 0, tabCount - 1);
     if (!(anim >= 0 && anim < 1) || prevIdx === curIdx) return;
 
-    var x1 = DISPLAY.tabCx[prevIdx];
-    var x2 = DISPLAY.tabCx[curIdx];
+    var x1 = tabPositions[prevIdx];
+    var x2 = tabPositions[curIdx];
     var cy = DISPLAY.tabCy;
-    var r1 = state._tabSprings[prevIdx].r;
-    var r2 = state._tabSprings[curIdx].r;
-    var c1 = TABS[prevIdx].accent;
-    var c2 = TABS[curIdx].accent;
+    var r1 = state._tabSprings[prevIdx] ? state._tabSprings[prevIdx].r : DISPLAY.tabR;
+    var r2 = state._tabSprings[curIdx] ? state._tabSprings[curIdx].r : DISPLAY.tabActiveR;
+    var c1 = activeTabs[prevIdx].accent;
+    var c2 = activeTabs[curIdx].accent;
 
     var hp = getHomePlayer();
     if (hp && typeof hp.drawLavaBridge === 'function') {
@@ -1679,12 +2257,14 @@
   function drawCategoryCircles(ctx, state, helpers) {
     renderCategoryBridge(ctx, state);
 
+    var activeTabs = getActiveTabs(state);
+    var tabPositions = getTabPositions(activeTabs.length);
     var activeIdx = state.libTabIdx;
     var cy = DISPLAY.tabCy;
 
-    for (var i = 0; i < TABS.length; i++) {
-      var tab = TABS[i];
-      var cx = DISPLAY.tabCx[i];
+    for (var i = 0; i < activeTabs.length; i++) {
+      var tab = activeTabs[i];
+      var cx = tabPositions[i];
       var isActive = i === activeIdx;
       var rad = clamp(state._tabSprings[i] ? state._tabSprings[i].r : (isActive ? DISPLAY.tabActiveR : DISPLAY.tabR), 10, 26);
 
@@ -1712,13 +2292,13 @@
       var expandBlend = clamp((rad - DISPLAY.tabR) / (DISPLAY.tabActiveR - DISPLAY.tabR), 0, 1);
       var iconOffsetY = lerp(0, -5.5, expandBlend);
       var iconScale = lerp(0.95, 0.9, expandBlend);
-      drawCategoryIcon(ctx, i, cx, cy + iconOffsetY, iconScale, PALETTE.darkInk);
+      drawCategoryIcon(ctx, tab.iconType || i, cx, cy + iconOffsetY, iconScale, PALETTE.darkInk);
 
       if (expandBlend > 0.22) {
         ctx.save();
         ctx.globalAlpha = clamp((expandBlend - 0.22) / 0.55, 0, 1);
         ctx.fillStyle = PALETTE.darkInk;
-        ctx.font = 'bold 8.5px ' + FONT_SANS;
+        ctx.font = 'bold 8.0px ' + FONT_SANS;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(tab.caption || tab.shortLabel, cx, cy + 9.5);
@@ -1773,23 +2353,25 @@
     var eqAnimate = item.type === 'VOICE_NOTE' ? isPreviewing : Boolean(state.playing);
 
     // 1. Left Icon Badge
+    var iconKey = item.iconType || tabIdx;
+    var rowAccent = item.accent || tabAccent;
     if (isInsideCapsule) {
       // #000000 solid circular icon badge inside vibrant capsule
       ctx.fillStyle = PALETTE.darkInk;
       ctx.beginPath();
       ctx.arc(badgeCx, cy, 10.5, 0, Math.PI * 2);
       ctx.fill();
-      drawCategoryIcon(ctx, tabIdx, badgeCx, cy, 0.72, tabAccent);
+      drawCategoryIcon(ctx, iconKey, badgeCx, cy, 0.72, rowAccent);
     } else {
       // Unselected: small solid colored dot (r = 4) directly on #000000 void
       if (item.isActive) {
-        ctx.strokeStyle = hexToRgba(tabAccent, 0.55);
+        ctx.strokeStyle = hexToRgba(rowAccent, 0.55);
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.arc(badgeCx, cy, 6.8, 0, Math.PI * 2);
         ctx.stroke();
       }
-      ctx.fillStyle = tabAccent;
+      ctx.fillStyle = rowAccent;
       ctx.beginPath();
       ctx.arc(badgeCx, cy, 4, 0, Math.PI * 2);
       ctx.fill();
@@ -2040,8 +2622,9 @@
     }
 
     var hp = getHomePlayer();
+    var activeTabs = getActiveTabs(state);
     var tabIdx = state.libTabIdx;
-    var tab = TABS[tabIdx] || TABS[0];
+    var tab = activeTabs[tabIdx] || activeTabs[0];
 
     // Pure #000000 True-Black AMOLED void
     ctx.fillStyle = PALETTE.voidBg;
@@ -2056,6 +2639,28 @@
 
     // 2. Top Circular Category Bubbles (cy=50) + Lava-Lamp Metaball Bridge
     drawCategoryCircles(ctx, state, helpers);
+
+    // 2b. Fen companion peeking beside the top menu (completely clear of bubbles & list)
+    if (root && root.FBoxFen && typeof root.FBoxFen.drawFen === 'function') {
+      root.FBoxFen.drawFen(ctx, 486, 49, 0.68, {
+        mood: 'BROWSING',
+        phase: state.phase || 0,
+        playing: !!state.playing
+      });
+    }
+
+    // 2c. SD Card usage bar when on FILES -> Storage
+    if (getBrowseMode(state) === 'FILES' && tab && tab.id === 'STORAGE') {
+      var barX = DISPLAY.listX;
+      var barW = DISPLAY.listRight - DISPLAY.listX;
+      var barY = 74;
+      drawRoundRectPath(ctx, barX, barY, barW, 4, 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.12)';
+      ctx.fill();
+      drawRoundRectPath(ctx, barX, barY, barW * 0.29, 4, 2);
+      ctx.fillStyle = PALETTE.chaptersGold;
+      ctx.fill();
+    }
 
     // 3. Minimalist 4-Row Viewport (x=24..494, y=82..226) + Bouncy Solid Capsule Pill
     var items = getItemsForTab(state, tabIdx);
@@ -2096,17 +2701,23 @@
     DISPLAY: DISPLAY,
     PALETTE: PALETTE,
     TABS: TABS,
+    MODE_TABS: MODE_TABS,
     KEY_HINTS: KEY_HINTS,
     DEFAULT_ABS_BOOKS: DEFAULT_ABS_BOOKS,
     DEFAULT_SPOTIFY_TRACKS: DEFAULT_SPOTIFY_TRACKS,
     DEFAULT_SD_FILES: DEFAULT_SD_FILES,
+    SPOTIFY_CONNECT_DEVICES: SPOTIFY_CONNECT_DEVICES,
+    SD_FOLDERS: SD_FOLDERS,
     formatTime: formatTime,
     getCatalog: getCatalog,
+    getBrowseMode: getBrowseMode,
+    getActiveTabs: getActiveTabs,
     ensureState: ensureState,
     getItemsForTab: getItemsForTab,
     renderLibraryBrowser: renderLibraryBrowser,
     moveCursor: moveCursor,
     switchTab: switchTab,
+    popDrill: popDrill,
     updateStickPhysics: updateStickPhysics,
     activateSelectedRow: activateSelectedRow
   };
