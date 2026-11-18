@@ -150,20 +150,24 @@
     <header class="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-[var(--border)]">
       <div>
         <div class="flex flex-wrap items-center gap-2.5">
-          <h1 class="text-lg md:text-xl font-semibold tracking-tight">
-            fbox (Option P5-Exp-Compact-Portrait) — Centered AMOLED + Right-Side 1×4 Explorer (72 × 84 × 19.5 mm)
+          <h1 id="hdr-title" class="text-lg md:text-xl font-semibold tracking-tight">
+            fbox Nano v2 — Metrology-Verified Pocket Square Explorer (69.0 × 68.0 × 24.2 mm)
           </h1>
-          <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[var(--card)] border border-[var(--border)] text-[var(--success)]">
-            0 Collisions · Shorter than Playing Card Deck · Centered 1.91&quot; AMOLED · 1-Plate P2S Ready
+          <span id="hdr-badge" class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[var(--card)] border border-[var(--border)] text-[var(--success)]">
+            0 Collisions · True 7.28mm Key Pitch · BOOT/IO21 Lid Relief · Bambu P2S Ready
           </span>
         </div>
-        <p class="text-xs text-[var(--muted-foreground)] mt-1">
-          Compact 1:1 CAD (<code>R = 5.4 mm</code> corners, <code>15.9 mm</code> internal cavity): <strong>Dead-Centered 1.91&quot; AMOLED</strong> (<code>X = 36.0 mm</code>) behind a <code>4.5 mm</code> recessed left-wall USB-C funnel, <strong>Dual Symmetrical Top Grilles</strong> (<code>1511</code> Micro-Speaker at <code>(26.8, 73.5)</code> + <code>INMP441</code> at <code>(45.2, 73.5)</code>), <strong>KY-023</strong> coral concave thumb-disc, <strong>1×4 Front Color Keypad</strong>, and <strong>1×4 Right-Side Matte Black Keypad</strong> (<code>B1</code> 5V Power at topmost <code>K1</code>).
+        <p id="hdr-desc" class="text-xs text-[var(--muted-foreground)] mt-1">
+          Metrology-verified 1:1 CAD (<code>R = 4.8 mm</code> corners, 100% same 10 boards): <strong>CNC-calibrated 1.91&quot; AMOLED</strong> w/ <code>1.0 mm</code> underside <code>BOOT/IO21</code> acrylic guard relief, <strong>Top-Shoulder 1×4 Keypad + 3.5mm TRS</strong>, <strong>Floor-Mounted KY-023</strong> coral thumb-disc + <strong>True 7.28mm-Pitch Front 1×4</strong>, <strong>Drop-In Mid-Deck Organizer Plate</strong>, and <strong>Bottom Symmetrical Speaker &amp; INMP441 Vents</strong>.
         </p>
       </div>
       <div class="flex flex-wrap items-center gap-2 text-xs">
-        <span class="px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] font-mono">
-          72.0 × 84.0 × 19.5 mm · R5.4 mm
+        <div role="group" aria-label="Chassis Form Factor" class="inline-flex rounded-lg border border-[var(--border)] bg-[var(--card)] p-0.5 gap-1">
+          <button type="button" data-ff="nano" class="ff-btn px-2.5 py-1 rounded-md font-semibold bg-[var(--primary)] text-[#ffffff]">fbox Nano v2 (69×68×24.2)</button>
+          <button type="button" data-ff="portrait" class="ff-btn px-2.5 py-1 rounded-md font-medium text-[var(--muted-foreground)]">Compact Portrait (72×84×19.5)</button>
+        </div>
+        <span id="hdr-dims" class="px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] font-mono">
+          69.0 × 68.0 × 24.2 mm · R4.8 mm
         </span>
         <nav aria-label="Unified Hardware and UI Suite" class="inline-flex rounded-lg border border-[var(--border)] bg-[var(--card)] p-0.5 gap-1">
           <button type="button" data-suite-tab="hardware" class="suite-tab-btn px-2.5 py-1 rounded-md font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">3D Hardware &amp; Photoreal</button>
@@ -180,6 +184,8 @@
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div role="group" aria-label="Shell Visibility Mode" class="inline-flex flex-wrap rounded-lg border border-[var(--border)] bg-[var(--background)] p-0.5 text-xs gap-1">
             <button type="button" data-shell="photoreal" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Photoreal PLA-CF</button>
+            <button type="button" data-shell="clearPurple" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Clear Purple</button>
+            <button type="button" data-shell="clearGreen" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Clear Green</button>
             <button type="button" data-shell="transparent" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Transparent</button>
             <button type="button" data-shell="smoke" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Smoked</button>
             <button type="button" data-shell="solid" class="shell-btn min-h-[28px] px-2.5 py-1 rounded-md font-medium">Matte Black</button>
@@ -187,6 +193,12 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-1.5">
+            <div role="group" aria-label="Button and Thumb-Disc Color Theme" class="inline-flex flex-wrap rounded-lg border border-[var(--border)] bg-[var(--background)] p-0.5 text-xs gap-1">
+              <button type="button" data-caps="pastel" class="caps-btn min-h-[28px] px-2 py-1 rounded-md font-medium">Pastel Caps</button>
+              <button type="button" data-caps="clearGreen" class="caps-btn min-h-[28px] px-2 py-1 rounded-md font-medium">Clear Green Caps</button>
+              <button type="button" data-caps="clearPurple" class="caps-btn min-h-[28px] px-2 py-1 rounded-md font-medium">Clear Purple Caps</button>
+              <button type="button" data-caps="black" class="caps-btn min-h-[28px] px-2 py-1 rounded-md font-medium">Stealth Black</button>
+            </div>
             <button type="button" id="btn-screen-toggle" aria-pressed="true" class="min-h-[28px] px-2.5 py-1 rounded-lg border border-[var(--border)] bg-[var(--background)] text-xs font-semibold text-[var(--success)] hover:border-[var(--primary)] transition-colors">
               Screen: ON
             </button>
@@ -201,9 +213,14 @@
         </div>
 
         <div class="relative rounded-xl border border-[var(--border)] bg-[var(--background)] overflow-hidden">
-          <canvas id="cad-canvas" class="block w-full cursor-grab active:cursor-grabbing touch-none" style="height: 450px;" aria-label="Interactive 3D Option P5-Exp-Compact-Portrait hardware assembly canvas; drag to orbit view"></canvas>
+          <canvas id="cad-canvas" class="block w-full cursor-grab active:cursor-grabbing touch-none" style="height: 450px;" aria-label="Interactive 3D fbox hardware assembly canvas; drag to orbit and scroll or pinch to zoom"></canvas>
+          <div class="absolute right-3 top-3 flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--card)]/90 p-1 text-xs shadow-sm backdrop-blur-sm">
+            <button type="button" id="btn-zoom-out" title="Zoom Out" aria-label="Zoom Out" class="w-7 h-7 flex items-center justify-center rounded-md font-bold hover:bg-[var(--background)] text-[var(--foreground)]">−</button>
+            <button type="button" id="btn-zoom-reset" title="Reset Zoom (1.0×)" class="min-w-[44px] h-7 px-1.5 flex items-center justify-center rounded-md font-mono text-[11px] hover:bg-[var(--background)] text-[var(--primary)]">1.0×</button>
+            <button type="button" id="btn-zoom-in" title="Zoom In" aria-label="Zoom In" class="w-7 h-7 flex items-center justify-center rounded-md font-bold hover:bg-[var(--background)] text-[var(--foreground)]">+</button>
+          </div>
           <div id="canvas-hint" class="pointer-events-none absolute left-3 bottom-2.5 px-2.5 py-1 rounded-md text-xs font-mono bg-[var(--card)]/90 border border-[var(--border)] text-[var(--muted-foreground)]">
-            Drag to orbit 360° · Left = 4.5mm USB-C Funnel · Right = 4× Black Side Keys + MicroSD · Top = 3.5mm TRS
+            Drag to orbit 360° · Scroll / Pinch / + − to zoom · Top = 3.5mm TRS + 4× Shoulder Keys · Left = USB-C · Right = MicroSD
           </div>
         </div>
 
@@ -453,7 +470,10 @@
         progress: 0.34,
         joyTiltX: 0,
         joyTiltY: 0,
+        formFactor: 'nano',
         shellMode: 'photoreal',
+        capsTheme: 'pastel',
+        zoom: 1.0,
         screenOn: true,
         explode: 0,
         dualView: false,
@@ -706,6 +726,32 @@
         return mesh;
       }
 
+      function getCapsPalette() {
+        if (uiState.capsTheme === 'clearGreen') {
+          const m = getStdMat("#22c55e", { opacity: 0.62, rough: 0.22, metal: 0.04 });
+          return { thumb: m, thumbInner: m, front: [m, m, m, m], secondary: m };
+        }
+        if (uiState.capsTheme === 'clearPurple') {
+          const m = getStdMat("#9333ea", { opacity: 0.62, rough: 0.22, metal: 0.04 });
+          return { thumb: m, thumbInner: m, front: [m, m, m, m], secondary: m };
+        }
+        if (uiState.capsTheme === 'black') {
+          const m = getStdMat("#1b1e24", { rough: 0.58 });
+          return { thumb: m, thumbInner: getStdMat("#111317", { rough: 0.65 }), front: [m, m, m, m], secondary: m };
+        }
+        return {
+          thumb: getStdMat("#e0634e", { rough: 0.45 }),
+          thumbInner: getStdMat("#c74d3a", { rough: 0.55 }),
+          front: [
+            getStdMat("#e3a84b", { rough: 0.42 }),
+            getStdMat("#45b09c", { rough: 0.42 }),
+            getStdMat("#ebd15e", { rough: 0.42 }),
+            getStdMat("#eb876b", { rough: 0.42 })
+          ],
+          secondary: getStdMat("#1b1e24", { rough: 0.62 })
+        };
+      }
+
       function buildP5ThreeScene(explodeVal, shellMode) {
         const ex = explodeVal;
         const zTray = -ex * 34;
@@ -733,6 +779,8 @@
 
         const shellStyle = {
           photoreal:   { hex: "#282b30", opacity: 1.0,  rough: 0.76, metal: 0.06 },
+          clearPurple: { hex: "#7e22ce", opacity: 0.44, rough: 0.24, metal: 0.04 },
+          clearGreen:  { hex: "#16a34a", opacity: 0.44, rough: 0.24, metal: 0.04 },
           transparent: { hex: "#cfe2ff", opacity: 0.24, rough: 0.22, metal: 0.05 },
           smoke:       { hex: "#3b4252", opacity: 0.42, rough: 0.32, metal: 0.05 },
           solid:       { hex: "#24272d", opacity: 0.96, rough: 0.65, metal: 0.08 },
@@ -840,19 +888,13 @@
         addBoxMesh(group, 5.5, 30.5, 3.5, 36.5, 2.4, 4.0, zMid, mDarkPCB);
         addBoxMesh(group, 9.5, 25.5, 12.8, 28.8, 4.0, 14.4, zMid, mSilver);
         const jX = 17.5 + uiState.joyTiltX * 2.2, jY = 20.8 + uiState.joyTiltY * 2.2;
-        const mCoral = getStdMat("#e0634e", { rough: 0.45 });
-        const mCoralInner = getStdMat("#c74d3a", { rough: 0.55 });
-        addCylZMesh(group, jX, jY, 16.3, 19.2, 8.0, 24, zCaps, mCoral);
-        addTubeZMesh(group, jX, jY, 19.2, 20.2, 5.7, 8.0, 24, zCaps, mCoral);
-        addCylZMesh(group, jX, jY, 19.1, 19.3, 5.7, 24, zCaps, mCoralInner);
+        const capsPal = getCapsPalette();
+        addCylZMesh(group, jX, jY, 16.3, 19.2, 8.0, 24, zCaps, capsPal.thumb);
+        addTubeZMesh(group, jX, jY, 19.2, 20.2, 5.7, 8.0, 24, zCaps, capsPal.thumb);
+        addCylZMesh(group, jX, jY, 19.1, 19.3, 5.7, 24, zCaps, capsPal.thumbInner);
 
         const frontCapXs = [36.0, 45.2, 54.4, 63.6];
-        const frontMats = [
-          getStdMat("#e3a84b", { rough: 0.42 }),
-          getStdMat("#45b09c", { rough: 0.42 }),
-          getStdMat("#ebd15e", { rough: 0.42 }),
-          getStdMat("#eb876b", { rough: 0.42 })
-        ];
+        const frontMats = capsPal.front;
         addBoxMesh(group, 31.5, 68.5, 13.3, 28.3, 7.9, 9.5, zMid, mGreenPCB);
         frontCapXs.forEach((cx, i) => {
           addBoxMesh(group, cx - 3.0, cx + 3.0, 17.8, 23.8, 9.5, 16.9, zMid, mBlackCap);
@@ -863,7 +905,7 @@
         addBoxMesh(group, 65.0, 66.6, 40.5, 77.5, 2.2, 17.2, zMid, mGreenPCB, xSide);
         sideCapYs.forEach(cy => {
           addBoxMesh(group, 66.6, 70.2, cy - 3.0, cy + 3.0, 6.7, 12.7, zMid, mBlackCap, xSide);
-          addBoxMesh(group, 70.2, 72.8, cy - 4.1, cy + 4.1, 5.6, 13.8, zMid, mBlackCap, xSide);
+          addBoxMesh(group, 70.2, 72.8, cy - 4.1, cy + 4.1, 5.6, 13.8, zMid, capsPal.secondary, xSide);
         });
 
         addBoxMesh(group, 31.5, 51.5, 9.5, 36.0, 2.0, 3.6, zMid, mDarkPCB);
@@ -927,8 +969,239 @@
         return scene;
       }
 
+      // ---- Metrology-Verified fbox Nano v2 (69.0 x 68.0 x 24.2 mm, R=4.8 mm, True 7.28mm Key Pitch) ----
+      function buildNanoV2ThreeScene(explodeVal, shellMode) {
+        const NW = 69.0, NH = 68.0, ND = 24.2, NR = 4.8, LID_Z0 = 22.4;
+        const hw = NW * 0.5, hh = NH * 0.5, hd = ND * 0.5;
+        const ex = explodeVal;
+        const zTray = -ex * 36, zFloor = -ex * 18, zOrg = -ex * 6, zMid = ex * 4, zAmoled = ex * 20, zCaps = ex * 34, zLid = ex * 48;
+        const yTopPad = ex * 12;
+
+        const scene = new THREE.Scene();
+        scene.add(new THREE.AmbientLight(0xffffff, 0.74));
+        const keyLight = new THREE.DirectionalLight(0xffffff, 0.96); keyLight.position.set(85, 110, 140); scene.add(keyLight);
+        const fillLight = new THREE.DirectionalLight(0xb8d4ff, 0.44); fillLight.position.set(-110, -40, 80); scene.add(fillLight);
+        const rimLight = new THREE.DirectionalLight(0xffffff, 0.35); rimLight.position.set(0, 90, -120); scene.add(rimLight);
+
+        const group = new THREE.Group();
+        scene.add(group);
+
+        const addB = (x0, x1, y0, y1, z0, z1, zOff, mat, yOff = 0) => {
+          const w = Math.abs(x1 - x0), h = Math.abs(y1 - y0), d = Math.abs(z1 - z0);
+          if (w < 0.01 || h < 0.01 || d < 0.01) return;
+          const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+          m.position.set((x0 + x1) * 0.5 - hw, (y0 + y1) * 0.5 - hh + yOff, (z0 + z1) * 0.5 - hd + zOff);
+          group.add(m);
+        };
+        const addCZ = (cx, cy, z0, z1, r, segs, zOff, mat) => {
+          const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, Math.abs(z1 - z0), segs), mat);
+          m.rotation.x = Math.PI / 2;
+          m.position.set(cx - hw, cy - hh, (z0 + z1) * 0.5 - hd + zOff);
+          group.add(m);
+        };
+        const addTZ = (cx, cy, z0, z1, rIn, rOut, segs, zOff, mat) => {
+          const s = new THREE.Shape(); s.absarc(0, 0, rOut, 0, Math.PI * 2, false);
+          const h = new THREE.Path(); h.absarc(0, 0, rIn, 0, Math.PI * 2, true); s.holes.push(h);
+          const m = new THREE.Mesh(new THREE.ExtrudeGeometry(s, { depth: Math.abs(z1 - z0), bevelEnabled: false, curveSegments: segs }), mat);
+          m.position.set(cx - hw, cy - hh, Math.min(z0, z1) - hd + zOff);
+          group.add(m);
+        };
+
+        const shellStyle = {
+          photoreal:   { hex: "#282b30", opacity: 1.0,  rough: 0.76, metal: 0.06 },
+          clearPurple: { hex: "#7e22ce", opacity: 0.44, rough: 0.24, metal: 0.04 },
+          clearGreen:  { hex: "#16a34a", opacity: 0.44, rough: 0.24, metal: 0.04 },
+          transparent: { hex: "#cfe2ff", opacity: 0.24, rough: 0.22, metal: 0.05 },
+          smoke:       { hex: "#3b4252", opacity: 0.42, rough: 0.32, metal: 0.05 },
+          solid:       { hex: "#24272d", opacity: 0.96, rough: 0.65, metal: 0.08 },
+          open:        null
+        }[shellMode];
+        const shellMat = shellStyle ? getStdMat(shellStyle.hex, shellStyle) : null;
+        const cradleMat = shellStyle ? getStdMat(shellStyle.hex, { opacity: Math.min(0.68, shellStyle.opacity + 0.14), rough: 0.72 }) : null;
+
+        const mDarkPCB = getStdMat("#121826", { rough: 0.5 });
+        const mPurplePCB = getStdMat("#7e22ce", { rough: 0.45 });
+        const mGreenPCB = getStdMat("#15803d", { rough: 0.48 });
+        const mBluePCB = getStdMat("#1d4ed8", { rough: 0.45 });
+        const mCyanPCB = getStdMat("#0284c7", { rough: 0.45 });
+        const mAcrylic = getStdMat("#dbeafe", { opacity: 0.32, rough: 0.12 });
+        const mSilver = getStdMat("#cbd5e1", { rough: 0.26, metal: 0.75 });
+        const mGold = getStdMat("#eab308", { rough: 0.25, metal: 0.85 });
+        const mBlackCap = getStdMat("#1b1e24", { rough: 0.62 });
+        const mCavity = getStdMat("#07090e", { rough: 0.9 });
+        const mLiPo = getStdMat("#cbd5e1", { rough: 0.4, metal: 0.25 });
+
+        const kOff = [7.55, 14.83, 22.12, 29.40];
+        const frontCapXs = kOff.map(o => 30.1 + o);
+        const topCapXs = kOff.map(o => 26.8 + o);
+        const corners = [[4.8, 4.8, 3.3, 3.3], [NW - 4.8, 4.8, NW - 3.3, 3.3], [NW - 4.8, NH - 4.8, NW - 3.3, NH - 3.3], [4.8, NH - 4.8, 3.3, NH - 3.3]];
+
+        if (shellMat) {
+          const baseGeo = new THREE.ExtrudeGeometry(roundedRectShape(-hw, -hh, NW, NH, NR), { depth: 1.8, bevelEnabled: false, curveSegments: 16 });
+          const baseMesh = new THREE.Mesh(baseGeo, shellMat); baseMesh.position.z = -hd + zTray; group.add(baseMesh);
+
+          // Left Wall w/ Flush USB-C Cutout
+          addB(0, 1.8, 4.8, 42.1, 1.8, LID_Z0, zTray, shellMat);
+          addB(0, 1.8, 52.1, NH - 4.8, 1.8, LID_Z0, zTray, shellMat);
+          addB(0, 1.8, 42.1, 52.1, 1.8, 17.7, zTray, shellMat);
+          addB(0, 1.8, 42.1, 52.1, 21.7, LID_Z0, zTray, shellMat);
+
+          // Right Wall w/ MicroSD Slot
+          addB(NW - 1.8, NW, 4.8, 36.2, 1.8, LID_Z0, zTray, shellMat);
+          addB(NW - 1.8, NW, 51.6, NH - 4.8, 1.8, LID_Z0, zTray, shellMat);
+          addB(NW - 1.8, NW, 36.2, 51.6, 1.8, 9.2, zTray, shellMat);
+          addB(NW - 1.8, NW, 36.2, 51.6, 12.2, LID_Z0, zTray, shellMat);
+
+          // Bottom Wall w/ Symmetrical 2x4 Speaker & Mic Acoustic Vents
+          const slotXs = [36.5, 39.3, 42.1, 44.9, 52.0, 54.8, 57.6, 60.4];
+          addB(4.8, slotXs[0] - 0.6, 0, 1.8, 1.8, LID_Z0, zTray, shellMat);
+          addB(slotXs[0] - 0.6, slotXs[7] + 0.6, 0, 1.8, 1.8, 6.4, zTray, shellMat);
+          addB(slotXs[0] - 0.6, slotXs[7] + 0.6, 0, 1.8, 13.2, LID_Z0, zTray, shellMat);
+          for (let i = 0; i < slotXs.length - 1; i++) {
+            addB(slotXs[i] + 0.6, slotXs[i + 1] - 0.6, 0, 1.8, 6.4, 13.2, zTray, shellMat);
+          }
+          for (const sx of slotXs) addB(sx - 0.55, sx + 0.55, 0.2, 1.7, 6.4, 13.2, zTray, mCavity);
+          addB(slotXs[7] + 0.6, NW - 4.8, 0, 1.8, 1.8, LID_Z0, zTray, shellMat);
+
+          // Top Wall w/ 3.5mm TRS + True 7.28mm-Pitch Shoulder Keys
+          addB(4.8, 10.2, NH - 1.8, NH, 1.8, LID_Z0, zTray, shellMat);
+          addB(10.2, 16.8, NH - 1.8, NH, 1.8, 8.4, zTray, shellMat);
+          addB(10.2, 16.8, NH - 1.8, NH, 14.6, LID_Z0, zTray, shellMat);
+          addB(16.8, topCapXs[0] - 3.3, NH - 1.8, NH, 1.8, LID_Z0, zTray, shellMat);
+          addB(topCapXs[0] - 3.3, topCapXs[3] + 3.3, NH - 1.8, NH, 1.8, 11.2, zTray, shellMat);
+          addB(topCapXs[0] - 3.3, topCapXs[3] + 3.3, NH - 1.8, NH, 18.4, LID_Z0, zTray, shellMat);
+          for (let i = 0; i < 3; i++) addB(topCapXs[i] + 3.3, topCapXs[i + 1] - 3.3, NH - 1.8, NH, 11.2, 18.4, zTray, shellMat);
+          addB(topCapXs[3] + 3.3, NW - 4.8, NH - 1.8, NH, 1.8, LID_Z0, zTray, shellMat);
+
+          for (const [cx, cy] of corners) addCZ(cx, cy, 1.8, LID_Z0, NR, 16, zTray, shellMat);
+
+          // Monolithic Top Faceplate w/ True 7.28mm Wells & Recessed Stick Collar
+          const lidShape = roundedRectShape(-hw, -hh, NW, NH, NR);
+          const rp = (x0, x1, y0, y1) => {
+            const p = new THREE.Path();
+            p.moveTo(x0 - hw, y0 - hh); p.lineTo(x1 - hw, y0 - hh); p.lineTo(x1 - hw, y1 - hh); p.lineTo(x0 - hw, y1 - hh); p.closePath();
+            return p;
+          };
+          const cp = (cx, cy, r) => { const p = new THREE.Path(); p.absarc(cx - hw, cy - hh, r, 0, Math.PI * 2, true); return p; };
+          lidShape.holes.push(rp(12.9, 57.9, 36.85, 57.45));
+          lidShape.holes.push(cp(18.8, 16.0, 11.8));
+          for (const cx of frontCapXs) lidShape.holes.push(rp(cx - 3.3, cx + 3.3, 12.4, 19.6));
+          const lidMesh = new THREE.Mesh(new THREE.ExtrudeGeometry(lidShape, { depth: 1.8, bevelEnabled: false, curveSegments: 20 }), shellMat);
+          lidMesh.position.z = LID_Z0 - hd + zLid;
+          group.add(lidMesh);
+
+          addTZ(18.8, 16.0, 20.6, ND, 11.8, 13.0, 24, zLid, shellMat);
+          addCZ(18.8, 16.0, 20.3, 20.6, 11.9, 24, zLid, mCavity);
+          for (const [,, sx, sy] of corners) {
+            addCZ(sx, sy, LID_Z0 + 0.05, ND + 0.05, 1.55, 16, zLid, mBlackCap);
+            addCZ(sx, sy, ND + 0.04, ND + 0.10, 0.72, 6, zLid, mCavity);
+          }
+
+          if (uiState.showCradles && cradleMat) {
+            addB(5.0, 64.0, 28.55, 29.15, 1.8, 6.8, zTray, cradleMat);
+            addB(64.0, 67.2, 8.5, 23.5, 1.8, 16.4, zTray, cradleMat);
+            addB(58.8, 67.2, 34.0, 37.8, 13.0, 18.2, zTray, cradleMat);
+            addB(58.8, 67.2, 56.2, 59.6, 13.0, 18.2, zTray, cradleMat);
+          }
+        }
+
+        // 1. Floor: 503759 LiPo + Drop-In Mid-Deck Organizer Plate
+        addB(5.0, 64.0, 29.2, 66.2, 1.8, 6.8, zFloor, mLiPo);
+        const orgMat = getStdMat("#334155", { opacity: 0.92, rough: 0.65 });
+        addB(5.1, 63.7, 29.3, 65.9, 6.9, 7.7, zOrg, orgMat);
+        addB(22.4, 23.2, 30.6, 64.6, 7.7, 8.7, zOrg, orgMat);
+        addB(48.3, 49.1, 33.8, 55.8, 7.7, 8.7, zOrg, orgMat);
+
+        // 2. Floor South: KY-023 + V713 + Speaker + Mic
+        addB(5.0, 38.0, 3.5, 28.5, 2.4, 4.0, zFloor, mDarkPCB);
+        addB(7.3, 30.3, 4.8, 27.3, 4.0, 16.0, zFloor, mSilver);
+        addCZ(18.8, 16.0, 16.0, 21.8, 2.0, 16, zFloor, mGreenPCB);
+        const jX = 18.8 + uiState.joyTiltX * 2.1, jY = 16.0 + uiState.joyTiltY * 2.1;
+        const capsPal = getCapsPalette();
+        addCZ(jX, jY, 20.8, 23.8, 7.8, 24, zCaps, capsPal.thumb);
+        addTZ(jX, jY, 23.8, 24.8, 5.5, 7.8, 24, zCaps, capsPal.thumb);
+
+        addB(38.6, 63.6, 8.2, 28.2, 2.0, 3.6, zFloor, mDarkPCB);
+        addB(46.5, 53.5, 14.5, 21.5, 3.6, 6.8, zFloor, mBlackCap);
+        addB(33.4, 48.6, 2.0, 5.5, 4.4, 14.6, zFloor, mBlackCap);
+        addB(49.4, 63.4, 2.0, 4.6, 4.4, 14.6, zFloor, mDarkPCB);
+
+        // 3. Mid-Deck Parking Bays: PCM5102 (L), KCX_BT + PAM8302A (C), MicroSD (R)
+        addB(5.0, 21.9, 34.3, 66.2, 8.0, 9.6, zMid, mPurplePCB);
+        addB(9.2, 17.7, 54.0, 66.2, 9.6, 13.5, zMid, mBlackCap);
+        const trsRing = new THREE.Mesh(new THREE.CylinderGeometry(3.0, 3.0, 2.5, 20), mGold);
+        trsRing.position.set(13.45 - hw, 67.1 - hh, 11.5 - hd + zMid); group.add(trsRing);
+        const trsBore = new THREE.Mesh(new THREE.CylinderGeometry(1.75, 1.75, 2.6, 16), mCavity);
+        trsBore.position.set(13.45 - hw, 67.15 - hh, 11.5 - hd + zMid); group.add(trsBore);
+
+        addB(23.2, 46.7, 35.0, 50.5, 8.0, 10.5, zMid, mBluePCB);
+        addB(23.2, 47.2, 35.0, 50.0, 11.4, 14.2, zMid + ex * 3, mPurplePCB);
+        addB(49.3, 67.2, 35.0, 52.9, 8.0, 9.6, zMid, mCyanPCB);
+        addB(52.8, 67.2, 37.0, 50.8, 9.6, 11.8, zMid, mSilver);
+
+        // 4. True 7.28mm-Pitch Keypads (Front + Top-Shoulder)
+        const fMats = capsPal.front;
+        addB(30.1, 67.1, 8.5, 23.5, 16.4, 18.0, zMid + ex * 4, mGreenPCB);
+        frontCapXs.forEach((cx, i) => {
+          addB(cx - 3.0, cx + 3.0, 13.0, 19.0, 18.0, 21.5, zMid + ex * 4, mBlackCap);
+          addB(cx - 3.1, cx + 3.1, 12.6, 19.4, 21.6, 25.0, zCaps, fMats[i]);
+        });
+
+        addB(26.8, 63.8, 60.4, 62.0, 7.6, 22.3, zMid, mGreenPCB, yTopPad);
+        topCapXs.forEach(cx => {
+          addB(cx - 3.0, cx + 3.0, 62.0, 66.0, 11.8, 17.8, zMid, mBlackCap, yTopPad);
+          addB(cx - 3.1, cx + 3.1, 65.8, 68.8, 11.4, 18.2, zMid, capsPal.secondary, yTopPad);
+        });
+
+        // 5. CNC-Calibrated T-Display-S3 AMOLED + Clear Acrylic Screen Guard
+        addB(2.0, 60.8, 34.4, 59.9, 18.2, 19.8, zAmoled, mDarkPCB);
+        addB(2.2, 12.7, 34.0, 59.5, 14.4, 18.2, zAmoled, mSilver);
+        addB(51.0, 60.6, 38.5, 55.5, 14.6, 18.2, zAmoled, mSilver);
+        addB(0.8, 7.8, 42.6, 51.6, 18.2, 21.4, zAmoled, mSilver);
+        addB(2.0, 60.8, 34.4, 59.9, 19.8, 22.3, zAmoled, mAcrylic);
+        addB(8.4, 58.7, 36.2, 58.1, 19.85, 22.36, zAmoled, getStdMat("#05080f", { rough: 0.12, metal: 0.15 }));
+
+        const ipsCvs = document.getElementById("ips-canvas");
+        if (!window._amoledTex && ipsCvs) {
+          window._amoledTex = new THREE.CanvasTexture(ipsCvs);
+          window._amoledTex.minFilter = THREE.LinearFilter;
+          window._amoledTex.magFilter = THREE.LinearFilter;
+        }
+        const scrMat = uiState.screenOn && window._amoledTex
+          ? new THREE.MeshBasicMaterial({ map: window._amoledTex })
+          : new THREE.MeshStandardMaterial({ color: 0x05070b, roughness: 0.08, metalness: 0.25 });
+        const scrPlane = new THREE.Mesh(new THREE.PlaneGeometry(44.22, 19.80), scrMat);
+        scrPlane.position.set(35.43 - hw, 47.15 - hh, 22.42 - hd + zAmoled);
+        group.add(scrPlane);
+
+        if (uiState.showWires) {
+          const wires = [
+            [[24, 58, 17.5 + zAmoled], [14, 52, 9.2 + zMid], "#c084fc"],
+            [[34, 58, 17.5 + zAmoled], [56, 4, 9.5 + zFloor], "#facc15"],
+            [[54, 44, 17.5 + zAmoled], [56, 44, 9.2 + zMid], "#38bdf8"],
+            [[26, 35, 17.5 + zAmoled], [34, 16, 3.6 + zFloor], "#34d399"],
+            [[46, 35, 17.5 + zAmoled], [48, 16, 16.6 + zMid], "#f97316"],
+            [[34, 61 + yTopPad, 14.8 + zMid], [48, 18, 3.2 + zFloor], "#ef4444"]
+          ];
+          for (const [a, b, col] of wires) {
+            const p0 = new THREE.Vector3(a[0] - hw, a[1] - hh, a[2] - hd);
+            const p2 = new THREE.Vector3(b[0] - hw, b[1] - hh, b[2] - hd);
+            const p1 = new THREE.Vector3((p0.x + p2.x) * 0.5, (p0.y + p2.y) * 0.5, Math.min(p0.z, p2.z) - 2.2);
+            group.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(p0, p1, p2), 12, 0.42, 6, false), getStdMat(col, { rough: 0.4 })));
+          }
+        }
+        return scene;
+      }
+
+      function buildActiveThreeScene(explodeVal, shellMode) {
+        return uiState.formFactor === 'nano'
+          ? buildNanoV2ThreeScene(explodeVal, shellMode)
+          : buildP5ThreeScene(explodeVal, shellMode);
+      }
+
       function renderThreeScene(scene, explodeVal) {
-        const dist = 148 + explodeVal * 42;
+        const baseDist = (uiState.formFactor === 'nano' ? 136 : 148) + explodeVal * 42;
+        const dist = baseDist / uiState.zoom;
         const cp = Math.cos(uiState.pitch), sp = Math.sin(uiState.pitch);
         const cy = Math.cos(uiState.yaw), sy = Math.sin(uiState.yaw);
         _threeCam.position.set(dist * cp * sy, -dist * sp, dist * cp * cy);
@@ -959,36 +1232,72 @@
           _threeCam.updateProjectionMatrix();
           _threeRenderer.setViewport(0, 0, halfW, h);
           _threeRenderer.setScissor(0, 0, halfW, h);
-          renderThreeScene(buildP5ThreeScene(0.0, "transparent"), 0.0);
+          renderThreeScene(buildActiveThreeScene(0.0, "transparent"), 0.0);
 
           _threeCam.aspect = (w - halfW) / h;
           _threeCam.updateProjectionMatrix();
           _threeRenderer.setViewport(halfW, 0, w - halfW, h);
           _threeRenderer.setScissor(halfW, 0, w - halfW, h);
-          renderThreeScene(buildP5ThreeScene(1.0, "smoke"), 1.0);
+          renderThreeScene(buildActiveThreeScene(1.0, "smoke"), 1.0);
           _threeRenderer.setScissorTest(false);
         } else {
           _threeRenderer.setScissorTest(false);
           _threeCam.aspect = w / h;
           _threeCam.updateProjectionMatrix();
           _threeRenderer.setViewport(0, 0, w, h);
-          renderThreeScene(buildP5ThreeScene(uiState.explode, uiState.shellMode), uiState.explode);
+          renderThreeScene(buildActiveThreeScene(uiState.explode, uiState.shellMode), uiState.explode);
         }
       }
 
       const cadCanvas = document.getElementById('cad-canvas');
-      let dragging = false, lastX = 0, lastY = 0;
-      cadCanvas.addEventListener('pointerdown', e => { dragging = true; lastX = e.clientX; lastY = e.clientY; cadCanvas.setPointerCapture(e.pointerId); });
-      cadCanvas.addEventListener('pointermove', e => {
-        if (!dragging) return;
-        const dx = e.clientX - lastX, dy = e.clientY - lastY;
-        lastX = e.clientX; lastY = e.clientY;
-        uiState.yaw += dx * 0.011;
-        uiState.pitch = Math.max(-1.35, Math.min(1.35, uiState.pitch - dy * 0.011));
+      const activePointers = new Map();
+      let lastPinchDist = null;
+      function setZoom(nextZoom) {
+        uiState.zoom = Math.max(0.45, Math.min(2.8, nextZoom));
+        const resetBtn = document.getElementById('btn-zoom-reset');
+        if (resetBtn) resetBtn.textContent = `${uiState.zoom.toFixed(1)}×`;
         drawScene();
+      }
+      cadCanvas.addEventListener('pointerdown', e => {
+        activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (activePointers.size === 2) {
+          const pts = [...activePointers.values()];
+          lastPinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+        }
+        cadCanvas.setPointerCapture(e.pointerId);
       });
-      cadCanvas.addEventListener('pointerup', () => { dragging = false; });
-      cadCanvas.addEventListener('pointercancel', () => { dragging = false; });
+      cadCanvas.addEventListener('pointermove', e => {
+        if (!activePointers.has(e.pointerId)) return;
+        const prev = activePointers.get(e.pointerId);
+        activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (activePointers.size === 2) {
+          const pts = [...activePointers.values()];
+          const d = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+          if (lastPinchDist && d > 0) setZoom(uiState.zoom * (d / lastPinchDist));
+          lastPinchDist = d;
+          return;
+        }
+        if (activePointers.size === 1) {
+          const dx = e.clientX - prev.x, dy = e.clientY - prev.y;
+          uiState.yaw += dx * 0.011;
+          uiState.pitch = Math.max(-1.35, Math.min(1.35, uiState.pitch - dy * 0.011));
+          drawScene();
+        }
+      });
+      const endPtr = e => {
+        activePointers.delete(e.pointerId);
+        if (activePointers.size < 2) lastPinchDist = null;
+      };
+      cadCanvas.addEventListener('pointerup', endPtr);
+      cadCanvas.addEventListener('pointercancel', endPtr);
+      cadCanvas.addEventListener('wheel', e => {
+        e.preventDefault();
+        const factor = Math.exp(-e.deltaY * 0.0025);
+        setZoom(uiState.zoom * factor);
+      }, { passive: false });
+      document.getElementById('btn-zoom-in').addEventListener('click', () => setZoom(uiState.zoom * 1.22));
+      document.getElementById('btn-zoom-out').addEventListener('click', () => setZoom(uiState.zoom / 1.22));
+      document.getElementById('btn-zoom-reset').addEventListener('click', () => setZoom(1.0));
 
       const explodeSlider = document.getElementById('explode-slider');
       const explodeReadout = document.getElementById('explode-readout');
@@ -1010,7 +1319,39 @@
           btn.style.background = active ? 'var(--primary)' : 'transparent';
           btn.style.color = active ? '#ffffff' : 'var(--muted-foreground)';
         });
+        document.querySelectorAll('.ff-btn').forEach(btn => {
+          const active = btn.dataset.ff === uiState.formFactor;
+          btn.style.background = active ? 'var(--primary)' : 'transparent';
+          btn.style.color = active ? '#ffffff' : 'var(--muted-foreground)';
+        });
+        document.querySelectorAll('.caps-btn').forEach(btn => {
+          const active = btn.dataset.caps === uiState.capsTheme;
+          btn.style.background = active ? 'var(--primary)' : 'transparent';
+          btn.style.color = active ? '#ffffff' : 'var(--muted-foreground)';
+        });
       }
+      document.querySelectorAll('.caps-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          uiState.capsTheme = btn.dataset.caps;
+          refreshButtons(); drawScene();
+        });
+      });
+      document.querySelectorAll('.ff-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          uiState.formFactor = btn.dataset.ff;
+          const isNano = uiState.formFactor === 'nano';
+          document.getElementById('hdr-title').textContent = isNano
+            ? 'fbox Nano v2 — Metrology-Verified Pocket Square Explorer (69.0 × 68.0 × 24.2 mm)'
+            : 'fbox (Option P5-Exp-Compact-Portrait) — Centered AMOLED + Right-Side 1×4 Explorer (72 × 84 × 19.5 mm)';
+          document.getElementById('hdr-dims').textContent = isNano
+            ? '69.0 × 68.0 × 24.2 mm · R4.8 mm'
+            : '72.0 × 84.0 × 19.5 mm · R5.4 mm';
+          document.getElementById('canvas-hint').textContent = isNano
+            ? 'Drag to orbit 360° · Top = 3.5mm TRS + 4× Shoulder Keys · Left = USB-C · Right = MicroSD · Bottom = Speaker & Mic Vents'
+            : 'Drag to orbit 360° · Left = 4.5mm USB-C Funnel · Right = 4× Black Side Keys + MicroSD · Top = 3.5mm TRS';
+          refreshButtons(); drawScene();
+        });
+      });
       document.querySelectorAll('.shell-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           uiState.shellMode = btn.dataset.shell; uiState.dualView = false;
